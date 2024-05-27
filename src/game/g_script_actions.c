@@ -4587,7 +4587,6 @@ qboolean G_ScriptAction_Cvar(gentity_t *ent, char *params)
 		{
 			G_Error("G_ScriptAction_Cvar: cvar %s requires a parameter\n", lastToken);
 		}
-		cvarValue |= (1 << Q_atoi(token));    // FIXME: cvarValue is never read
 	}
 	else if (!Q_stricmp(lastToken, "bitreset"))
 	{
@@ -4595,7 +4594,6 @@ qboolean G_ScriptAction_Cvar(gentity_t *ent, char *params)
 		{
 			G_Error("G_Scripting: cvar %s requires a parameter\n", lastToken);
 		}
-		cvarValue &= ~(1 << Q_atoi(token));   // FIXME: cvarValue is never read
 	}
 	else if (!Q_stricmp(lastToken, "abort_if_bitset"))
 	{
@@ -4627,7 +4625,6 @@ qboolean G_ScriptAction_Cvar(gentity_t *ent, char *params)
 		{
 			G_Error("G_ScriptAction_Cvar: cvar %s requires a parameter\n", lastToken);
 		}
-		cvarValue = Q_atoi(token);    // FIXME: cvarValue is never read
 	}
 	else if (!Q_stricmp(lastToken, "random"))
 	{
@@ -4644,8 +4641,6 @@ qboolean G_ScriptAction_Cvar(gentity_t *ent, char *params)
 		{
 			G_Error("G_ScriptAction_Cvar: cvar %s requires a random parameter <> 0\n", lastToken);
 		}
-
-		cvarValue = rand() % randomValue;   // FIXME: cvarValue is never read
 	}
 	else if (!Q_stricmp(lastToken, "trigger_if_equal"))
 	{

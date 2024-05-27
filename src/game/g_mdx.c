@@ -1308,7 +1308,6 @@ qhandle_t trap_R_RegisterModel(const char *filename)
 	}
 	else
 	{
-		ret = -1;
 		Com_Dealloc(mem);
 		G_Error(GAME_VERSION " MDX: Not a model: %s\n", filename);
 	}

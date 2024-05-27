@@ -407,7 +407,7 @@ qboolean G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, ve
 	// if still not valid, move them around to see if we can find a good spot
 	if (JITTER_MAX > JITTER_INC)
 	{
-		float x, fx, y, fy, z, fz;
+		int x, fx, y, fy, z, fz;
 
 		VectorCopy(check->s.pos.trBase, org);
 		if (check->client)

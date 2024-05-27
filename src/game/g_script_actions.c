@@ -3580,11 +3580,6 @@ qboolean G_ScriptAction_SetWinner(gentity_t *ent, char *params)
 		G_Error("G_ScriptAction_SetWinner: Invalid team number\n");
 	}
 
-	if (g_gametype.integer == GT_WOLF_LMS)
-	{
-		num = -1;   // FIXME: never read
-	}
-
 	trap_GetConfigstring(CS_MULTI_MAPWINNER, cs, sizeof(cs));
 
 	Info_SetValueForKey(cs, "w", token);

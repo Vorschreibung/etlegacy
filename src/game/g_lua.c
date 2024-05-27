@@ -487,7 +487,7 @@ static int _et_trap_FS_FOpenFile(lua_State *L)
 // filedata = et.trap_FS_Read( fd, count )
 static int _et_trap_FS_Read(lua_State *L)
 {
-	char         *filedata = "";
+	char         *filedata;
 	fileHandle_t fd        = (int)luaL_checkinteger(L, 1);
 	int          count     = (int)luaL_checkinteger(L, 2);
 

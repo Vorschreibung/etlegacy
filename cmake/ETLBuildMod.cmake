@@ -27,6 +27,8 @@ if(BUILD_CLIENT_MOD)
 		LIBRARY_OUTPUT_DIRECTORY_RELEASE "${MODNAME}"
 	)
 	target_compile_definitions(cgame PRIVATE CGAMEDLL=1 MODLIB=1)
+
+	LEG_STRIP(cgame)
 endif()
 
 #
@@ -46,6 +48,8 @@ if(BUILD_CLIENT_MOD)
 		LIBRARY_OUTPUT_DIRECTORY_RELEASE "${MODNAME}"
 	)
 	target_compile_definitions(ui PRIVATE UIDLL=1 MODLIB=1)
+
+	LEG_STRIP(ui)
 endif()
 
 #
@@ -91,6 +95,8 @@ if(BUILD_SERVER_MOD)
 		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${MODNAME}"
 	)
 	target_compile_definitions(qagame PRIVATE GAMEDLL=1 MODLIB=1)
+
+	LEG_STRIP(qagame)
 endif()
 
 #
@@ -132,6 +138,8 @@ if(BUILD_SERVER_MOD)
 		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${MODNAME}"
 	)
 	target_compile_definitions(tvgame PRIVATE GAMEDLL=1 MODLIB=1)
+
+	LEG_STRIP(tvgame)
 endif()
 
 # Build both architectures on older xcode versions

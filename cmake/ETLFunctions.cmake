@@ -106,3 +106,16 @@ function(LEG_DOWNLOAD _MSG _URL _PATH _HASH _EXTRACT _EXTRACT_RES)
 		endif()
 	endif()
 endfunction()
+
+function(LEG_STRIP _TARGET)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release")
+		message(STATUS "Stripping target: ${_TARGET}")
+		add_custom_command(
+			COMMENT "AHIHI ${_TARGET}"
+			TARGET "${_TARGET}" POST_BUILD
+			DEPENDS "${_TARGET}"
+			COMMAND ${CMAKE_STRIP}
+			ARGS --strip-all $<TARGET_FILE:${_TARGET}>
+		)
+	endif()
+endfunction()

@@ -68,6 +68,8 @@ if(MSVC AND NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/etl.vcxproj.user)
 	configure_file(${PROJECT_SOURCE_DIR}/cmake/vs2013.vcxproj.user.in ${CMAKE_CURRENT_BINARY_DIR}/etl.vcxproj.user @ONLY)
 endif()
 
+LEG_STRIP(etl)
+
 install(TARGETS etl
 	BUNDLE  DESTINATION "${INSTALL_DEFAULT_BINDIR}"
 	RUNTIME DESTINATION "${INSTALL_DEFAULT_BINDIR}"

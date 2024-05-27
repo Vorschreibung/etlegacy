@@ -78,6 +78,8 @@ macro(configure_renderer renderer name)
 	if(NOT RENDERER_DYNAMIC)
 		target_link_libraries(client_libraries INTERFACE ${renderer})
 	endif()
+
+	LEG_STRIP(${renderer})
 endmacro()
 
 if(RENDERER_DYNAMIC)

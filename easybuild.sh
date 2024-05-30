@@ -118,6 +118,14 @@ ewarning() {
 	command echo -e "\n$boldred WARNING$boldyellow~~> $boldwhite${1}$reset"
 }
 
+eerror() {
+	if $silent_mode; then
+		return 1
+	fi
+	command echo -e "\n${boldred}~~>${reset} ${boldwhite}${1}${reset}"
+	exit 1
+}
+
 ehead() {
 	if $silent_mode; then
 		return 1
@@ -207,8 +215,7 @@ detectos() {
 		# Check if x86_build is set and an osx vesion as of Catalina or higher is used
 		IFS='.' read -r -a ver <<< "$DISTRO"
 		if { [ "${ver[0]}" -gt 10 ] || [ "${ver[1]}" -gt 13 ]; } && [ "${x86_build}" = true ]; then
-			einfo "You can't compile 32bit binaries with Mac OS ${ver[0]}.${ver[1]}. Use the flag \"-64\". Aborting."
-			exit 1
+			eerror "You can't compile 32bit binaries with Mac OS ${ver[0]}.${ver[1]}. Use the flag \"-64\". Aborting."
 		fi
 	else
 		DISTRO="Unknown"
@@ -241,8 +248,7 @@ check_compiler() {
 		elif [ "$CLANGFOUND" == 1 ] && [ "$CLANGPLUSFOUND" == 1 ]; then
 			set_compiler clang clang++ $x86_build
 		else
-			einfo "Missing compiler. Exiting."
-			exit 1
+			eerror "Missing compiler. Exiting."
 		fi
 	fi
 }
@@ -859,8 +865,7 @@ create_osx_dmg() {
 
 	app_exists APP_FOUND "rsvg-convert"
 	if [ "$APP_FOUND" == 0 ]; then
-		echo "Missing rsvg-convert cannot create installer"
-		exit 1
+		eerror "Missing rsvg-convert cannot create installer"
 	fi
 
 	echo "Generating OSX installer"

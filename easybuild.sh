@@ -1043,6 +1043,10 @@ start_script() {
 		done
 	done
 
+	if [ $# -gt 0 ] && [ $ARG_FOUND -eq 0 ]; then
+		eerror "Unknown command:${reset} $*"
+	fi
+
 	if [ $ARG_FOUND -eq 1 ]; then
 		return
 	fi

@@ -2554,17 +2554,17 @@ void CG_DrawVote(hudComponent_t *comp)
 		return;
 	}
 
-	if (cgs.autoFireteamCreateEndTime > cg.time && cgs.autoFireteamCreateNum == -1)
-	{
-		CG_GetBindingKeyForVote(str1, str2);
+	// if (cgs.autoFireteamCreateEndTime > cg.time && cgs.autoFireteamCreateNum == -1)
+	// {
+	// 	CG_GetBindingKeyForVote(str1, str2);
 
-		str = va("%s\n%s",
-		         CG_TranslateString("Create a Fireteam?"),
-		         va(CG_TranslateString("Press '%s' for YES, or '%s' for NO"), str1, str2));
+	// 	str = va("%s\n%s",
+	// 	         CG_TranslateString("Create a Fireteam?"),
+	// 	         va(CG_TranslateString("Press '%s' for YES, or '%s' for NO"), str1, str2));
 
-		CG_DrawCompMultilineText(comp, str, comp->colorMain, comp->alignText, comp->styleText, &cgs.media.limboFont2);
-		return;
-	}
+	// 	CG_DrawCompMultilineText(comp, str, comp->colorMain, comp->alignText, comp->styleText, &cgs.media.limboFont2);
+	// 	return;
+	// }
 
 	if (cgs.autoFireteamJoinEndTime > cg.time && cgs.autoFireteamJoinNum == -1)
 	{

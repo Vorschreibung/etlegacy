@@ -105,7 +105,7 @@ weaponDef
 				part 3
 				{
 					tag		"tag_barrel4"
-					model	"models/multiplayer/m1_garand/v_m1_garand_barrel4.md3"
+ 					model	"models/multiplayer/m1_garand/v_m1_garand_barrel4.md3"
 				}
 				part 4
 				{

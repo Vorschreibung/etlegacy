@@ -856,7 +856,7 @@ void CG_MapAutoexec(qboolean cheats)
 	if (CG_ConfigFileExists(filename))
 	{
 		CG_execFile(filename);
-		cg.mapConfigLoaded = qtrue;
+		cgs.mapConfigLoaded = qtrue;
 	}
 	else
 	{
@@ -866,7 +866,7 @@ void CG_MapAutoexec(qboolean cheats)
 		if (CG_ConfigFileExists(filename))
 		{
 			CG_execFile(filename);
-			cg.mapConfigLoaded = qtrue;
+			cgs.mapConfigLoaded = qtrue;
 		}
 	}
 }
@@ -2871,11 +2871,12 @@ void CG_Init(int serverMessageNum, int serverCommandSequence, int clientNum, qbo
 	CG_AssetCache();
 
 	// try execing map autoexec scripts
+	cgs.mapConfigLoaded = qfalse;
 	CG_MapAutoexec(cgs.sv_cheats);
 
 	// if cheats are enabled but devmap-specific configs aren't found,
 	// fallback to regular configs
-	if (cgs.sv_cheats && !cg.mapConfigLoaded)
+	if (cgs.sv_cheats && !cgs.mapConfigLoaded)
 	{
 		CG_MapAutoexec(qfalse);
 	}

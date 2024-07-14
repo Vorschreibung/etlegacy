@@ -2715,6 +2715,7 @@ typedef struct cgs_s
 
 	int scoresCount;
 	char scores[MAX_SCORES_CMDS][MAX_STRING_CHARS];
+	qboolean mapConfigLoaded; // map-specific autoexec status
 } cgs_t;
 
 //==============================================================================

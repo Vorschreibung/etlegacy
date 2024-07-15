@@ -3951,6 +3951,7 @@ static void PM_Weapon(void)
 
 	pm->ps->aimSpreadScale = (int)(pm->ps->aimSpreadScaleFloat);
 
+	// disable ATTACK_LASTSHOT animation for WEAPON_TYPE_MG (e.g. MG42 / Browning)
 	if (GetWeaponTableData(pm->ps->weapon)->type & WEAPON_TYPE_MG)
 	{
 		if (weapattackanim == WEAP_ATTACK_LASTSHOT)

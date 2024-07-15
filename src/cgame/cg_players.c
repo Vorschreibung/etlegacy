@@ -3002,32 +3002,25 @@ void CG_Player(centity_t *cent)
 
 	CG_BreathPuffs(cent, &head);
 
-	// add the gun / barrel / flash
-	if (!(cent->currentState.eFlags & EF_DEAD) /*&& !usingBinocs*/)
+	// add world models - the weapon itself / it's barrel / it's muzzle flash
+	if (!(cent->currentState.eFlags & EF_DEAD))
 	{
-		if ((cent->currentState.eFlags & EF_TALK)
+		if (
+			(cent->currentState.eFlags & EF_TALK)
 #ifdef FEATURE_MULTIVIEW
-		    && (cgs.clientinfo[cent->currentState.clientNum].weaponState == WSTATE_IDLE)
+			&& (cgs.clientinfo[cent->currentState.clientNum].weaponState == WSTATE_IDLE)
 #endif
-		    && !(cent->currentState.eFlags & (EF_FIRING | EF_MOUNTEDTANK | EF_ZOOMING))
-		    && !(cent->pe.torso.animation->flags & (ANIMFL_LADDERANIM | ANIMFL_FIRINGANIM | ANIMFL_RELOADINGANIM))
-		    && !(GetWeaponTableData(cent->currentState.weapon)->type & (WEAPON_TYPE_SET | WEAPON_TYPE_SCOPED)))
+			&& !(cent->currentState.eFlags & (EF_FIRING | EF_MOUNTEDTANK | EF_ZOOMING))
+			&& !(cent->pe.torso.animation->flags & (ANIMFL_LADDERANIM | ANIMFL_FIRINGANIM | ANIMFL_RELOADINGANIM))
+			&& !(GetWeaponTableData(cent->currentState.weapon)->type & (WEAPON_TYPE_SET | WEAPON_TYPE_SCOPED))
+			&& !(CG_PointContents(head.origin, 0) & CONTENTS_WATER)  // when not underwater
+			)
 		{
-			int contents;
-
-			contents = CG_PointContents(head.origin, 0);
-
-			// don't attach radio on hand when player is underwater
-			if (!(contents & CONTENTS_WATER))
-			{
-				acc.hModel = cg_weapons[WP_SATCHEL_DET].weaponModel[W_TP_MODEL].model;
-				CG_PositionEntityOnTag(&acc, &body, "tag_weapon", 0, NULL);
-				CG_AddRefEntityWithPowerups(&acc, cent->currentState.powerups, ci->team, &cent->currentState, cent->fireRiseDir);
-			}
-			else
-			{
-				CG_AddPlayerWeapon(&body, NULL, cent);
-			}
+			// when talking/chatting, don't render weapon world models, but render
+			// talking balloon instead
+			acc.hModel = cg_weapons[WP_SATCHEL_DET].weaponModel[W_TP_MODEL].model;
+			CG_PositionEntityOnTag(&acc, &body, "tag_weapon", 0, NULL);
+			CG_AddRefEntityWithPowerups(&acc, cent->currentState.powerups, ci->team, &cent->currentState, cent->fireRiseDir);
 		}
 		else
 		{

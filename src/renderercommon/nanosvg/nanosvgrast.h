@@ -31,6 +31,8 @@ extern "C" {
 #endif
 #endif
 
+#include "nanosvg.h"
+
 typedef struct NSVGrasterizer NSVGrasterizer;
 
 /* Example Usage:

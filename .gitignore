@@ -10,6 +10,8 @@
 CMakeLists.txt.user
 etmain/ui/git_version.h
 /.cache
+log-*
+.pixi
 
 #
 # OS specific
@@ -86,4 +88,3 @@ app/build/
 build/
 gradle/
 /local.properties
-

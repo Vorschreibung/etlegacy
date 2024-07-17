@@ -37,6 +37,8 @@
 #ifndef INCLUDE_SYS_WIN_H
 #define INCLUDE_SYS_WIN_H
 
+#ifdef _WIN32
+
 void Sys_CreateConsoleWindow(void);
 
 #if defined (_MSC_VER) && (_MSC_VER >= 1200)
@@ -78,5 +80,7 @@ void    Sys_PumpConsoleEvents(void);
 #else
 #define Sys_ShowConsoleWindow(x, y) if (x) { Sys_CreateConsoleWindow(); }
 #endif
+
+#endif // #ifdef _WIN32
 
 #endif // #ifndef INCLUDE_SYS_WIN_H

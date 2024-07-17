@@ -34,6 +34,9 @@
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
+
+#ifdef _WIN32
+
 #include <windows.h>
 
 #define QCONSOLE_HISTORY 32
@@ -513,3 +516,5 @@ void CON_Print(const char *msg)
 
 	CON_Show();
 }
+
+#endif // #ifdef _WIN32

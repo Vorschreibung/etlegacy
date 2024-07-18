@@ -986,6 +986,13 @@ static void CG_Item(centity_t *cent)
 		}
 	}
 
+	// XXX : circumvent z-fighting by offsetting the z-pos of all throwables by a minute amount
+	// multiplied by the entity number
+	if (!(GetWeaponTableData(item->giWeapon)->firingMode & (WEAPON_FIRING_MODE_THROWABLE)))
+	{
+		ent.origin[2] += es->number * 0.001f;
+	}
+
 	// add to refresh list
 	trap_R_AddRefEntityToScene(&ent);
 }

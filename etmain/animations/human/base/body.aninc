@@ -127,7 +127,7 @@
 		raise_grenade			2702	25	0	20	0	0	0	10
 		stand_grenade			2734	24	24	10	0	0	0	0
 		holding_grenadeB    	2759    12  0   20  0   0   0	13
-		throw_underhand			2788    21  0   20  0   0   0	20
+		throw_underhand			2788    21	0	25	0	0	0	20
 		firing_grenadeB			2772	37	0	40	0	0	0	20
 		holding_grenadeA    	2811	10	0	20	0	0	0	13
 		firing_grenadeA			2822	40	0	40	0	0	0	20
@@ -178,7 +178,7 @@
 		//raise_binoculars		3525	10	0	20	0	0	0	10
 		firing_pliers			3540	19	19	20	0	50	0	20
 		firing_syringe			3570	15	0	60	0	0	0	20
-		raise_medpack			3590	10	0	20	0	0	0	10
+		raise_medpack			3592	8	0	24	0	0	0	10
 		stand_medpack			3605	30	30	20	0	0	0	0
 
 		run_medpack				3640	12	12	20	0	0	0	0

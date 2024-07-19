@@ -3609,6 +3609,24 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 		CG_PositionRotatedEntityOnTag(&flash, &gun, "tag_flash");
 	}
 
+	if (weaponNum == WP_FLAMETHROWER) {
+		vec3_t forward;
+		float  flash_offset;
+
+		// adjust flamethrower muzzle according to cg_fov
+		flash_offset = (((cg.refdef.fov_y / 73.739784 /*90 fov*/) - 1.0) * -3) - 0.4f;
+
+		// pull the flame back slightly while raising
+		if ((cg.snap->ps.weapAnim & ~ANIM_TOGGLEBIT) == WEAP_RAISE)
+		{
+			flash_offset -= 0.5;
+		}
+
+		AxisToAngles(flash.axis, angles);
+		AngleVectors(angles, forward, NULL, NULL);
+		VectorMA(flash.origin, flash_offset, forward, flash.origin);
+	}
+
 	// store this position for other cgame elements to access
 	cent->pe.gunRefEnt      = gun;
 	cent->pe.gunRefEntFrame = cg.clientFrame;

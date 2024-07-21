@@ -3895,6 +3895,9 @@ static void PM_Weapon(void)
 		PM_StartWeaponAnim(weapattackanim);
 	}
 
+	// Add return here for instant firing
+	// return;
+
 	// moved releasedFire into pmext instead of ps
 	pm->pmext->releasedFire = qfalse;
 	pm->ps->lastFireTime    = pm->cmd.serverTime;

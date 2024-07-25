@@ -124,6 +124,17 @@ void CG_MachineGunEjectBrass(centity_t *cent)
 		return;
 	}
 
+	// TODO : XXX : the KAR98 (normal engi rifle) seems to have a wonky brass
+	// tag and thus ejects brass straight into the players noggin (especially
+	// bad if you run forward while shooting) - aside from completely obscuring
+	// the view, individual brass will directly clip into the viewport and end
+	// up being rendered cut off - instead of trying to fix this via offset, we
+	// just disable it for now, but it can/should be re-enabled in the future
+	// with a proper offset/direction change applied
+	if (cent->currentState.weapon == WP_KAR98) {
+		return;
+	}
+
 	le = CG_AllocLocalEntity();
 	re = &le->refEntity;
 
@@ -3107,7 +3118,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 	// don't draw weapon stuff when looking through a scope
 	if (GetWeaponTableData(weaponNum)->type & WEAPON_TYPE_SCOPED)
 	{
-		if (isFirstPerson)
+		if (isFirstPerson && cg.zoomed)
 		{
 			return;
 		}
@@ -3485,7 +3496,23 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 	// add the scope model to the rifle if you've got it
 	if (isFirstPerson)  // for now just do it on the first person weapons
 	{
-		if ((GetWeaponTableData(weaponNum)->type & (WEAPON_TYPE_RIFLE | WEAPON_TYPE_RIFLENADE)) && !(GetWeaponTableData(weaponNum)->type & (WEAPON_TYPE_SCOPABLE)))
+		if (CHECKBITWISE(GetWeaponTableData(weaponNum)->type, (WEAPON_TYPE_RIFLE | WEAPON_TYPE_SCOPABLE))
+		    || CHECKBITWISE(GetWeaponTableData(weaponNum)->type, (WEAPON_TYPE_RIFLE | WEAPON_TYPE_SCOPED)))
+		{
+			barrel.hModel = weapon->modModels[0];
+
+			if (barrel.hModel)
+			{
+				CG_PositionEntityOnTag(&barrel, &gun, (weaponNum == WP_GARAND || weaponNum == WP_GARAND_SCOPE) ? "tag_scope2" : "tag_scope", 0, NULL);
+				CG_AddWeaponWithPowerups(&barrel, cent->currentState.powerups, ps, cent);
+			}
+
+			barrel.hModel = weapon->modModels[1];
+
+			CG_PositionEntityOnTag(&barrel, &gun, "tag_flash", 0, NULL);
+			CG_AddWeaponWithPowerups(&barrel, cent->currentState.powerups, ps, cent);
+		}
+		else if ((GetWeaponTableData(weaponNum)->type & (WEAPON_TYPE_RIFLE | WEAPON_TYPE_RIFLENADE)))
 		{
 			if ((cg.snap->ps.ammo[GetWeaponTableData(WP_GPG40)->ammoIndex] || cg.snap->ps.ammo[GetWeaponTableData(WP_M7)->ammoIndex] || cg.snap->ps.ammoclip[GetWeaponTableData(WP_GPG40)->ammoIndex] || cg.snap->ps.ammoclip[GetWeaponTableData(WP_M7)->ammoIndex]))
 			{
@@ -3512,22 +3539,6 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 					}
 				}
 			}
-		}
-		else if (CHECKBITWISE(GetWeaponTableData(weaponNum)->type, (WEAPON_TYPE_RIFLE | WEAPON_TYPE_SCOPABLE)))
-		{
-			barrel.hModel = weapon->modModels[0];
-
-			if (barrel.hModel)
-			{
-				CG_PositionEntityOnTag(&barrel, &gun, (weaponNum == WP_GARAND) ? "tag_scope2" : "tag_scope", 0, NULL);
-				CG_AddWeaponWithPowerups(&barrel, cent->currentState.powerups, ps, cent);
-			}
-
-			barrel.hModel = weapon->modModels[1];
-			//if(barrel.hModel) {
-			CG_PositionEntityOnTag(&barrel, &gun, "tag_flash", 0, NULL);
-			CG_AddWeaponWithPowerups(&barrel, cent->currentState.powerups, ps, cent);
-			//}
 		}
 	}
 	// 3rd person attachements
@@ -3624,28 +3635,39 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 	// @XXX hardcode offset flash positions, to correct wrong official
 	// muzzle locations in some cases
 	{
-		vec3_t  forward;
-		float flash_offset = 0.0f;
+		vec3_t forward;
+		float  flash_offset = 0.0f;
 
-		switch (weaponNum) {
-			case WP_FLAMETHROWER:
-				// adjust flamethrower muzzle according to cg_fov
-				flash_offset = (((cg.refdef.fov_y / 73.739784 /*90 fov*/) - 1.0) * -3) - 0.4f;
+		switch (weaponNum)
+		{
+		case WP_KAR98:   // normal Kar98
+			flash_offset = 8.0f;
+			break;
+		case WP_K43:     // scoped Kar98
+		case WP_GARAND:  // scoped Garand
+		case WP_CARBINE: // normal Garand
+			flash_offset = 14.0f;
+			break;
+		case WP_FLAMETHROWER:
+			// adjust flamethrower muzzle according to cg_fov
+			flash_offset = (((cg.refdef.fov_y / 73.739784 /*90 fov*/) - 1.0) * -3) - 0.4f;
 
-				// pull the flame back slightly while raising
-				if ((cg.snap->ps.weapAnim & ~ANIM_TOGGLEBIT) == WEAP_RAISE) {
-					flash_offset -= 0.5;
-				}
-				break;
-			default:
-				break;
+			// pull the flame back slightly while raising
+			if ((cg.snap->ps.weapAnim & ~ANIM_TOGGLEBIT) == WEAP_RAISE)
+			{
+				flash_offset -= 0.5;
+			}
+			break;
+		default:
+			break;
 		}
 
-      if (flash_offset != 0.0f) {
-         AxisToAngles(flash.axis, angles);
-         AngleVectors(angles, forward, NULL, NULL);
-         VectorMA(flash.origin, flash_offset, forward, flash.origin);
-      }
+		if (flash_offset != 0.0f)
+		{
+			AxisToAngles(flash.axis, angles);
+			AngleVectors(angles, forward, NULL, NULL);
+			VectorMA(flash.origin, flash_offset, forward, flash.origin);
+		}
 	}
 
 	// store this position for other cgame elements to access

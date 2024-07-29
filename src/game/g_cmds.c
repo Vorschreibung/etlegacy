@@ -650,6 +650,7 @@ static qboolean Cmd_Give_f_Check(const char *cmdName)
 		if (!Q_stricmp(giveCmds[i], cmdName))
 		{
 			return qtrue;
+			break;
 		}
 	}
 

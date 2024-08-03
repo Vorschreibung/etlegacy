@@ -692,7 +692,9 @@ void CL_Ping_f(void);
 qboolean CL_UpdateVisiblePings_f(int source);
 
 /// console
-#define NUM_CON_TIMES   10
+/// @TODO - bugs out above 10 for some reason, need to fix the code where it's
+/// used
+#define NUM_CON_TIMES   50
 
 #define CON_TEXTSIZE    131072
 

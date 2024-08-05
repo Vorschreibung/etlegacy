@@ -236,6 +236,8 @@ jobs:
       SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
       CI_ETL_DESCRIBE: ${{needs.version.outputs.describe}}
       CI_ETL_TAG: ${{needs.version.outputs.tag}}
+    if:
+      ${{ env.SIGNING_STORE_PASSWORD != '' }}
     container:
       image: etlegacy/android-build
     steps:

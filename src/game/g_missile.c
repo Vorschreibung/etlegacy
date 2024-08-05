@@ -955,13 +955,15 @@ void G_BurnTarget(gentity_t *self, gentity_t *body, qboolean directhit)
 		return;
 	}
 
-	// reduce the current damageQuota with time
-	if (body->flameQuotaTime && body->flameQuota > 0)
-	{
-		body->flameQuota -= (int)(((float)(level.time - body->flameQuotaTime) / 1000) * 2.5f);
-		if (body->flameQuota < 0)
+	if (!directhit) {
+		// reduce the current damageQuota with time
+		if (body->flameQuotaTime && body->flameQuota > 0)
 		{
-			body->flameQuota = 0;
+			body->flameQuota -= (int)(((float)(level.time - body->flameQuotaTime) / 1000) * 2.5f);
+			if (body->flameQuota < 0)
+			{
+				body->flameQuota = 0;
+			}
 		}
 	}
 
@@ -1022,70 +1024,76 @@ void G_RunFlamechunk(gentity_t *ent)
 	float     deltaTime  = (level.time - ent->s.pos.trTime) / 1000.f;
 	gentity_t *ignoreent = NULL;
 
-	// vel was only being set if (level.time - ent->timestamp > 50
-	// However, below, it was being used when we hit something and it was uninitialized
-	VectorCopy(ent->s.pos.trDelta, vel);
-	speed = VectorNormalize(vel);
+	// Move
+	if (ent->closespeed == 0) {
+		// vel was only being set if (level.time - ent->timestamp > 50
+		// However, below, it was being used when we hit something and it was uninitialized
+		VectorCopy(ent->s.pos.trDelta, vel);
+		speed = VectorNormalize(vel);
 
-	// Adust the current speed of the chunk
-	if (level.time - ent->timestamp <= 50)
-	{
-		speed = FLAME_START_SPEED;
-	}
-	else if (level.time - ent->timestamp <= ent->s.pos.trDuration)
-	{
-		speed -= deltaTime * FLAME_FRICTION_PER_SEC;
-
-		if (speed < FLAME_MIN_SPEED)
+		// Adust the current speed of the chunk
+		if (level.time - ent->timestamp <= 50)
 		{
-			speed = FLAME_MIN_SPEED;
+			speed = FLAME_START_SPEED;
+		}
+		else if (level.time - ent->timestamp <= ent->s.pos.trDuration)
+		{
+			speed -= deltaTime * FLAME_FRICTION_PER_SEC;
+
+			if (speed < FLAME_MIN_SPEED)
+			{
+				speed = FLAME_MIN_SPEED;
+			}
+
+			VectorScale(vel, speed, ent->s.pos.trDelta);
 		}
 
-		VectorScale(vel, speed, ent->s.pos.trDelta);
-	}
+		ent->s.pos.trTime = level.time;
 
-	ent->s.pos.trTime = level.time;
+		// Move the chunk
+		VectorMA(ent->r.currentOrigin, deltaTime, ent->s.pos.trDelta, neworg);
 
-	// Move the chunk
-	VectorMA(ent->r.currentOrigin, deltaTime, ent->s.pos.trDelta, neworg);
+		trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, neworg, ent->r.ownerNum, MASK_SHOT | MASK_WATER);
 
-	trap_Trace(&tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, neworg, ent->r.ownerNum, MASK_SHOT | MASK_WATER);
-
-	if (tr.startsolid)
-	{
-		VectorClear(ent->s.pos.trDelta);
-		ent->count2++;
-	}
-	else if (tr.fraction != 1.0f && !(tr.surfaceFlags & SURF_NOIMPACT))
-	{
-		float dot;
-
-		VectorCopy(tr.endpos, ent->r.currentOrigin);
-
-		dot = DotProduct(vel, tr.plane.normal);
-		VectorMA(vel, -2.f * dot, tr.plane.normal, vel);
-		VectorNormalize(vel);
-		speed *= 0.5f * (0.25f + 0.75f * ((dot + 1.0f) * 0.5f));
-
-		if (speed < FLAME_MIN_SPEED)
+		if (tr.startsolid)
 		{
-			speed = FLAME_MIN_SPEED;
+			VectorClear(ent->s.pos.trDelta);
+			ent->count2++;
 		}
-
-		VectorScale(vel, speed, ent->s.pos.trDelta);
-
-		if (tr.entityNum != ENTITYNUM_WORLD && tr.entityNum != ENTITYNUM_NONE)
+		else if (tr.fraction != 1.0f && !(tr.surfaceFlags & SURF_NOIMPACT))
 		{
-			ignoreent = &g_entities[tr.entityNum];
-			G_BurnTarget(ent, ignoreent, qtrue);
-		}
+			float dot;
 
-		ent->count2++;
+			VectorCopy(tr.endpos, ent->r.currentOrigin);
+
+			dot = DotProduct(vel, tr.plane.normal);
+			VectorMA(vel, -2.f * dot, tr.plane.normal, vel);
+			VectorNormalize(vel);
+			speed *= 0.5f * (0.25f + 0.75f * ((dot + 1.0f) * 0.5f));
+
+			if (speed < FLAME_MIN_SPEED)
+			{
+				speed = FLAME_MIN_SPEED;
+			}
+
+			VectorScale(vel, speed, ent->s.pos.trDelta);
+
+			if (tr.entityNum != ENTITYNUM_WORLD && tr.entityNum != ENTITYNUM_NONE && ent->etpro_misc_1 == 0)
+			{
+				ignoreent = &g_entities[tr.entityNum];
+				G_BurnTarget(ent, ignoreent, qtrue);
+				ent->etpro_misc_1 = 1;
+				// ent->closespeed = 1;
+			}
+
+			ent->count2++;
+		}
+		else
+		{
+			VectorCopy(neworg, ent->r.currentOrigin);
+		}
 	}
-	else
-	{
-		VectorCopy(neworg, ent->r.currentOrigin);
-	}
+	// VectorCopy(neworg, ent->r.currentOrigin);
 
 	// Do damage to nearby entities, every 100ms
 	if (ent->flameQuotaTime <= level.time)
@@ -1100,11 +1108,13 @@ void G_RunFlamechunk(gentity_t *ent)
 		float     size = ent->speed / 2;
 		vec3_t mins = {-size, -size, -size};
 		vec3_t maxs = {size, size, size};
+		float *color = (ent->etpro_misc_1 == 0) ? tv(1.0f, 0.5f, 0.f) : tv(1.0f, 0.0f, 1.f);
+
 		G_RailBox(
 			ent->r.currentOrigin,
 			mins,
 			maxs,
-			tv(1.0f, 0.5f, 0.f),
+			color,
 			ent->timestamp
 			);
 	}
@@ -1151,9 +1161,11 @@ gentity_t *fire_flamechunk(gentity_t *self, vec3_t start, vec3_t dir)
 	self->count2 = 1;
 
 	bolt = G_Spawn();
+	// Com_Printf("%d\n", self->s.number);
 	G_PreFilledMissileEntity(bolt, WP_FLAMETHROWER, self->s.weapon, self->s.number, TEAM_FREE, -1, self, start, dir);
 
-	bolt->flameQuotaTime   = level.time + 50;
+	bolt->flameQuotaTime   = (level.time + 100) - (level.time % 100);
+
 	bolt->count2           = 0; // how often it bounced off of something
 	bolt->count            = 1; // this chunk can add hit
 	bolt->s.pos.trDuration = 550;

@@ -3836,10 +3836,6 @@ void G_BurnMeGood(gentity_t *self, gentity_t *body, gentity_t *chunk, qboolean d
 {
 	vec3_t origin;
 
-	// add the new damage
-	body->flameQuota    += 5;
-	body->flameQuotaTime = level.time;
-
 	// fill in our own origin if we have no flamechunk
 	if (chunk != NULL)
 	{
@@ -3850,21 +3846,36 @@ void G_BurnMeGood(gentity_t *self, gentity_t *body, gentity_t *chunk, qboolean d
 		VectorCopy(self->r.currentOrigin, origin);
 	}
 
-	// yet another flamethrower damage model, trying to find a feels-good damage combo that isn't overpowered
+	// direct damage
+	if (directhit)
+	{
+#ifndef CGAMEDLL
+		if (!Q_stricmp(body->classname, "player"))
+		{
+			// Com_Printf("> %d:[X] direct flamechunk dmg\n", level.framenum);
+		}
+#endif
+		G_Damage(body, self, self, vec3_origin, origin, GetWeaponTableData(WP_FLAMETHROWER)->damage, 0, MOD_FLAMETHROWER);
+		return;
+	}
+
+	// indirect damage ...
 	if (body->lastBurnedFrameNumber != level.framenum)
 	{
-		int damage = GetWeaponTableData(WP_FLAMETHROWER)->damage;
-
-		if (directhit) {
-			damage *= 3;
+#ifndef CGAMEDLL
+		if (!Q_stricmp(body->classname, "player"))
+		{
+			// Com_Printf("> %d:[ ] indirect flamechunk dmg\n", level.framenum);
 		}
-
-		G_Damage(body, self, self, vec3_origin, origin, damage, 0, MOD_FLAMETHROWER);
+#endif
+		G_Damage(body, self, self, vec3_origin, origin, GetWeaponTableData(WP_FLAMETHROWER)->damage, DAMAGE_RADIUS, MOD_FLAMETHROWER);
 		body->lastBurnedFrameNumber = level.framenum;
 	}
 
 	// additionally, cause dot burn damage, by setting 'body->s.onFireEnd',
 	// which continuously causes damage via 'P_WorldEffects'
+	body->flameQuota    += 5;
+	body->flameQuotaTime = level.time;
 	if (body->client && (body->health <= 0 || body->flameQuota > 0))
 	{
 		if (body->s.onFireEnd < level.time)
@@ -3882,8 +3893,7 @@ void G_BurnMeGood(gentity_t *self, gentity_t *body, gentity_t *chunk, qboolean d
 /**
  * @brief Weapon_FlamethrowerFire
  * @param[in,out] ent
- * @param[out] firedShot
- * @return
+ * @return firedShot
  */
 gentity_t *Weapon_FlamethrowerFire(gentity_t *ent)
 {
@@ -3914,6 +3924,7 @@ gentity_t *Weapon_FlamethrowerFire(gentity_t *ent)
 			trace_start[1] -= trace.endpos[1];
 			if (trace_start[0] * trace_start[0] + trace_start[1] * trace_start[1] < 441)
 			{
+				// Com_Printf("> %d flamed myself like a buffoon dmg\n", level.framenum);
 				// set self in flames
 				G_BurnMeGood(ent, ent, NULL, qfalse);
 			}

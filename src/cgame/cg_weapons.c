@@ -131,7 +131,8 @@ void CG_MachineGunEjectBrass(centity_t *cent)
 	// up being rendered cut off - instead of trying to fix this via offset, we
 	// just disable it for now, but it can/should be re-enabled in the future
 	// with a proper offset/direction change applied
-	if (cent->currentState.weapon == WP_KAR98) {
+	if (cent->currentState.weapon == WP_KAR98)
+	{
 		return;
 	}
 
@@ -2875,9 +2876,9 @@ static void CG_WeaponAnimation(playerState_t *ps, weaponInfo_t *weapon, int *wea
 
 	ws = BG_simpleWeaponState(ps->weaponstate);
 
-   // XXX : hack for mortar to reset firing animation - without this when
-   // holding down firing, the firing animation would only be played once when
-   // shooting continuously
+	// XXX : hack for mortar to reset firing animation - without this when
+	// holding down firing, the firing animation would only be played once when
+	// shooting continuously
 	if (
 		(CHECKBITWISE(GetWeaponTableData(ps->weapon)->type, WEAPON_TYPE_MORTAR | WEAPON_TYPE_SET))
 		&& ps->weaponTime < 50 && ps->weaponTime > 10
@@ -3772,7 +3773,10 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 		}
 
 		// no flamethrower flame on prone moving or dead players, or during pause
-		if ((cent->currentState.eFlags & EF_FIRING) && !(cent->currentState.eFlags & (EF_PRONE_MOVING | EF_DEAD)) && !cgs.matchPaused)
+		if ((cent->currentState.eFlags & EF_FIRING) && !(cent->currentState.eFlags & (EF_PRONE_MOVING | EF_DEAD)) && !cgs.matchPaused
+		    && (
+				!(cg.time - cg.predictedPlayerEntity.overheatTime < 3000))
+		    )
 		{
 			trace_t trace;
 			vec3_t  muzzlePoint, angles, forward;

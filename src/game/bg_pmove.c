@@ -3008,7 +3008,7 @@ void PM_CoolWeapons(void)
 			// and it's hot
 			if (pm->pmext->weapHeat[wp])
 			{
-				if (BG_IsSkillAvailable(pm->skill, SK_HEAVY_WEAPONS, SK_SOLDIER_OVERHEATING_COOLDOWN) && pm->ps->stats[STAT_PLAYER_CLASS] == PC_SOLDIER)
+				if (wp != WP_FLAMETHROWER && BG_IsSkillAvailable(pm->skill, SK_HEAVY_WEAPONS, SK_SOLDIER_OVERHEATING_COOLDOWN) && pm->ps->stats[STAT_PLAYER_CLASS] == PC_SOLDIER)
 				{
 					pm->pmext->weapHeat[wp] -= ((float)GetWeaponTableData(wp)->coolRate * 2.f * pml.frametime);
 				}

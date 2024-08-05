@@ -17,6 +17,7 @@ weaponDef
 		//readySound		""
 		//firingSound		""									// no weapons seem to use this, basically it's a replacement hum for readysound, but then when firing
 		//overheatSound		""
+		overheatSound		"sound/weapons/mg42/mg42_heat.wav"
 		//reloadSound		""
 		//reloadFastSound	""									// some weapons have fast reloads due to the skill system
 		//spinupSound		""									// sound started when fire button goes down, and stepped on when the first fire event happens

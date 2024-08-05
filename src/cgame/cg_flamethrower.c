@@ -816,7 +816,6 @@ void CG_AddFlameSpriteToScene(flameChunk_t *f, float lifeFrac, float alpha)
 
 	pPolyBuffer->numIndicies += 6;
 	pPolyBuffer->numVerts    += 4;
-
 }
 
 static int nextFlameLight = 0;

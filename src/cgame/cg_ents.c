@@ -3048,6 +3048,16 @@ void CG_AddPacketEntities(void)
 	// changing to a single loop, child will request that their parents are added first anyway
 	for (num = 0; num < cg.snap->numEntities ; num++)
 	{
+		// centity_t *et = &cg_entities[cg.snap->entities[num].number];
+
+		// Com_Printf("> %d\n", et->currentState.eType);
+		// if (et->currentState.eType == ET_FLAMETHROWER_CHUNK) {
+		// 	// Com_Printf("%d", cent->currentState.eType);
+		// 	Com_Printf("> CG Flame Chunk");
+		// }
+		// if (et->currentState.eType) {
+		// }
+
 		CG_AddCEntity_Filter(&cg_entities[cg.snap->entities[num].number]);
 	}
 

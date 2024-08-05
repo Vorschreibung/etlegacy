@@ -976,6 +976,7 @@ struct gclient_s
 	// timeResidual is used to handle events that happen every second
 	// like health countdowns and regeneration
 	int timeResidual;
+	int timeResidualCount;
 
 	float currentAimSpreadScale;
 

@@ -5334,6 +5334,7 @@ void G_RunEntity(gentity_t *ent, int msec)
 	case  ET_FLAMETHROWER_CHUNK: // Server-side collision for flamethrower
 		if (level.match_pause == PAUSE_NONE)
 		{
+			// Com_Printf(".");
 			G_RunFlamechunk(ent);
 		}
 		else

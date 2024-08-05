@@ -210,6 +210,8 @@ void P_WorldEffects(gentity_t *ent)
 			{
 				gentity_t *attacker = g_entities + ent->flameBurnEnt;
 
+
+				// Com_Printf("> %d:burn dmg\n", level.framenum);
 				G_Damage(ent, attacker, attacker, NULL, NULL, GetWeaponTableData(WP_FLAMETHROWER)->damage, DAMAGE_NO_KNOCKBACK, MOD_FLAMETHROWER);
 			}
 		}
@@ -474,6 +476,15 @@ void G_TouchTriggers(gentity_t *ent)
 			}
 		}
 
+		{
+			// float dist = vec3_distance(ent->client->ps.origin, hit->r.currentOrigin);
+			// // Com_Printf("- . - %F\n", vec3_distance(ent->client->ps.origin, hit->pos1));
+			// Com_Printf(": %F\n", dist);
+			// if (dist > 40.0f) {
+			//	 continue;
+			// }
+		}
+
 		// use seperate code for determining if an item is picked up
 		// so you don't have to actually contact its bounding box
 		if (hit->s.eType == ET_ITEM)
@@ -483,15 +494,16 @@ void G_TouchTriggers(gentity_t *ent)
 				continue;
 			}
 		}
-		else
-		{
-			// always use capsule for player
-			if (!trap_EntityContactCapsule(mins, maxs, hit))
-			{
-				//if ( !trap_EntityContact( mins, maxs, hit ) ) {
-				continue;
-			}
-		}
+		//else
+		//{
+		//	// always use capsule for player
+		//	// CAPSU
+		//	if (!trap_EntityContactCapsule(mins, maxs, hit))
+		//	{
+		//		//if ( !trap_EntityContact( mins, maxs, hit ) ) {
+		//		continue;
+		//	}
+		//}
 
 		Com_Memset(&trace, 0, sizeof(trace));
 
@@ -984,6 +996,8 @@ void ClientEvents(gentity_t *ent, int oldEventSequence)
 
 		switch (event)
 		{
+		// case EV_FLAME_EXPLOSION:
+		// 	G_RadiusDamage(client->ps.origin, NULL, NULL, 100, 200, NULL, MOD_FLAMETHROWER);
 		case EV_FALL_NDIE:
 		//case EV_FALL_SHORT:
 		case EV_FALL_DMG_10:
@@ -1050,6 +1064,7 @@ void ClientEvents(gentity_t *ent, int oldEventSequence)
 		case EV_FIRE_WEAPON:
 		case EV_FIRE_WEAPONB:
 		case EV_FIRE_WEAPON_LASTSHOT:
+			// Com_Printf("FEIER\n");
 			FireWeapon(ent);
 			break;
 		default:

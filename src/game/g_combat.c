@@ -1587,6 +1587,12 @@ void G_DamageExt(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec
 		}
 	}
 
+	// play headshot sound if you directly hit with flamer (i.e. not on indirect
+	// dmg via flame chunk neither via burn damage)
+	if (mod == MOD_FLAMETHROWER && !(dflags & DAMAGE_RADIUS) && !(dflags & DAMAGE_NO_KNOCKBACK)) {
+		hitEventType = HIT_HEADSHOT;
+	}
+
 	if (g_antilag.integer)
 	{
 		// re-adjust now because we are changing eFlags and pm_flags

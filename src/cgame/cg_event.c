@@ -2935,6 +2935,17 @@ void CG_EntityEvent(centity_t *cent, vec3_t position)
 	case EV_PLAYER_HIT:
 		CG_PlayHitSound(es->clientNum, es->eventParm);
 		break;
+	// case EV_FLAME_EXPLOSION:
+	// 	// CG_PlayHitSound(es->clientNum, es->eventParm);
+	// 	{
+	// 		vec3_t dir;
+	// 		int	effect;
+	// 		position = es->origin;
+	// 		effect = (CG_PointContents(position, 0) & CONTENTS_WATER) ? PS_FX_WATER : PS_FX_COMMON;
+	// 		ByteToDir(es->eventParm, dir);
+	// 		CG_MissileHitWall(VERYBIGEXPLOSION, effect, position, dir, 0, es->number);
+	// 	}
+	// 	break;
 	default:
 		if (cg.demoPlayback)
 		{

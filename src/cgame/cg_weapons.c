@@ -3772,7 +3772,10 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 		}
 
 		// no flamethrower flame on prone moving or dead players, or during pause
-		if ((cent->currentState.eFlags & EF_FIRING) && !(cent->currentState.eFlags & (EF_PRONE_MOVING | EF_DEAD)) && !cgs.matchPaused)
+		if ((cent->currentState.eFlags & EF_FIRING) && !(cent->currentState.eFlags & (EF_PRONE_MOVING | EF_DEAD)) && !cgs.matchPaused && (
+
+		!(cg.time - cg.predictedPlayerEntity.overheatTime < 3000)
+					))
 		{
 			trace_t trace;
 			vec3_t  muzzlePoint, angles, forward;

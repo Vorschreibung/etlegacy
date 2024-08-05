@@ -3008,7 +3008,7 @@ void PM_CoolWeapons(void)
 			// and it's hot
 			if (pm->pmext->weapHeat[wp])
 			{
-				if (BG_IsSkillAvailable(pm->skill, SK_HEAVY_WEAPONS, SK_SOLDIER_OVERHEATING_COOLDOWN) && pm->ps->stats[STAT_PLAYER_CLASS] == PC_SOLDIER)
+				if (wp != WP_FLAMETHROWER && BG_IsSkillAvailable(pm->skill, SK_HEAVY_WEAPONS, SK_SOLDIER_OVERHEATING_COOLDOWN) && pm->ps->stats[STAT_PLAYER_CLASS] == PC_SOLDIER)
 				{
 					pm->pmext->weapHeat[wp] -= ((float)GetWeaponTableData(wp)->coolRate * 2.f * pml.frametime);
 				}
@@ -4019,6 +4019,13 @@ static void PM_Weapon(void)
 			//PM_StartWeaponAnim(PM_IdleAnimForWeapon(pm->ps->weapon)); // removed.  client handles anim in overheat event
 			addTime            = GetWeaponTableData(pm->ps->weapon)->heatRecoveryTime; // force "heat recovery minimum" right now
 			pm->ps->viewlocked = VIEWLOCK_NONE;
+
+			// // explode if flamethrower overheats
+			// if (pm->ps->weapon == WP_FLAMETHROWER) {
+			// 	PM_AddEvent(EV_FLAME_EXPLOSION);
+			// 	// G_RadiusDamage(origin, ent, ent->parent, ent->splashDamage, ent->splashRadius, ent, ent->splashMethodOfDeath);
+			// 	// G_RadiusDamage(pm->ps->origin, NULL, NULL, 100, 200, NULL, MOD_FLAMETHROWER);
+			// }
 		}
 
 		// sync heat for overheat check

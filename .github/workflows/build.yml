@@ -227,61 +227,6 @@ jobs:
             build/legacy/qagame*.dll
             build/legacy/tvgame*.dll
 
-  android-mod:
-    runs-on: ubuntu-20.04
-    needs: version
-    env:
-      SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGN_APK_ALLIAS }}
-      SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
-      SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
-      CI_ETL_DESCRIBE: ${{needs.version.outputs.describe}}
-      CI_ETL_TAG: ${{needs.version.outputs.tag}}
-    container:
-      image: etlegacy/android-build
-    steps:
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Android Repo
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-          fetch-depth: 0
-
-      - name: Build
-        run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          ./gradlew clean assembleRelease
-          ls -R
-
-      - name: Upload arm64-v8a
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-arm64-mod
-          path: |
-            app/build/intermediates/merged_native_libs/release/out/lib/arm64-v8a/libcgame*.so
-            app/build/intermediates/merged_native_libs/release/out/lib/arm64-v8a/libui*.so
-
-      - name: Upload x86
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-x86-mod
-          path: |
-            app/build/intermediates/merged_native_libs/release/out/lib/x86/libcgame*.so
-            app/build/intermediates/merged_native_libs/release/out/lib/x86/libui*.so
-
-      - name: Upload x86_64
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-x86_64-mod
-          path: |
-            app/build/intermediates/merged_native_libs/release/out/lib/x86_64/libcgame*.so
-            app/build/intermediates/merged_native_libs/release/out/lib/x86_64/libui*.so
-
-
 #   __  __                                                          _
 #  |  \/  |                                                        | |
 #  | \  / |   ___   _ __    __ _    ___     _ __ ___     ___     __| |  ___
@@ -294,7 +239,7 @@ jobs:
 # This step also generates the final packages for 32 bit lnx.
   mod-merger:
     runs-on: ubuntu-20.04
-    needs: [ version, lnx64-mod, lnx32-mod, osx-mod, win-mod, win64-mod, lnx-aarch64-mod, android-mod ]
+    needs: [ version, lnx64-mod, lnx32-mod, osx-mod, win-mod, win64-mod, lnx-aarch64-mod ]
     steps:
 
       - uses: actions/download-artifact@v4
@@ -310,7 +255,7 @@ jobs:
       - name: Create supported platform manifest
         shell: bash
         run: |
-          echo "win_x86 win_x86_64 lnx_x86 lnx_x86_64 macos_x86_64 macos_aarch64 lnx_armv8_64 android_aarch64 android_x86 android_x86_64" > platforms.manifest
+          echo "win_x86 win_x86_64 lnx_x86 lnx_x86_64 macos_x86_64 macos_aarch64 lnx_armv8_64" > platforms.manifest
 
       - name: Merge mod files
         shell: bash
@@ -348,7 +293,7 @@ jobs:
 #  |_|      |_| |_| |_|  \__,_| |_|   | .__/   \__,_|  \___| |_|\_\  \__,_|  \__, |  \___| |___/
 #                                     | |                                     __/ |
 #                                     |_|                                    |___/
-# Generate the final packages for Lnx, macOS, Windows and Android
+# Generate the final packages for Lnx, macOS, Windows
   lnx64:
     runs-on: ubuntu-20.04
     needs: [ version, mod-merger ]
@@ -604,54 +549,6 @@ jobs:
             build/etlegacy-*.exe
             build/etlegacy-*.zip
 
-  android:
-    runs-on: ubuntu-20.04
-    env:
-      SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGN_APK_ALLIAS }}
-      SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
-      SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
-      CI_ETL_DESCRIBE: ${{needs.version.outputs.describe}}
-      CI_ETL_TAG: ${{needs.version.outputs.tag}}
-    needs: [ version, mod-merger ]
-    container:
-      image: etlegacy/android-build
-    steps:
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Android Repo
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: All-mods
-          path: app/src/main/assets
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: app/src/main/assets
-
-      - name: Build and Generate Package
-        run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          ./gradlew clean assembleRelease
-          ls -R
-
-      - name: Rename APK
-        run: |
-          for FILE in ./app/build/outputs/apk/release/*; do mv $FILE ${FILE%-*}.apk; done
-          ls app/build/outputs/apk/release
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: android-packages
-          path: app/build/outputs/apk/release/etlegacy*.apk
-
 #   _    _           _                       _                         _      _____   _
 #  | |  | |         | |                     | |                       | |    / ____| | |
 #  | |  | |  _ __   | |   ___     __ _    __| |     __ _   _ __     __| |   | |      | |   ___    __ _   _ __    _   _   _ __
@@ -663,7 +560,7 @@ jobs:
 
   upload:
     runs-on: ubuntu-20.04
-    needs: [ version, lnx32, lnx64, osx, win, win64, lnx-aarch64, android ]
+    needs: [ version, lnx32, lnx64, osx, win, win64, lnx-aarch64 ]
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: geekyeggo/delete-artifact@v4
@@ -691,7 +588,6 @@ jobs:
           find osx-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=zrm0gXDJ0vvQ" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
           find win-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=qkKkqKmiKHul" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
           find win64-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=1EM7l2e6pqpA" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
-          find android-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=pqxx51ioaosg" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
           find lnx-aarch64-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=r3tqepamenlf" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
           find mod-zip/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=eacan4jn14wt" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
 

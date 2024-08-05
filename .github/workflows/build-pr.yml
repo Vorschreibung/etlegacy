@@ -196,35 +196,3 @@ jobs:
         shell: cmd
         working-directory: build
         run: cpack
-
-  android:
-    runs-on: ubuntu-20.04
-    env:
-      CI_ETL_DESCRIBE: ${{needs.version.outputs.describe}}
-      CI_ETL_TAG: ${{needs.version.outputs.tag}}
-    needs: [ version ]
-    container:
-      image: etlegacy/android-build
-    steps:
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Android Repo
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Build and Generate Package
-        run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          ./gradlew clean assembleDebug
-          ls -R
-
-      - name: Rename APK
-        run: |
-          for FILE in ./app/build/outputs/apk/debug/*; do mv $FILE ${FILE%-*}.apk; done
-          ls app/build/outputs/apk/debug
-

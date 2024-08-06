@@ -229,6 +229,7 @@ jobs:
             build/legacy/tvgame*.dll
 
   android-mod:
+    # if: github.repository == 'etlegacy/etlegacy'
     runs-on: ubuntu-20.04
     needs: version
     env:
@@ -237,8 +238,6 @@ jobs:
       SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
       CI_ETL_DESCRIBE: ${{needs.version.outputs.describe}}
       CI_ETL_TAG: ${{needs.version.outputs.tag}}
-    if:
-      ${{ env.SIGNING_STORE_PASSWORD != '' }}
     container:
       image: etlegacy/android-build
     steps:
@@ -254,10 +253,18 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - name: Build
+      - name: Build Release
+        if: github.repository == 'etlegacy/etlegacy'
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           ./gradlew clean assembleRelease
+          ls -R
+
+      - name: Build Debug
+        if: github.repository != 'etlegacy/etlegacy'
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          ./gradlew clean assembleDebug
           ls -R
 
       - name: Upload arm64-v8a
@@ -297,6 +304,7 @@ jobs:
 # This step also generates the final packages for 32 bit lnx.
   mod-merger:
     runs-on: ubuntu-20.04
+    # if: always()
     needs: [ version, lnx64-mod, lnx32-mod, osx-mod, win-mod, win64-mod, lnx-aarch64-mod, android-mod ]
     steps:
 
@@ -354,6 +362,7 @@ jobs:
 # Generate the final packages for Lnx, macOS, Windows and Android
   lnx64:
     runs-on: ubuntu-20.04
+    # if: always()
     needs: [ version, mod-merger ]
     env:
       CI_ETL_DESCRIBE: ${{needs.version.outputs.describe}}
@@ -405,6 +414,7 @@ jobs:
 
   lnx32:
     runs-on: ubuntu-20.04
+    # if: always()
     needs: [ version, mod-merger ]
     steps:
       - uses: actions/checkout@v4
@@ -453,6 +463,7 @@ jobs:
 
   lnx-aarch64:
     runs-on: ubuntu-latest
+    # if: always()
     needs: [ version, mod-merger ]
     container:
       image: etlegacy/lnx-aarch64-build
@@ -491,6 +502,7 @@ jobs:
 
   osx:
     runs-on: macos-12
+    # if: always()
     needs: [ version, mod-merger ]
     env:
       CI_ETL_DESCRIBE: ${{needs.version.outputs.describe}}
@@ -535,6 +547,7 @@ jobs:
 
   win:
     runs-on: windows-2019
+    # if: always()
     needs: [ version, mod-merger ]
     env:
       CI_ETL_DESCRIBE: ${{needs.version.outputs.describe}}
@@ -572,6 +585,7 @@ jobs:
 
   win64:
     runs-on: windows-2019
+    # if: always()
     needs: [ version, mod-merger ]
     env:
       CI_ETL_DESCRIBE: ${{needs.version.outputs.describe}}
@@ -608,6 +622,7 @@ jobs:
             build/etlegacy-*.zip
 
   android:
+    # if: github.repository == 'etlegacy/etlegacy'
     runs-on: ubuntu-20.04
     env:
       SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGN_APK_ALLIAS }}
@@ -680,12 +695,12 @@ jobs:
           echo "hash_exists=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.LEGACY_UPLOAD_CHECK_URL }}${{ github.sha }} 2>/dev/null)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/download-artifact@v4
-        if: ${{ steps.vars.outputs.hash_exists == '404' }}
+        if: steps.vars.outputs.hash_exists == '404'
         with:
           path: packages
 
       - name: Upload packages
-        if: ${{ steps.vars.outputs.hash_exists == '404' }}
+        if: steps.vars.outputs.hash_exists == '404'
         shell: bash
         working-directory: packages
         run: |
@@ -699,7 +714,7 @@ jobs:
           find mod-zip/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=eacan4jn14wt" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
 
       - name: Discord notification
-        if: ${{ steps.vars.outputs.hash_exists == '404' && needs.version.outputs.describe != needs.version.outputs.tag }}
+        if: steps.vars.outputs.hash_exists == '404' && needs.version.outputs.describe != needs.version.outputs.tag
         env:
           DISCORD_WEBHOOK: ${{ secrets.PUBLISH_DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.3.0
@@ -752,7 +767,7 @@ jobs:
 
       # Create weekly tag when scheduled and update when triggered on docker hub
       - name: Build and push the weekly Docker image
-        if: ${{ github.event_name == 'schedule' }}
+        if: github.event_name == 'schedule'
         working-directory: build/package
         run: |
           docker tag etlegacy/server:latest-patch etlegacy/server:weekly

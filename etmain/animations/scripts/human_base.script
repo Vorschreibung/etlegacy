@@ -92,13 +92,13 @@ STATE ALERT
 
 STATE COMBAT
 {
-	dead
+	dead	
 	{
 		suicide
 		{
 			both dead_rifle_head_2
 		}
-
+	
 		default
 		{
 			both dead_machinegun_1
@@ -394,10 +394,10 @@ STATE COMBAT
 		{
 			legs alert_crchidle_1h torso stand_akimbo
 		}
-		// default
-		// {
-		// 	both alert_crchidle_1h
-		// }
+		default
+		{
+			both alert_crchidle_1h
+		}
 	}
 	walk
 	{
@@ -1689,7 +1689,7 @@ STATE COMBAT
 	{
 		default
 		{
-			torso stand_radio legs alert_crchidle_1h
+			torso stand_radio legs alert_crchidle_1h 
 		}
 	}
 	radioprone
@@ -1955,35 +1955,35 @@ fireweapon
 // MACHINEGUNS
 	weapons machineguns, movetype straferight
 	{
-		torso alert_run_2h duration 30
+		torso alert_run_2h duration 50
 	}
 	weapons machineguns, movetype strafeleft
 	{
-		torso alert_run_2h duration 30
+		torso alert_run_2h duration 50
 	}
 	weapons machineguns, movetype walk AND turnleft AND turnright AND idlecr
 	{
-		torso firing_machinegun duration 30
+		torso firing_machinegun duration 50
 	}
 	weapons machineguns, movetype walkcrbk
 	{
-		torso firing_crbk_2h duration 30
+		torso firing_crbk_2h duration 50
 	}
 	weapons machineguns, movetype crouching
 	{
-		torso firing_crch_2h duration 30
+		torso firing_crch_2h duration 50
 	}
 	weapons machineguns, movetype run AND swim
 	{
-		torso alert_run_2h duration 30
+		torso alert_run_2h duration 50
 	}
 	weapons machineguns, movetype backstep AND swimbk
 	{
-		torso alert_bk_2h duration 30
+		torso alert_bk_2h duration 50
 	}
 	weapons machineguns
 	{
-		torso firing_machinegun duration 30
+		torso firing_machinegun duration 50
 	}
 // RIFLES
 	weapons Scoped M1 Garand, movetype walk AND turnleft AND turnright AND idlecr AND idle
@@ -2601,7 +2601,7 @@ raiseweapon
 	}
 	weapons Landmine
 	{
-		torso raise_medpack
+		torso raise_grenade
 	}
 	weapons Satchel Charge
 	{
@@ -2691,18 +2691,6 @@ raiseweapon
 
 reload
 {
-	weapons bazooka
-	{
-		torso stand_rifle
-	}
-	weapons panzerfaust
-	{
-		torso stand_panzer
-	}
-	weapons flamethrower
-	{
-		torso stand_machinegun
-	}
 	weapons satchel charge
 	{
 		torso raise_medpack
@@ -2725,7 +2713,7 @@ reload
 	}
 	weapons Landmine
 	{
-		torso raise_medpack
+		torso raise_grenade
 	}
 	weapons Satchel Charge
 	{
@@ -2738,6 +2726,14 @@ reload
 	weapons special
 	{
 		torso raise_knife
+	}
+	weapons bazooka
+	{
+		torso reload_rifle
+	}
+	weapons panzerfaust
+	{
+		torso reload_panzer
 	}
 	weapons pistols, movetype idlecr
 	{
@@ -2813,31 +2809,19 @@ jump
 {
 	weapons none, movetype run
 	{
-		legs jump_1step_1h
-	}
-	weapons none
-	{
-		legs jump_nostep_1h
-	}
-	weapons one_handed_weapons, movetype run
-	// weapons one_handed_weapons AND NOT reloading, movetype run
-	{
 		both jump_1step_1h
 	}
-	weapons one_handed_weapons
-	// weapons one_handed_weapons AND NOT reloading
+	weapons none
 	{
 		both jump_nostep_1h
 	}
 	weapons one_handed_weapons, movetype run
-	// weapons one_handed_weapons AND reloading, movetype run
 	{
-		legs jump_1step_1h
+		both jump_1step_1h
 	}
 	weapons one_handed_weapons
-	// weapons one_handed_weapons AND reloading
 	{
-		legs jump_nostep_1h
+		both jump_nostep_1h
 	}
 //	weapons rifles, movetype run
 //	{
@@ -2943,18 +2927,17 @@ jump
 	{
 		legs jump_nostep_1h torso stand_panzer
 	}
-	// THIS HERE MAKES STUMBLE FLOAT
 	weapons two_handed_weapons, movetype run
 	{
-		legs jump_1step_2h
+		both jump_1step_2h
 	}
 	weapons two_handed_weapons
 	{
-		legs jump_nostep_1h
+		both jump_nostep_1h
 	}
 	default
 	{
-		legs jump_1step_1h
+		both jump_1step_1h
 	}
 }
 
@@ -2962,11 +2945,11 @@ jumpbk
 {
 	weapons one_handed_weapons, movetype run
 	{
-		legs jump_1step_1h
+		both jump_1step_1h
 	}
 	weapons one_handed_weapons
 	{
-		legs jump_nostep_1h
+		both jump_nostep_1h
 	}
 //	weapons rifles, movetype run
 //	{
@@ -3074,15 +3057,15 @@ jumpbk
 	}
 	weapons two_handed_weapons, movetype run
 	{
-		legs jump_1step_2h
+		both jump_1step_2h
 	}
 	weapons two_handed_weapons
 	{
-		legs jump_nostep_1h
+		both jump_nostep_1h
 	}
 	default
 	{
-		legs jump_1step_1h
+		both jump_1step_1h
 	}
 }
 
@@ -3430,4 +3413,3 @@ undo_alt_weapon_mode_prone
 //		}
 // }
 //STATECHANGES
-// vim: set ft=et-script:

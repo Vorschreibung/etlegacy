@@ -281,6 +281,7 @@ static animStringItem_t animConditionsStr[NUM_ANIM_CONDITIONS + 1] =
 	{ "GEN_BITFLAG",    -1 },
 	{ "AISTATE",        -1 },
 	{ "SUICIDE",        -1 },
+	{ "RELOADING",      -1 },
 
 	{ NULL,             -1 },
 };
@@ -308,6 +309,7 @@ static animConditionTable_t animConditionsTable[NUM_ANIM_CONDITIONS] =
 	{ ANIM_CONDTYPE_VALUE,    animFlailTypeStr             },
 	{ ANIM_CONDTYPE_BITFLAGS, animGenBitFlagStr            },
 	{ ANIM_CONDTYPE_VALUE,    animAIStateStr               },
+	{ ANIM_CONDTYPE_VALUE,    NULL                         },
 	{ ANIM_CONDTYPE_VALUE,    NULL                         },
 };
 
@@ -1985,6 +1987,15 @@ void BG_AnimUpdatePlayerStateConditions(pmove_t *pmove)
 	else
 	{
 		BG_UpdateConditionValue(ps->clientNum, ANIM_COND_FIRING, qfalse, qtrue);
+	}
+
+	if (pmove->ps->weaponstate == WEAPON_RELOADING)
+	{
+		BG_UpdateConditionValue(ps->clientNum, ANIM_COND_RELOADING, qtrue, qtrue);
+	}
+	else
+	{
+		BG_UpdateConditionValue(ps->clientNum, ANIM_COND_RELOADING, qfalse, qtrue);
 	}
 
 	if (ps->pm_flags & PMF_FLAILING)

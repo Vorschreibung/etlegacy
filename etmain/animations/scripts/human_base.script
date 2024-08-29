@@ -92,13 +92,13 @@ STATE ALERT
 
 STATE COMBAT
 {
-	dead	
+	dead
 	{
 		suicide
 		{
 			both dead_rifle_head_2
 		}
-	
+
 		default
 		{
 			both dead_machinegun_1
@@ -1689,7 +1689,7 @@ STATE COMBAT
 	{
 		default
 		{
-			torso stand_radio legs alert_crchidle_1h 
+			torso stand_radio legs alert_crchidle_1h
 		}
 	}
 	radioprone

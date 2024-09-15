@@ -21,6 +21,7 @@ set weapons pistols              = Luger AND Colt AND Silenced Luger AND Silence
 set weapons akimbo_pistols       = Akimbo Luger AND Silenced Akimbo Luger AND Akimbo Colt AND Silenced Akimbo Colt
 set weapons machineguns          = MP 40 AND Thompson AND Sten gun AND Flamethrower AND panzerfaust AND bazooka AND Mobile MG 42 AND Mobile Browning AND MP34
 set weapons rifles               = K43 Rifle AND gpg40 AND M7 AND m1 garand AND FG 42 Paratroop Rifle AND Scoped K43 Rifle AND K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope
+set weapons scopes               = K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope
 
 // broke off dynamite, since we never want to throw it overhand
 set weapons throwables           = pineapple AND grenade AND Smoke Bomb
@@ -1392,6 +1393,14 @@ state combat
 
 	climbup
 	{
+		weapons scopes
+		{
+			legs climb_up torso stand_rifle
+		}
+		weapons binoculars, gen_bitflag zooming
+		{
+			legs climb_up torso stand_binoculars
+		}
 		weapons throwables, gen_bitflag holding
 		{
 			legs climb_up torso holding_grenadeA
@@ -1405,6 +1414,14 @@ state combat
 
 	climbdown
 	{
+		weapons scopes
+		{
+			legs climb_down torso stand_rifle
+		}
+		weapons binoculars, gen_bitflag zooming
+		{
+			legs climb_down torso stand_binoculars
+		}
 		weapons throwables, gen_bitflag holding
 		{
 			legs climb_down torso holding_grenadeA
@@ -2694,6 +2711,10 @@ jump
 	{
 		legs jump_nostep_1h torso stand_panzer
 	}
+	weapons scopes
+	{
+		legs jump_1step_1h
+	}
 	weapons two_handed_weapons, movetype run, reloading
 	{
 		legs jump_1step_2h
@@ -2713,6 +2734,10 @@ jump
 	weapons dynamite weapon
 	{
 		both jump_1step_1h
+	}
+	gen_bitflag zooming
+	{
+		legs jump_1step_1h
 	}
 	firing
 	{
@@ -2758,6 +2783,10 @@ jumpbk
 	{
 		legs jump_nostep_1h torso stand_panzer
 	}
+	weapons scopes
+	{
+		legs jump_1step_1h
+	}
 	weapons two_handed_weapons, movetype run, reloading
 	{
 		legs jump_1step_2h
@@ -2778,6 +2807,10 @@ jumpbk
 	{
 		both jump_1step_1h
 	}
+	gen_bitflag zooming
+	{
+		legs jump_1step_1h
+	}
 	firing
 	{
 		legs jump_1step_1h
@@ -2790,6 +2823,19 @@ jumpbk
 
 climbdismount
 {
+	weapons scopes
+	{
+		legs climb_dis torso stand_rifle
+	}
+	weapons binoculars, gen_bitflag zooming
+	{
+		legs climb_dis torso stand_binoculars
+	}
+	weapons throwables, gen_bitflag holding
+	{
+		legs climb_dis torso holding_grenadeA
+		legs climb_dis torso holding_grenadeB
+	}
 	default
 	{
 		both climb_dis

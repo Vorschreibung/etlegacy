@@ -1410,6 +1410,10 @@ state combat
 			legs climb_up torso holding_grenadeA
 			legs climb_up torso holding_grenadeB
 		}
+		ladder_peek
+		{
+			legs climb_up
+		}
 		default
 		{
 			both climb_up
@@ -1430,6 +1434,10 @@ state combat
 		{
 			legs climb_down torso holding_grenadeA
 			legs climb_down torso holding_grenadeB
+		}
+		ladder_peek
+		{
+			legs climb_down
 		}
 		default
 		{

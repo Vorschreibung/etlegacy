@@ -2159,6 +2159,26 @@ static void PM_Footsteps(void)
 	{
 		if (pm->ps->pm_flags & PMF_LADDER)                 // on ladder
 		{
+			trace_t trace;
+			vec3_t  forward, right;
+			vec3_t  muzzlePoint, end;
+
+			AngleVectors(pm->ps->viewangles, forward, right, NULL);
+			VectorCopy(pm->ps->origin, muzzlePoint);
+			muzzlePoint[2] += pm->ps->viewheight + 12;
+
+			VectorMA(muzzlePoint, MAX_TRACE, forward, end);
+
+			PM_TraceAll(&trace, muzzlePoint, end);
+
+			BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_LADDER_PEEK, (!(trace.surfaceFlags & SURF_LADDER)), qtrue);
+
+			if (!(trace.surfaceFlags & SURF_LADDER))
+			{
+				BG_AnimScriptAnimation(pm->ps, pm->character->animModelInfo, ANIM_MT_IDLE, qtrue);
+			}
+
+
 			if (pm->ps->velocity[2] >= 0)
 			{
 				animResult = BG_AnimScriptAnimation(pm->ps, pm->character->animModelInfo, ANIM_MT_CLIMBUP, qtrue);

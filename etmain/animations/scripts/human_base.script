@@ -22,6 +22,7 @@ set weapons akimbo_pistols       = Akimbo Luger AND Silenced Akimbo Luger AND Ak
 set weapons machineguns          = MP 40 AND Thompson AND Sten gun AND Flamethrower AND panzerfaust AND bazooka AND Mobile MG 42 AND Mobile Browning AND MP34
 set weapons rifles               = K43 Rifle AND gpg40 AND M7 AND m1 garand AND FG 42 Paratroop Rifle AND Scoped K43 Rifle AND K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope
 set weapons scopes               = K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope
+set weapons directimpact        = Knife AND Ka-Bar AND Mobile MG 42 Bipod AND Mobile Browning Bipod AND Luger AND Colt AND Silenced Luger AND Silenced Colt AND Akimbo Luger AND Silenced Akimbo Luger AND Akimbo Colt AND Silenced Akimbo Colt AND MP 40 AND Thompson AND Sten gun AND Mobile MG 42 AND Mobile Browning AND MP34 AND K43 Rifle AND m1 garand AND FG 42 Paratroop Rifle AND Scoped K43 Rifle AND K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope
 
 // broke off dynamite, since we never want to throw it overhand
 set weapons throwables           = pineapple AND grenade AND Smoke Bomb
@@ -108,7 +109,6 @@ set movetype proning = idleprone AND prone AND pronebk
 //		leaning
 //		impact_point
 //		crouching
-//		stunned
 //		firing
 //		short_reaction
 //		enemy_team
@@ -119,7 +119,6 @@ set movetype proning = idleprone AND prone AND pronebk
 //		flailing_type
 //		gen_bitflag
 //		aistate
-//		suicide
 //		reloading
 //
 //	<condition value> (bool if unspecified):
@@ -131,7 +130,7 @@ set movetype proning = idleprone AND prone AND pronebk
 //		position: behind, infront, right, left
 //		underhand: <no values>
 //		leaning: right, left
-//		impact_point: head, chest, gut, groin, shoulder_right, shoulder_left, knee_right, knee_left
+//		impact_point: head, torso
 //		health_level: 1, 2, 3
 
 ANIMATIONS
@@ -141,13 +140,9 @@ state combat
 
 	dead
 	{
-		suicide
-		{
-			both dead_rifle_head_2
-		}
 		default
 		{
-			both dead_machinegun_1
+			both dead_corpse
 		}
 	}
 
@@ -2864,58 +2859,17 @@ climbdismount
 
 death
 {
-	movetype proning, suicide
+	enemy_weapon directimpact, enemy_position behind
 	{
-		both prone_die1
+		both death_behind
 	}
-	movetype crouching, suicide
+	enemy_weapon directimpact, impact_point torso
 	{
-		both death_crouch
-	}
-
-	suicide
-	{
-		both death_rifle_head_2
-	}
-
-	enemy_weapon knives, enemy_position behind
-	{
-		both death_machinegun_1
-		both death_machinegun_2
-		both death_gut
-	}
-
-	enemy_weapon machineguns
-	{
-		both death_machinegun_1
-		both death_machinegun_2
-		both death_gut
-	}
-
-	enemy_weapon rifles, impact_point head
-	{
-		both death_machinegun_1
-		both death_machinegun_2
-		both death_gut
-	}
-
-	enemy_weapon rifles, impact_point chest
-	{
-		both death_machinegun_1
-		both death_machinegun_2
-		both death_gut
-	}
-	enemy_weapon flamethrower
-	{
-		both death_machinegun_1
-		both death_machinegun_2
-		both death_gut
+		both death_torso
 	}
 	default
 	{
-		both death_machinegun_1
-		both death_machinegun_2
-		both death_gut
+		both death_general
 	}
 }
 
@@ -2949,18 +2903,18 @@ pain
 	{
 		legs e_swim_1h
 	}
-	movetype crouching, impact_point head
-	{
-		torso pain_cr_head
-	}
-	movetype crouching, impact_point shoulder_right
-	{
-		torso pain_cr_shoulderR
-	}
-	movetype crouching, impact_point shoulder_left
-	{
-		torso pain_cr_shoulderL
-	}
+	// movetype crouching, impact_point head
+	// {
+	// 	torso pain_cr_head
+	// }
+	// movetype crouching, impact_point shoulder_right
+	// {
+	// 	torso pain_cr_shoulderR
+	// }
+	// movetype crouching, impact_point shoulder_left
+	// {
+	// 	torso pain_cr_shoulderL
+	// }
 	movetype crouching	// pick one at random if they failed
 	{
 		torso pain_cr_head
@@ -2971,44 +2925,44 @@ pain
 	{
 		torso pain_fire
 	}
-	stunned
-	{
-		torso pain_daze
-	}
-	impact_point head
-	{
-		torso pain_head
-	}
-	impact_point chest
-	{
-		torso pain_chest
-	}
-	impact_point gut
-	{
-		torso pain_gut
-	}
-	impact_point groin
-	{
-		torso pain_groin
-	}
-	impact_point shoulder_right
-	{
-		torso pain_shoulderR
-	}
-	impact_point shoulder_left
-	{
-		torso pain_shoulderL
-	}
-	impact_point knee_right
-	{
-	// legs ?
-		torso pain_kneeR
-	}
-	impact_point knee_left
-	{
-	// legs ?
-		torso pain_kneeL
-	}
+	// stunned
+	// {
+	// 	torso pain_daze
+	// }
+	// impact_point head
+	// {
+	// 	torso pain_head
+	// }
+	// impact_point chest
+	// {
+	// 	torso pain_chest
+	// }
+	// impact_point gut
+	// {
+	// 	torso pain_gut
+	// }
+	// impact_point groin
+	// {
+	// 	torso pain_groin
+	// }
+	// impact_point shoulder_right
+	// {
+	// 	torso pain_shoulderR
+	// }
+	// impact_point shoulder_left
+	// {
+	// 	torso pain_shoulderL
+	// }
+	// impact_point knee_right
+	// {
+	// // legs ?
+	// 	torso pain_kneeR
+	// }
+	// impact_point knee_left
+	// {
+	// // legs ?
+	// 	torso pain_kneeL
+	// }
 	default
 	{
 		torso pain_chest

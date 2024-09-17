@@ -1087,33 +1087,9 @@ static qboolean hit_parse_hit(hit_t *hitModel, mdx_t *mdx, char **ptr)
 			{
 				hit->impactpoint = IMPACTPOINT_HEAD;
 			}
-			else if (!Q_stricmp(token, "chest"))
+			else if (!Q_stricmp(token, "torso"))
 			{
-				hit->impactpoint = IMPACTPOINT_CHEST;
-			}
-			else if (!Q_stricmp(token, "gut"))
-			{
-				hit->impactpoint = IMPACTPOINT_GUT;
-			}
-			else if (!Q_stricmp(token, "groin"))
-			{
-				hit->impactpoint = IMPACTPOINT_GROIN;
-			}
-			else if (!Q_stricmp(token, "shoulder_right"))
-			{
-				hit->impactpoint = IMPACTPOINT_SHOULDER_RIGHT;
-			}
-			else if (!Q_stricmp(token, "shoulder_left"))
-			{
-				hit->impactpoint = IMPACTPOINT_SHOULDER_LEFT;
-			}
-			else if (!Q_stricmp(token, "knee_right"))
-			{
-				hit->impactpoint = IMPACTPOINT_KNEE_RIGHT;
-			}
-			else if (!Q_stricmp(token, "knee_left"))
-			{
-				hit->impactpoint = IMPACTPOINT_KNEE_LEFT;
+				hit->impactpoint = IMPACTPOINT_TORSO;
 			}
 			else
 			{

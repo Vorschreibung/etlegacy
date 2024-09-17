@@ -188,13 +188,7 @@ static animStringItem_t animConditionImpactPointsStr[] =
 {
 	{ "** UNUSED **",   -1 },
 	{ "HEAD",           -1 },
-	{ "CHEST",          -1 },
-	{ "GUT",            -1 },
-	{ "GROIN",          -1 },
-	{ "SHOULDER_RIGHT", -1 },
-	{ "SHOULDER_LEFT",  -1 },
-	{ "KNEE_RIGHT",     -1 },
-	{ "KNEE_LEFT",      -1 },
+	{ "TORSO",          -1 },
 
 	{ NULL,             -1 },
 };
@@ -269,7 +263,6 @@ static animStringItem_t animConditionsStr[NUM_ANIM_CONDITIONS + 1] =
 	{ "LEANING",        -1 },
 	{ "IMPACT_POINT",   -1 },
 	{ "CROUCHING",      -1 },
-	{ "STUNNED",        -1 },
 	{ "FIRING",         -1 },
 	{ "SHORT_REACTION", -1 },
 	{ "ENEMY_TEAM",     -1 },
@@ -280,7 +273,6 @@ static animStringItem_t animConditionsStr[NUM_ANIM_CONDITIONS + 1] =
 	{ "FLAILING_TYPE",  -1 },
 	{ "GEN_BITFLAG",    -1 },
 	{ "AISTATE",        -1 },
-	{ "SUICIDE",        -1 },
 	{ "RELOADING",      -1 },
 	{ "LADDER_PEEK",    -1 },
 
@@ -301,7 +293,6 @@ static animConditionTable_t animConditionsTable[NUM_ANIM_CONDITIONS] =
 	{ ANIM_CONDTYPE_VALUE,    NULL                         },
 	{ ANIM_CONDTYPE_VALUE,    NULL                         },
 	{ ANIM_CONDTYPE_VALUE,    NULL                         },
-	{ ANIM_CONDTYPE_VALUE,    NULL                         },
 	{ ANIM_CONDTYPE_VALUE,    animEnemyTeamsStr            },
 	{ ANIM_CONDTYPE_VALUE,    NULL                         },
 	{ ANIM_CONDTYPE_VALUE,    NULL                         },
@@ -310,7 +301,6 @@ static animConditionTable_t animConditionsTable[NUM_ANIM_CONDITIONS] =
 	{ ANIM_CONDTYPE_VALUE,    animFlailTypeStr             },
 	{ ANIM_CONDTYPE_BITFLAGS, animGenBitFlagStr            },
 	{ ANIM_CONDTYPE_VALUE,    animAIStateStr               },
-	{ ANIM_CONDTYPE_VALUE,    NULL                         },
 	{ ANIM_CONDTYPE_VALUE,    NULL                         },
 	{ ANIM_CONDTYPE_VALUE,    NULL                         },
 };
@@ -2017,6 +2007,4 @@ void BG_AnimUpdatePlayerStateConditions(pmove_t *pmove)
 	}
 
 	BG_UpdateConditionValue(ps->clientNum, ANIM_COND_IMPACT_POINT, IMPACTPOINT_UNUSED, qtrue);
-	BG_UpdateConditionValue(ps->clientNum, ANIM_COND_STUNNED, 0, qtrue);
-	BG_UpdateConditionValue(ps->clientNum, ANIM_COND_SUICIDE, 0, qtrue);
 }

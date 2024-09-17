@@ -1567,7 +1567,7 @@ void G_DamageExt(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec
 		G_LogRegionHit(attacker, HR_HEAD);
 		hr = HR_HEAD;
 
-		//BG_UpdateConditionValue(targ->client->ps.clientNum, ANIM_COND_IMPACT_POINT, IMPACTPOINT_HEAD, qtrue);
+		BG_UpdateConditionValue(targ->client->ps.clientNum, ANIM_COND_IMPACT_POINT, IMPACTPOINT_HEAD, qtrue);
 		//BG_AnimScriptEvent(&targ->client->ps, targ->client->pers.character->animModelInfo, ANIM_ET_PAIN, qfalse);
 	}
 	else
@@ -1615,6 +1615,10 @@ void G_DamageExt(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec
 			else if (GetMODTableData(mod)->isExplosive)
 			{
 				//BG_UpdateConditionValue(targ->client->ps.clientNum, ANIM_COND_STUNNED, 1, qtrue);
+			}
+			else
+			{
+				BG_UpdateConditionValue(targ->client->ps.clientNum, ANIM_COND_IMPACT_POINT, IMPACTPOINT_CHEST, qtrue);
 			}
 
 			//BG_AnimScriptEvent(&targ->client->ps, targ->client->pers.character->animModelInfo, ANIM_ET_PAIN, qfalse);

@@ -2727,6 +2727,10 @@ jump
 	{
 		legs jump_1step_1h
 	}
+	weapons Mobile MG 42 AND Mobile Browning
+	{
+		legs jump_nostep_1h torso jump_1step_2h
+	}
 	weapons two_handed_weapons, movetype run, reloading
 	{
 		legs jump_1step_2h
@@ -2798,6 +2802,10 @@ jumpbk
 	weapons scopes
 	{
 		legs jump_1step_1h
+	}
+	weapons Mobile MG 42 AND Mobile Browning
+	{
+		legs jump_nostep_1h torso jump_1step_2h
 	}
 	weapons two_handed_weapons, movetype run, reloading
 	{

@@ -240,7 +240,7 @@
 		stand_mobilemg42		4361	19	19	10	0	0	0	0
 		firing_mobilemg42		4382	6	6	20	0	0	0	20
 		reload_mobilemg42		4390	30	0	10	0	0	0	20
-		raise_mobilemg42		4425	5	0	15	0	0	0	10
+		raise_mobilemg42		4426	4	0	15	0	0	0	10
 
 		// MORTAR
 		//mortar_reload			4784	12	0	15	0	0	0	20

@@ -202,6 +202,9 @@ static void CG_Obituary(entityState_t *ent)
 	// this happens alongside 'EV_STOPSTREAMINGSOUND', as it sometimes doesn't seem to get emitted
 	trap_S_StartSoundEx(NULL, target, CHAN_WEAPON, 0, SND_CUTOFF_ALL);  // kill weapon sound (could be reloading)
 
+	// reset player times
+	CG_ResetClientTimers(&cg_entities[target]);
+
 	// no obituary message if changing teams
 	if (mod == MOD_SWITCHTEAM)
 	{
@@ -2298,10 +2301,24 @@ void CG_EntityEvent(centity_t *cent, vec3_t position)
 		}
 		break;
 	case EV_CHANGE_WEAPON:
+	{
+		cgs.clientinfo[es->number].prevWeapon = es->eventParm;
+
+		cent->switchEventTime = cg.time;
+		cent->switchTime      = cg.time + GetWeaponTableData(es->weapon)->switchTimeBegin;
+
 		trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.selectSound);
 		break;
+	}
 	case EV_CHANGE_WEAPON_2:
+	{
+		cgs.clientinfo[es->number].prevWeapon = es->eventParm;
+
+		cent->switchEventTime = cg.time;
+		cent->switchTime      = cg.time + GetWeaponTableData(es->weapon)->switchTimeBegin;
+
 		trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.selectSound);
+
 
 		// special switching sound for alt weapon
 		if (cg_weapons[GetWeaponTableData(es->weapon)->weapAlts].switchSound)
@@ -2319,6 +2336,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position)
 			}
 		}
 		break;
+	}
 	case EV_FIRE_WEAPON_MOUNTEDMG42:
 	case EV_FIRE_WEAPON_MG42:
 	{

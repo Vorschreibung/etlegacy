@@ -2576,7 +2576,7 @@ static void PM_BeginWeaponChange(weapon_t oldWeapon, weapon_t newWeapon, qboolea
 		// don't send change weapon event after firing with riflenade
 		if (!(GetWeaponTableData(oldWeapon)->type & WEAPON_TYPE_RIFLENADE) || pm->ps->ammoclip[GetWeaponTableData(oldWeapon)->ammoIndex])
 		{
-			PM_AddEvent(EV_CHANGE_WEAPON_2);
+			PM_AddEventExt(EV_CHANGE_WEAPON_2, oldWeapon);
 
 			// special case for silenced pistol
 			if (((GetWeaponTableData(oldWeapon)->type & WEAPON_TYPE_PISTOL) && (GetWeaponTableData(oldWeapon)->attributes & WEAPON_ATTRIBUT_SILENCED)))
@@ -2608,8 +2608,7 @@ static void PM_BeginWeaponChange(weapon_t oldWeapon, weapon_t newWeapon, qboolea
 	}
 	else
 	{
-		PM_AddEvent(EV_CHANGE_WEAPON);
-
+		PM_AddEventExt(EV_CHANGE_WEAPON, oldWeapon);
 		PM_StartWeaponAnim(WEAP_DROP);
 
 		// play an animation

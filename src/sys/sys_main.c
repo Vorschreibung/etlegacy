@@ -76,6 +76,8 @@
 jmp_buf exit_game;
 #endif
 
+char *GlobalGameTitle = CLIENT_WINDOW_TITLE;
+
 static char binaryPath[MAX_OSPATH]  = { 0 };
 static char installPath[MAX_OSPATH] = { 0 };
 
@@ -913,17 +915,83 @@ void *Sys_LoadGameDll(const char *name, qboolean extract,
 	return libHandle;
 }
 
+void Sys_ParseArgsDrawBanner(FILE *stream)
+{
+	static int alreadyDrawn = qfalse;
+	if (!alreadyDrawn)
+	{
+		alreadyDrawn = qtrue;
+		fprintf(stream,
+		        "  ███████╗████████╗   ██╗     ███████╗ ██████╗  █████╗  ██████╗██╗   ██╗\n"
+		        "  ██╔════╝╚══██╔══╝██╗██║     ██╔════╝██╔════╝ ██╔══██╗██╔════╝╚██╗ ██╔╝\n"
+		        "  █████╗     ██║   ╚═╝██║     █████╗  ██║  ███╗███████║██║      ╚████╔╝\n"
+		        "  ██╔══╝     ██║   ██╗██║     ██╔══╝  ██║   ██║██╔══██║██║       ╚██╔╝\n"
+		        "  ███████╗   ██║   ╚═╝███████╗███████╗╚██████╔╝██║  ██║╚██████╗   ██║\n"
+		        "  ╚══════╝   ╚═╝      ╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝   ╚═╝\n"
+		        "    Version: %s\n"
+		        "\n",
+		        PRODUCT_VERSION_STR
+		        );
+	}
+}
+
+void Sys_ParseArgsShowHelpAndExit(int ret)
+{
+	FILE *stream = (ret == 0) ? stdout : stderr;
+	Sys_ParseArgsDrawBanner(stream);
+	fprintf(stream,
+	        "Usage:\n"
+	        "  <etl-bin> [option]* -- [server options]*\n"
+	        "\n"
+	        "Options:\n"
+	        "  -h, --help                 Show help and exit\n"
+	        "  -v, --version              Show version and exit\n"
+	        "  -t, --title <title>        Set the game window title\n"
+	        "\n"
+	        "Server Options:\n"
+	        "  see https://etlegacy.readthedocs.io/en/latest/commands.html\n"
+	        "  and https://etlegacy.readthedocs.io/en/latest/cvars.html\n"
+	        "\n"
+	        "Examples:\n"
+	        "  <etl-bin> +devmap fueldump\n"
+	        "  <etl-bin> --title ETLFueldump -- +devmap fueldump\n"
+	        "\n"
+	        );
+	Sys_Exit(ret);
+}
+
+void Sys_ParseArgsError(const char *msg)
+{
+	Sys_ParseArgsDrawBanner(stderr);
+	if (msg != NULL)
+	{
+		fprintf(stderr, "  ERROR: %s\n", msg);
+	}
+	Sys_ParseArgsShowHelpAndExit(1);
+}
+
 /**
- * @brief Sys_ParseArgs
+ * @brief Parses passed process arguments
  * @param[in] argc
- * @param[in] argv
+ * @param[in,out] argv
  */
 void Sys_ParseArgs(int argc, char **argv)
 {
-	if (argc == 2)
+	for (int i = 0; i < argc; ++i)
 	{
-		if (!strcmp(argv[1], "--version") ||
-		    !strcmp(argv[1], "-v"))
+		if (!strcmp(argv[i], "--"))
+		{
+			return;
+		}
+		// --help -- print help info
+		else if (!strcmp(argv[i], "--help") ||
+		         !strcmp(argv[i], "-h"))
+		{
+			Sys_ParseArgsShowHelpAndExit(0);
+		}
+		// --version -- prints version info and quits
+		else if (!strcmp(argv[i], "--version") ||
+		         !strcmp(argv[i], "-v"))
 		{
 #ifdef DEDICATED
 			fprintf(stdout, Q3_VERSION " " CPUSTRING " dedicated server (%s)\n", __DATE__);
@@ -934,6 +1002,26 @@ void Sys_ParseArgs(int argc, char **argv)
 			fprintf(stdout, "Built: " PRODUCT_BUILD_TIME "\n");
 			fprintf(stdout, "Build features: " PRODUCT_BUILD_FEATURES "\n");
 			Sys_Exit(0);
+		}
+		// --title -- allows to set a custom window title
+		else if (!strcmp(argv[i], "--title") ||
+		         !strcmp(argv[i], "-t"))
+		{
+			i++;
+
+			if (i >= argc)
+			{
+				Sys_ParseArgsError(va("Option '%s' expected an argument: <title>\n", argv[i - 1]));
+			}
+
+			GlobalGameTitle = argv[i];
+			argv[i - 1]     = NULL;
+			argv[i]         = NULL;
+		}
+		// let's try to catch some errors
+		else if (!strncmp(argv[i], "--", 2))
+		{
+			Sys_ParseArgsError(va("Unknown arg: '%s'\n\n", argv[i]));
 		}
 	}
 }
@@ -951,33 +1039,41 @@ void Sys_BuildCommandLine(int argc, char **argv, char *buffer, size_t bufferSize
 	// Concatenate the command line for passing to Com_Init
 	for (i = 1; i < argc; i++)
 	{
-		const qboolean containsSpaces = (qboolean)(strchr(argv[i], ' ') != NULL);
-
-		// Allow URIs to be passed without +connect
-		if (!Q_stricmpn(argv[i], "et://", 5) && Q_stricmpn(argv[i - 1], "+connect", 8))
+		// 'Sys_ParseArgs' sets arguments it consumes to 'NULL', simply skip them
+		if (argv[i] == NULL)
 		{
-			Q_strcat(buffer, bufferSize, "+connect ");
+			continue;
 		}
 
-		// Allow demo files to be passed without +demo for playback
-		if (FS_IsDemoExt(argv[i], -1) && Q_stricmpn(argv[i - 1], "+demo", 5) && Q_stricmpn(argv[i - 1], "+record", 7))
 		{
-			Q_strcat(buffer, bufferSize, "+demo dirty ");
+			const qboolean containsSpaces = (qboolean)(strchr(argv[i], ' ') != NULL);
+
+			// Allow URIs to be passed without +connect
+			if (!Q_stricmpn(argv[i], "et://", 5) && Q_stricmpn(argv[i - 1], "+connect", 8))
+			{
+				Q_strcat(buffer, bufferSize, "+connect ");
+			}
+
+			// Allow demo files to be passed without +demo for playback
+			if (FS_IsDemoExt(argv[i], -1) && Q_stricmpn(argv[i - 1], "+demo", 5) && Q_stricmpn(argv[i - 1], "+record", 7))
+			{
+				Q_strcat(buffer, bufferSize, "+demo dirty ");
+			}
+
+			if (containsSpaces)
+			{
+				Q_strcat(buffer, bufferSize, "\"");
+			}
+
+			Q_strcat(buffer, bufferSize, argv[i]);
+
+			if (containsSpaces)
+			{
+				Q_strcat(buffer, bufferSize, "\"");
+			}
+
+			Q_strcat(buffer, bufferSize, " ");
 		}
-
-		if (containsSpaces)
-		{
-			Q_strcat(buffer, bufferSize, "\"");
-		}
-
-		Q_strcat(buffer, bufferSize, argv[i]);
-
-		if (containsSpaces)
-		{
-			Q_strcat(buffer, bufferSize, "\"");
-		}
-
-		Q_strcat(buffer, bufferSize, " ");
 	}
 }
 

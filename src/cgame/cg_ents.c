@@ -3223,3 +3223,23 @@ void CG_AttachBitsToTank(centity_t *tank, refEntity_t *mg42base, refEntity_t *mg
 	CGTagToRefEntity(player, &tank->mountedMG42Player);
 	CGTagToRefEntity(flash, &tank->mountedMG42Flash);
 }
+
+void CG_ResetClientTimers(centity_t *cent)
+{
+	if (cent == NULL || cent->currentState.number == cg.clientNum)
+	{
+		cg.predictedPlayerEntity.firedTime       = 0;
+		cg.predictedPlayerEntity.switchedTime    = 0;
+		cg.predictedPlayerEntity.switchTime      = 0;
+		cg.predictedPlayerEntity.switchEventTime = 0;
+
+	}
+
+	if (cent != NULL)
+	{
+		cent->firedTime       = 0;
+		cent->switchedTime    = 0;
+		cent->switchTime      = 0;
+		cent->switchEventTime = 0;
+	}
+}

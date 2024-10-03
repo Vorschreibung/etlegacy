@@ -2244,6 +2244,7 @@ typedef enum
 
 	ANIM_MT_JUMP,
 	ANIM_MT_JUMPFORWARD,
+	ANIM_MT_MIDAIR,
 
 	NUM_ANIM_MOVETYPES
 } scriptAnimMoveTypes_t;

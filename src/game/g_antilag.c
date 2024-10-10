@@ -193,7 +193,7 @@ void G_StoreClientPosition(gentity_t *ent)
  * @param[in] time timestamp which to use
  * @return true if adjusted, otherwise false
  */
-static qboolean G_AdjustSingleClientPosition(gentity_t *ent, int time)
+qboolean G_AdjustSingleClientPosition(gentity_t *ent, int time)
 {
 	int i, j;
 

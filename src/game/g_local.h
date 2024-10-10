@@ -2348,6 +2348,7 @@ void Svcmd_SwapTeams_f(void);
 
 // g_antilag.c
 void G_StoreClientPosition(gentity_t *ent);
+qboolean G_AdjustSingleClientPosition(gentity_t *ent, int time);
 qboolean G_ReAdjustSingleClientPosition(gentity_t *ent);
 void G_ResetMarkers(gentity_t *ent);
 void G_HistoricalTrace(gentity_t *ent, trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask);

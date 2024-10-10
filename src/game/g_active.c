@@ -2090,6 +2090,104 @@ void WolfReviveBbox(gentity_t *self)
 	}
 }
 
+static void G_DebugHitboxes(gentity_t *ent, float r)
+{
+	// debug hitboxes
+	if (g_debugPlayerHitboxes.integer & 1)
+	{
+		vec3_t       maxs;
+		grefEntity_t refent;
+
+		// wounded player don't have head and legs hitbox, (see G_BuildHead and G_BuildLeg)
+		if (!(ent->client->ps.eFlags & EF_DEAD))
+		{
+			// head hitbox in green
+			ent->client->tempHead = G_BuildHead(ent, &refent, qtrue);
+			G_RailBox(ent->client->tempHead->r.currentOrigin, ent->client->tempHead->r.mins, ent->client->tempHead->r.maxs,
+			          tv(r, 1.f, 0.f), ent->client->tempHead->s.number | HITBOXBIT_HEAD);
+
+			if (ent->client->ps.eFlags & EF_PRONE)
+			{
+				// legs hitbox in green
+				ent->client->tempLeg = G_BuildLeg(ent, &refent, qtrue);
+				G_RailBox(ent->client->tempLeg->r.currentOrigin, ent->client->tempLeg->r.mins, ent->client->tempLeg->r.maxs,
+				          tv(r, 1.f, 0.f), ent->client->tempLeg->s.number | HITBOXBIT_LEGS);
+				G_FreeEntity(ent->client->tempLeg);
+			}
+		}
+
+		// body hitbox in green
+		VectorCopy(ent->r.maxs, maxs);
+		maxs[2] = ClientHitboxMaxZ(ent);
+		G_RailBox(ent->r.currentOrigin, ent->r.mins, maxs, tv(r, 1.f, 0.f), ent->s.number);
+
+		// free temp head after body box to ensure we are using the head mins height
+		if (ent->client->tempHead)
+		{
+			G_FreeEntity(ent->client->tempHead);
+		}
+	}
+
+	// debug head and legs box for collision (see PM_TraceHead and PM_TraceLegs)
+	if (g_debugPlayerHitboxes.integer & 4)
+	{
+		// cyan
+		G_RailBox(ent->client->ps.origin, ent->r.mins, ent->r.maxs, tv(0.f, 1.f, 1.f), ent->s.number);
+
+		if (ent->client->ps.eFlags & (EF_PRONE | EF_DEAD))
+		{
+			vec3_t headOffset, legsOffset;
+
+			BG_HeadCollisionBoxOffset(ent->client->ps.viewangles, ent->client->ps.eFlags, headOffset);
+			BG_LegsCollisionBoxOffset(ent->client->ps.viewangles, ent->client->ps.eFlags, legsOffset);
+
+			VectorAdd(ent->client->ps.origin, headOffset, headOffset);
+			VectorAdd(ent->client->ps.origin, legsOffset, legsOffset);
+
+			// cyan
+			G_RailBox(headOffset, playerHeadProneMins, playerHeadProneMaxs, tv(0.f, 1.f, 1.f), ent->s.number | HITBOXBIT_HEAD);
+
+			// cyan
+			G_RailBox(legsOffset, playerlegsProneMins, playerlegsProneMaxs, tv(0.f, 1.f, 1.f), ent->s.number | HITBOXBIT_LEGS);
+		}
+		else
+		{
+			trace_t trace;
+			vec3_t  end;
+
+			BG_LegsCollisionBoxOffset(ent->client->ps.viewangles, EF_PRONE, end);
+			VectorAdd(ent->client->ps.origin, end, end);
+
+			trap_Trace(&trace, ent->client->ps.origin, playerlegsProneMins, playerlegsProneMaxs, end, ent->client->ps.clientNum, ent->clipmask);
+
+			if (trace.fraction != 1.f)
+			{
+				BG_LegsCollisionBoxOffset(ent->client->ps.viewangles, EF_DEAD, end);
+				VectorAdd(trace.endpos, end, end);
+
+				// cyan
+				G_RailBox(end, playerlegsProneMins, playerlegsProneMaxs, tv(0.f, 1.f, 1.f), ent->s.number | HITBOXBIT_LEGS);
+			}
+			else
+			{
+				BG_HeadCollisionBoxOffset(ent->client->ps.viewangles, EF_PRONE, end);
+				VectorAdd(ent->client->ps.origin, end, end);
+
+				trap_Trace(&trace, ent->client->ps.origin, playerHeadProneMins, playerHeadProneMaxs, end, ent->client->ps.clientNum, ent->clipmask);
+
+				if (trace.fraction != 1.f)
+				{
+					BG_HeadCollisionBoxOffset(ent->client->ps.viewangles, EF_DEAD, end);
+					VectorAdd(trace.endpos, end, end);
+
+					// cyan
+					G_RailBox(end, playerHeadProneMins, playerHeadProneMaxs, tv(0.f, 1.f, 1.f), ent->s.number | HITBOXBIT_HEAD);
+				}
+			}
+		}
+	}
+}
+
 /**
  * @brief Called at the end of each server frame for each connected client
  * A fast client will have multiple ClientThink for each ClientEndFrame,
@@ -2340,98 +2438,15 @@ void ClientEndFrame(gentity_t *ent)
 	mdx_PlayerAnimation(ent);
 #endif
 
-	// debug hitboxes
-	if (g_debugPlayerHitboxes.integer & 1)
 	{
-		vec3_t       maxs;
-		grefEntity_t refent;
+		G_DebugHitboxes(ent, 0.0f);
 
-		// wounded player don't have head and legs hitbox, (see G_BuildHead and G_BuildLeg)
-		if (!(ent->client->ps.eFlags & EF_DEAD))
+		// because client struggles with showing too many railtrails...
+		if (g_developer.integer)
 		{
-			// head hitbox in green
-			ent->client->tempHead = G_BuildHead(ent, &refent, qtrue);
-			G_RailBox(ent->client->tempHead->r.currentOrigin, ent->client->tempHead->r.mins, ent->client->tempHead->r.maxs,
-			          tv(0.f, 1.f, 0.f), ent->client->tempHead->s.number | HITBOXBIT_HEAD);
-
-			if (ent->client->ps.eFlags & EF_PRONE)
-			{
-				// legs hitbox in green
-				ent->client->tempLeg = G_BuildLeg(ent, &refent, qtrue);
-				G_RailBox(ent->client->tempLeg->r.currentOrigin, ent->client->tempLeg->r.mins, ent->client->tempLeg->r.maxs,
-				          tv(0.f, 1.f, 0.f), ent->client->tempLeg->s.number | HITBOXBIT_LEGS);
-				G_FreeEntity(ent->client->tempLeg);
-			}
-		}
-
-		// body hitbox in green
-		VectorCopy(ent->r.maxs, maxs);
-		maxs[2] = ClientHitboxMaxZ(ent);
-		G_RailBox(ent->r.currentOrigin, ent->r.mins, maxs, tv(0.f, 1.f, 0.f), ent->s.number);
-
-		// free temp head after body box to ensure we are using the head mins height
-		if (ent->client->tempHead)
-		{
-			G_FreeEntity(ent->client->tempHead);
-		}
-	}
-
-	// debug head and legs box for collision (see PM_TraceHead and PM_TraceLegs)
-	if (g_debugPlayerHitboxes.integer & 4)
-	{
-		// cyan
-		G_RailBox(ent->client->ps.origin, ent->r.mins, ent->r.maxs, tv(0.f, 1.f, 1.f), ent->s.number);
-
-		if (ent->client->ps.eFlags & (EF_PRONE | EF_DEAD))
-		{
-			vec3_t headOffset, legsOffset;
-
-			BG_HeadCollisionBoxOffset(ent->client->ps.viewangles, ent->client->ps.eFlags, headOffset);
-			BG_LegsCollisionBoxOffset(ent->client->ps.viewangles, ent->client->ps.eFlags, legsOffset);
-
-			VectorAdd(ent->client->ps.origin, headOffset, headOffset);
-			VectorAdd(ent->client->ps.origin, legsOffset, legsOffset);
-
-			// cyan
-			G_RailBox(headOffset, playerHeadProneMins, playerHeadProneMaxs, tv(0.f, 1.f, 1.f), ent->s.number | HITBOXBIT_HEAD);
-
-			// cyan
-			G_RailBox(legsOffset, playerlegsProneMins, playerlegsProneMaxs, tv(0.f, 1.f, 1.f), ent->s.number | HITBOXBIT_LEGS);
-		}
-		else
-		{
-			trace_t trace;
-			vec3_t  end;
-
-			BG_LegsCollisionBoxOffset(ent->client->ps.viewangles, EF_PRONE, end);
-			VectorAdd(ent->client->ps.origin, end, end);
-
-			trap_Trace(&trace, ent->client->ps.origin, playerlegsProneMins, playerlegsProneMaxs, end, ent->client->ps.clientNum, ent->clipmask);
-
-			if (trace.fraction != 1.f)
-			{
-				BG_LegsCollisionBoxOffset(ent->client->ps.viewangles, EF_DEAD, end);
-				VectorAdd(trace.endpos, end, end);
-
-				// cyan
-				G_RailBox(end, playerlegsProneMins, playerlegsProneMaxs, tv(0.f, 1.f, 1.f), ent->s.number | HITBOXBIT_LEGS);
-			}
-			else
-			{
-				BG_HeadCollisionBoxOffset(ent->client->ps.viewangles, EF_PRONE, end);
-				VectorAdd(ent->client->ps.origin, end, end);
-
-				trap_Trace(&trace, ent->client->ps.origin, playerHeadProneMins, playerHeadProneMaxs, end, ent->client->ps.clientNum, ent->clipmask);
-
-				if (trace.fraction != 1.f)
-				{
-					BG_HeadCollisionBoxOffset(ent->client->ps.viewangles, EF_DEAD, end);
-					VectorAdd(trace.endpos, end, end);
-
-					// cyan
-					G_RailBox(end, playerHeadProneMins, playerHeadProneMaxs, tv(0.f, 1.f, 1.f), ent->s.number | HITBOXBIT_HEAD);
-				}
-			}
+			G_AdjustSingleClientPosition(ent, ent->client->pers.cmd.serverTime);
+			G_DebugHitboxes(ent, 1.0f);
+			G_ReAdjustSingleClientPosition(ent);
 		}
 	}
 

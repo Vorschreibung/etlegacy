@@ -855,7 +855,7 @@ typedef struct
 
 /**
  * @struct clientMarker_t
- * @brief Contains all the variables that are tracked in historical markers for antilag functionality.
+ * @brief
  */
 typedef struct
 {
@@ -870,8 +870,6 @@ typedef struct
 	int pm_flags;           ///< ps for both
 	vec3_t viewangles;      ///< s.apos.trBase to ps.viewangles
 
-	int groundEntityNum;
-
 	int time;
 
 	// torso markers
@@ -885,7 +883,6 @@ typedef struct
 	float torsoPitchAngle;
 	int torsoYawing;
 	int torsoPitching;
-	int torsoAnimationMovetype;
 
 	// leg markers
 	qhandle_t legsOldFrameModel;
@@ -898,7 +895,6 @@ typedef struct
 	float legsPitchAngle;
 	int legsYawing;
 	qboolean legsPitching;
-	int legsAnimationMovetype;
 } clientMarker_t;
 
 #define MAX_CLIENT_MARKERS 40
@@ -1014,7 +1010,6 @@ struct gclient_s
 
 	unsigned int combatState;
 
-	// antilag
 	int topMarker;
 	clientMarker_t clientMarkers[MAX_CLIENT_MARKERS];
 	clientMarker_t backupMarker;

@@ -1415,6 +1415,8 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input)
 
 	for (stage = 0; stage < MAX_SHADER_STAGES; stage++)
 	{
+		qboolean endIt = qfalse;
+
 		pStage = tess.xstages[stage];
 
 		if (!pStage)
@@ -1424,6 +1426,31 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input)
 
 		ComputeColors(pStage);
 		ComputeTexCoords(pStage);
+
+		// {
+		// 	dshader_t *dsh;
+		// 	for (int i = 0; i < s_worldData.numShaders; ++i)
+		// 	{
+		// 		dsh = &s_worldData.shaders[i];
+		// 		if (!Q_stricmp(dsh->shader, input->shader->name))
+		// 		{
+		// 			if (dsh->surfaceFlags & SURF_LANDMINE)
+		// 			{
+		// 				{
+		// 					int i;
+		// 					for (i = 0; i < input->numVertexes; i++)
+		// 					{
+		// 						input->svars.colors[i][0] = 0;
+		// 						input->svars.colors[i][1] = 255;
+		// 						input->svars.colors[i][2] = 0;
+		// 						input->svars.colors[i][3] = 255;
+		// 					}
+		// 					endIt = qtrue;
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		if (!setArraysOnce)
 		{
@@ -1522,6 +1549,11 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input)
 
 		// allow skipping out to show just lightmaps during development
 		if (r_lightMap->integer && (pStage->bundle[0].isLightmap || pStage->bundle[1].isLightmap))
+		{
+			break;
+		}
+
+		if (endIt)
 		{
 			break;
 		}

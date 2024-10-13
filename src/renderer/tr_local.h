@@ -2373,4 +2373,6 @@ extern cvar_t *r_gfxInfo;
 
 extern cvar_t *r_scale;
 
+extern world_t s_worldData;
+
 #endif //TR_LOCAL_H

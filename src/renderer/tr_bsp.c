@@ -37,7 +37,7 @@
 
 #include "tr_local.h"
 
-static world_t s_worldData;
+world_t s_worldData;
 static byte    *fileBase;
 
 surfaceType_t skipData = SF_SKIP;

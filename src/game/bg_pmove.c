@@ -2201,13 +2201,22 @@ static void PM_Footsteps(void)
 			PM_TraceAll(&trace, pm->ps->origin, end);
 			if (trace.fraction == 1.0) // we're midair
 			{
-				// check for jumping forward first
-				if (!(pm->cmd.buttons & BUTTON_WALKING) /* running */ && pm->cmd.forwardmove > 0)
+				uint8_t isRunningForward = !(pm->cmd.buttons & BUTTON_WALKING) && pm->cmd.forwardmove > 0;
+				// set jumpforward first so that our midair movetype animation
+				// can process it
+				if (isRunningForward)
 				{
 					BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_MOVETYPE, ANIM_MT_JUMPFORWARD, qtrue);
 				}
-
 				BG_AnimScriptAnimation(pm->ps, pm->character->animModelInfo, ANIM_MT_MIDAIR, qtrue);
+				// then set jumpforward again, as the midair movetype animation
+				// resets it
+				// @TODO: ALTHOUGH IF ROGOT WHY THIS 2ND CALL IS EVEN NECESSARY
+				// LMAO
+				if (isRunningForward)
+				{
+					BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_MOVETYPE, ANIM_MT_JUMPFORWARD, qtrue);
+				}
 			}
 		}
 

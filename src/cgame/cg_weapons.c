@@ -107,18 +107,18 @@ static void CG_ContinueWeaponAnim(int anim)
  * @brief Add leaning offset
  * @param[in] viewAngle
  * @param[out] point
- * @param[in] ammount
+ * @param[in] amount
  */
-void AddLean(vec3_t viewAngle, vec3_t point, float ammount)
+void AddLean(vec3_t viewAngle, vec3_t point, float amount)
 {
-	if (ammount != 0.f)
+	if (amount != 0.f)
 	{
 		vec3_t up, right;
 
 		AngleVectors(viewAngle, up, right, NULL);
-		VectorMA(point, ammount, right, point);
+		VectorMA(point, amount, right, point);
 		// to match client's view
-		point[2] -= Q_fabs(ammount / 3.5f);
+		point[2] -= Q_fabs(amount / 3.5f);
 	}
 }
 

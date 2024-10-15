@@ -1695,8 +1695,9 @@ static void PM_CrashLand(void)
 				pm->ps->pm_time   = 1000;
 				pm->ps->pm_flags |= PMF_TIME_KNOCKBACK;
 				PM_AddEventExt(EV_FALL_DMG_50, PM_FootstepForSurface());
-				//BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_IMPACT_POINT, (rand() + 1) ? IMPACTPOINT_KNEE_RIGHT : IMPACTPOINT_KNEE_LEFT, qtrue);
-				//BG_AnimScriptEvent(pm->ps, pm->character->animModelInfo, ANIM_ET_PAIN, qfalse);
+
+				BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_IMPACT_POINT, IMPACTPOINT_LEGS, qtrue);
+				BG_AnimScriptEvent(pm->ps, pm->character->animModelInfo, ANIM_ET_PAIN, qfalse);
 			}
 		}
 		else if (delta > 58)
@@ -1707,8 +1708,9 @@ static void PM_CrashLand(void)
 				pm->ps->pm_time   = 250;
 				pm->ps->pm_flags |= PMF_TIME_KNOCKBACK;
 				PM_AddEventExt(EV_FALL_DMG_25, PM_FootstepForSurface());
-				//BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_IMPACT_POINT, (rand() + 1) ? IMPACTPOINT_KNEE_RIGHT : IMPACTPOINT_KNEE_LEFT, qtrue);
-				//BG_AnimScriptEvent(pm->ps, pm->character->animModelInfo, ANIM_ET_PAIN, qfalse);
+
+				BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_IMPACT_POINT, IMPACTPOINT_LEGS, qtrue);
+				BG_AnimScriptEvent(pm->ps, pm->character->animModelInfo, ANIM_ET_PAIN, qfalse);
 			}
 		}
 		else if (delta > 48)
@@ -1719,8 +1721,9 @@ static void PM_CrashLand(void)
 				pm->ps->pm_time   = 1000;
 				pm->ps->pm_flags |= PMF_TIME_KNOCKBACK;
 				PM_AddEventExt(EV_FALL_DMG_15, PM_FootstepForSurface());
-				//BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_IMPACT_POINT, (rand() + 1) ? IMPACTPOINT_KNEE_RIGHT : IMPACTPOINT_KNEE_LEFT, qtrue);
-				//BG_AnimScriptEvent(pm->ps, pm->character->animModelInfo, ANIM_ET_PAIN, qfalse);
+
+				BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_IMPACT_POINT, IMPACTPOINT_LEGS, qtrue);
+				BG_AnimScriptEvent(pm->ps, pm->character->animModelInfo, ANIM_ET_PAIN, qfalse);
 			}
 		}
 		else if (delta > 38.75f)
@@ -1731,8 +1734,9 @@ static void PM_CrashLand(void)
 				pm->ps->pm_time   = 1000;
 				pm->ps->pm_flags |= PMF_TIME_KNOCKBACK;
 				PM_AddEventExt(EV_FALL_DMG_10, PM_FootstepForSurface());
-				//BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_IMPACT_POINT, (rand() + 1) ? IMPACTPOINT_KNEE_RIGHT : IMPACTPOINT_KNEE_LEFT, qtrue);
-				//BG_AnimScriptEvent(pm->ps, pm->character->animModelInfo, ANIM_ET_PAIN, qfalse);
+
+				BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_IMPACT_POINT, IMPACTPOINT_LEGS, qtrue);
+				BG_AnimScriptEvent(pm->ps, pm->character->animModelInfo, ANIM_ET_PAIN, qfalse);
 			}
 		}
 		else if (delta > 7)
@@ -2190,13 +2194,41 @@ static void PM_Footsteps(void)
 			PM_TraceAll(&trace, pm->ps->origin, end);
 			if (trace.fraction == 1.0) // we're midair
 			{
+				uint8_t didIt = !(pm->cmd.buttons & BUTTON_WALKING) /* running */ && pm->cmd.forwardmove > 0;
 				// check for jumping forward first
-				if (!(pm->cmd.buttons & BUTTON_WALKING) /* running */ && pm->cmd.forwardmove > 0)
+				// if (!(pm->cmd.rightmove && !pm->cmd.forwardmove) && (!(pm->cmd.buttons & BUTTON_WALKING) /* not walking */ && pm->cmd.forwardmove > 0))
+
+
+				// else if ()  // forward run-jumping
+				// {
+				// 	BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_MOVETYPE, ANIM_MT_JUMPFORWARD, qtrue);
+				// 	BG_AnimScriptEvent(pm->ps, pm->character->animModelInfo, ANIM_ET_JUMP, qfalse);
+				// 	pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+				// }
+				// if (!(pm->cmd.buttons & BUTTON_WALKING) /* running */ && pm->cmd.forwardmove > 0)
+				// {
+				// } else {
+				// }
+				// else
+				// {
+				// 	// BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_MOVETYPE, ANIM_MT_MIDAIR, qtrue);
+				// }
+
+				if (didIt)
 				{
 					BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_MOVETYPE, ANIM_MT_JUMPFORWARD, qtrue);
 				}
-
 				BG_AnimScriptAnimation(pm->ps, pm->character->animModelInfo, ANIM_MT_MIDAIR, qtrue);
+				if (didIt)
+				{
+					BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_MOVETYPE, ANIM_MT_JUMPFORWARD, qtrue);
+				}
+				// if (!(pm->cmd.buttons & BUTTON_WALKING) /* running */ && pm->cmd.forwardmove > 0)
+				// {
+				// 	// BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_MOVETYPE, ANIM_MT_JUMPFORWARD, qtrue);
+				// 	BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_MOVETYPE, ANIM_MT_JUMPFORWARD, qtrue);
+				// 	// BG_UpdateConditionValue(pm->ps->clientNum, ANIM_COND_MOVETYPE, ANIM_MT_MIDAIRFORWARD, qtrue);
+				// }
 			}
 		}
 

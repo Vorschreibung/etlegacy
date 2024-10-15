@@ -2245,6 +2245,7 @@ typedef enum
 	ANIM_MT_JUMP,
 	ANIM_MT_JUMPFORWARD,
 	ANIM_MT_MIDAIR,
+	ANIM_MT_MIDAIRFORWARD,
 
 	NUM_ANIM_MOVETYPES
 } scriptAnimMoveTypes_t;
@@ -2277,6 +2278,7 @@ typedef enum
 	ANIM_ET_RAISEWEAPONPRONE,
 	ANIM_ET_RELOADPRONE,
 	ANIM_ET_NOPOWER,
+	ANIM_ET_ACTIVATE,
 
 	NUM_ANIM_EVENTTYPES
 } scriptAnimEventTypes_t;
@@ -2323,7 +2325,7 @@ typedef enum
 	ANIM_COND_GEN_BITFLAG,     ///< general bit flags (to save some space)
 	ANIM_COND_AISTATE,         ///< our current ai state (sometimes more convenient than creating a separate section)
 	ANIM_COND_SUICIDE,
-	ANIM_COND_RELOADING,
+	ANIM_COND_FAST_RELOAD,
 	ANIM_COND_LADDER_PEEK,
 
 	NUM_ANIM_CONDITIONS
@@ -2492,6 +2494,7 @@ typedef enum
 	IMPACTPOINT_SHOULDER_LEFT,
 	IMPACTPOINT_KNEE_RIGHT,
 	IMPACTPOINT_KNEE_LEFT,
+	IMPACTPOINT_LEGS,
 
 	NUM_ANIM_COND_IMPACTPOINT
 } animScriptImpactPoint_t;

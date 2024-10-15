@@ -85,40 +85,40 @@ animStringItem_t animStateStr[] =
 
 static animStringItem_t animMoveTypesStr[] =
 {
-	{ "** UNUSED **", -1 }, // 0
-	{ "IDLE",         -1 },
-	{ "IDLECR",       -1 },
-	{ "WALK",         -1 },
-	{ "WALKBK",       -1 },
-	{ "WALKCR",       -1 },
-	{ "WALKCRBK",     -1 },
-	{ "RUN",          -1 },
-	{ "RUNBK",        -1 },
-	{ "SWIM",         -1 },
-	{ "SWIMBK",       -1 }, // 10
-	{ "STRAFERIGHT",  -1 },
-	{ "STRAFELEFT",   -1 },
-	{ "TURNRIGHT",    -1 },
-	{ "TURNLEFT",     -1 },
-	{ "CLIMBUP",      -1 },
-	{ "CLIMBDOWN",    -1 },
-	{ "FALLEN",       -1 }, // dead, before limbo
-	{ "PRONE",        -1 },
-	{ "PRONEBK",      -1 },
-	{ "IDLEPRONE",    -1 }, // 20
-	{ "FLAILING",     -1 },
+	{ "** UNUSED **",  -1 }, // 0
+	{ "IDLE",          -1 },
+	{ "IDLECR",        -1 },
+	{ "WALK",          -1 },
+	{ "WALKBK",        -1 },
+	{ "WALKCR",        -1 },
+	{ "WALKCRBK",      -1 },
+	{ "RUN",           -1 },
+	{ "RUNBK",         -1 },
+	{ "SWIM",          -1 },
+	{ "SWIMBK",        -1 }, // 10
+	{ "STRAFERIGHT",   -1 },
+	{ "STRAFELEFT",    -1 },
+	{ "TURNRIGHT",     -1 },
+	{ "TURNLEFT",      -1 },
+	{ "CLIMBUP",       -1 },
+	{ "CLIMBDOWN",     -1 },
+	{ "FALLEN",        -1 }, // dead, before limbo
+	{ "PRONE",         -1 },
+	{ "PRONEBK",       -1 },
+	{ "IDLEPRONE",     -1 }, // 20
+	{ "FLAILING",      -1 },
 
-	{ "RADIO",        -1 },
-	{ "RADIOCR",      -1 },
-	{ "RADIOPRONE",   -1 },
+	{ "RADIO",         -1 },
+	{ "RADIOCR",       -1 },
+	{ "RADIOPRONE",    -1 },
 
-	{ "DEAD",         -1 },
+	{ "DEAD",          -1 },
 
-	{ "JUMP",         -1 },
-	{ "JUMPFORWARD",  -1 },
-	{ "MIDAIR",       -1 },
+	{ "JUMP",          -1 },
+	{ "JUMPFORWARD",   -1 },
+	{ "MIDAIR",        -1 },
 
-	{ NULL,           -1 },
+	{ NULL,            -1 },
 };
 
 animStringItem_t animEventTypesStr[] =
@@ -145,6 +145,7 @@ animStringItem_t animEventTypesStr[] =
 	{ "RAISEWEAPONPRONE",           -1 },
 	{ "RELOADPRONE",                -1 },
 	{ "NOPOWER",                    -1 },
+	{ "ACTIVATE",                   -1 },
 
 	{ NULL,                         -1 },
 };
@@ -201,13 +202,14 @@ static animStringItem_t animConditionImpactPointsStr[] =
 	{ "SHOULDER_LEFT",  -1 },
 	{ "KNEE_RIGHT",     -1 },
 	{ "KNEE_LEFT",      -1 },
+	{ "LEGS",           -1 },
 
 	{ NULL,             -1 },
 };
 
 static animStringItem_t animEnemyTeamsStr[] =
 {
-	{ "NAZI",    -1 },
+	{ "AXIS",    -1 },
 	{ "ALLIES",  -1 },
 	{ "MONSTER", -1 },
 	{ "SPARE1",  -1 },
@@ -287,7 +289,7 @@ static animStringItem_t animConditionsStr[NUM_ANIM_CONDITIONS + 1] =
 	{ "GEN_BITFLAG",    -1 },
 	{ "AISTATE",        -1 },
 	{ "SUICIDE",        -1 },
-	{ "RELOADING",      -1 },
+	{ "FAST_RELOAD",    -1 },
 	{ "LADDER_PEEK",    -1 },
 
 	{ NULL,             -1 },
@@ -2010,7 +2012,7 @@ void BG_AnimUpdatePlayerStateConditions(pmove_t *pmove)
 	}
 
 	BG_UpdateConditionValue(ps->clientNum, ANIM_COND_FIRING, (pmove->cmd.buttons & BUTTON_ATTACK), qtrue);
-	BG_UpdateConditionValue(ps->clientNum, ANIM_COND_RELOADING, (pmove->ps->weaponstate == WEAPON_RELOADING), qtrue);
+	BG_UpdateConditionValue(ps->clientNum, ANIM_COND_FAST_RELOAD, (BG_IsSkillAvailable(pmove->skill, SK_LIGHT_WEAPONS, SK_LIGHT_WEAPONS_FASTER_RELOAD) && GetWeaponTableData(pmove->ps->weapon)->attributes & WEAPON_ATTRIBUT_FAST_RELOAD), qtrue);
 
 	if (ps->pm_flags & PMF_FLAILING)
 	{

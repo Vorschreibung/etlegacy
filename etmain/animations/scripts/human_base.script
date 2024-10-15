@@ -12,29 +12,128 @@
 //
 // These can be used to simplify the scripting, by defining replacement strings
 
+// TODOS
+// [X] Fix MP40 / machinegun backwards walk firing
+// [X] Make Rifle Grenade disappear immediately on firing instead of on weapon switch
+// [X] Make Rifle Grenade appear delayed when attaching
+// [ ] Speed up scoping anim
+// [ ] Fix/Improve Sniper rifle crouch idle / crouch-walk / run fire
+// [X] Readd longer Dynamite raise
+// [ ] Fix Rifle Firing (kinda all of them)
+// [ ] Fix Rifle/GPG40 Running suddenly looks like K98
+// [ ] Fix Scoped Rifles backwards walk
+// [X] Fix 1P MP34 Firing jiggle (go back to 'master')
+// [X] Fix binocing mid-air not putting on binocs ! :(
+// [X] Fix rifle prone raise
+// [ ] Fix both scoped & unscoped FG 42 prone fast fire
+// [ ] Fix FG42 doing a stabby when shooting and running
+// [ ] Fix FG42 backwards crouching
+// [ ] Fix grenade throws
+// [ ] Prolong grenade held throw animation (its too short when throwing from a hold)
+// [ ] Fix prone grenade raise
+// [ ] Fix prone grenade throw
+// [X] Fix flamer jumps
+// [ ] Fix Flamer Midair firing
+// [ ] Fix flamer run firing shaking / fix like with prone
+// [ ] Fix flamer stand firing shaking / fix like with prone
+// [ ] Fix flamer crouch bk firing shaking / fix like with prone
+// [ ] Fix flamer crouch idle firing shaking / fix like with prone
+// [X] Fix flamer prone firing
+// [X] Fix Flamethrower prone switching & firing
+// [X] Fix pistol jumps
+// [X] Fix pistol prone raise
+// [X] Fix pistol attach timings
+// [X] Add pistol prone fast reload
+// [X] Fix pistol crouch firing
+// [X] Add open door animation
+// [O] Fix backwards run with Landmine
+// [ ] Fix brass ejecting out of the head of a player 3P silenced pistol
+// [X] Fix akimbo jump
+// [ ] Reevaluate 'jump_1step_1h' (it's like a worse version of 'jump_1step_2h' ?)
+// [/] Make MG42 in 1P pan vertically (bipod missing)
+// [X] Fix proning and then immediately deploying MG42 producing a weird animation (was due to bipod anim match missing)
+// [X] Fix all MG42 jumps, crouchs, etc.
+// [ ] Fix mg42 brass ejecting out of head in 3P
+// [X] Fix all Mortar Jumps
+// [O] Hide Mortar when climbing?
+// [X] Make Overheat color linearly shift from yellow to red
+// [X] Only select class when clicking OK in Limbo
+// [ ] Keep stationary MG42 rotation when leaving the stations MG42?
+// [X] Show some 3P animation for deploying / undeploying MG bipod
+// [X] Delay attaching/showing GPG40 / MG42 bipod to when animation finishes instead of immediately as it starts
+// [X] Don't hide the MG42 gun so quickly e.g. when moving forward and then proning - now always showing MG42 when proning
+// [X] Show different torso prone idle anim when proning with undeployed MG
+// [ ] Fix MG42 firing despite overheating when standing/crouching (does stop when proning)
+// [X] Reeval scoping while jumping/midair - especiall forward jumping currently is not canceled by scoping >:(
+// [X] Fix walkback with Panzer
+// [/] Reduce dead-body height (only for item collision?)
+// [X] Fix mid-air switch from pliers-smg
+// [ ] Improve GPG40 fire animation straight into normal rifle firing
+// [X] Improve SMG idle firing - crouch firing
+// [ ] Make 2 separate FG42 prone reloads
+// [ ] Make 2 separate sten prone reloads
+// [ ] Re-eval 3P syringe firing / missing reload
+// [X] Fix the 'midair' movetype
+// [X] Fix mid-air smg/rifle leg kicks while shooting jumpforward
+// [/] Fix binocs disrupting running leg animation :(
+// [/] Add animation for calling in firing-for-effect !?
+// [ ] Fix Pistol disappearing earlier than the DROP animation finishes when switching to SMG and firing :(
+// [ ] Fix noAmmoSound not playing for trying to select Syringe or Grenade that are out of ammo
+// [ ] Fix fast switching from Dyn to Pliers
+// [X] Re-eval allied grenade rifle attach and fire animation (looks a bit too quick for me again)
+// [ ] Give airplanes a shadow O_O
+// [ ] Give mortar_set a flash dlight and a flash
+// [X] Fix pliers jump attacking
+// [ ] Try to improve plier cycle-firing while jumping
+// [ ] Fix gpg40 being held like normal rifle when running
+// [ ] Do a double check over the climbing animations (still too fast)
+// [ ] Make a HEAT shader for the tip of guns that overheat that gets more red as overheating increases
+// [ ] New Icons for: Where to !? & Follow me! & Cover me! & Improve upscaled YES & All Clear
+// [ ] Really reduce muzzle flashes
+// [X] Change SMG run shooting back to running
+// [ ] Fix tracers sometimes coming out of your face thirdperson, sometimes out of your muzzle
+// [ ] Fix SMG forward jump shooting
+// [ ] Fix Airplane Alpha (totall wrong)
+// [ ] Bake shadows into Airplane model
+// [ ] Fix standing on dynamite jiggle
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// [O] Pick a custom frame when corpses/bodies fly through the air (???)
+// [ ] Fix flamethrower muzzle flame tip bugging out
+// [ ] Add frame independent way of generating muzzle smoke and fix em all - (reuse covi smoke bomb implementation?)
+// [ ] Auto Select Thompson or MP40 when available
+// [X] Add cmd line arg to set window title
+// [X] Add flag for playing firing animation only as long as being held down (like with pliers already) - for: mg42, smg - (repurposed: loop -1)
+// [X] Render 3P overheat smoke for others
+// [ ] Canonicalize ALL the animation names :)
+// [x] https://github.com/etlegacy/etlegacy/commit/adf5f722981f7b445ff2afb36ee2deea3bd1fe25#r147530970
+
 DEFINES
 
 // weapons
-set weapons knives               = Knife AND Ka-Bar
-set weapons Bipods               = Mobile MG 42 Bipod AND Mobile Browning Bipod
-set weapons pistols              = Luger AND Colt AND Silenced Luger AND Silenced Colt
-set weapons akimbo_pistols       = Akimbo Luger AND Silenced Akimbo Luger AND Akimbo Colt AND Silenced Akimbo Colt
-set weapons machineguns          = MP 40 AND Thompson AND Sten gun AND Flamethrower AND panzerfaust AND bazooka AND Mobile MG 42 AND Mobile Browning AND MP34
-set weapons rifles               = K43 Rifle AND gpg40 AND M7 AND m1 garand AND FG 42 Paratroop Rifle AND Scoped K43 Rifle AND K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope
-set weapons scopes               = K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope
+set weapons knives         = Knife AND Ka-Bar
+set weapons pistols        = Luger AND Colt AND Silenced Luger AND Silenced Colt
+set weapons akimbo_pistols = Akimbo Luger AND Silenced Akimbo Luger AND Akimbo Colt AND Silenced Akimbo Colt
+// set weapons machineguns    = MP 40 AND Thompson AND Sten gun AND Flamethrower AND panzerfaust AND bazooka AND Mobile MG 42 AND Mobile Browning AND MP34
+set weapons machineguns    = MP 40 AND Thompson AND Sten gun AND MP34
+set weapons rifles         = K43 Rifle AND gpg40 AND m1 garand AND M7 AND FG 42 Paratroop Rifle AND Scoped K43 Rifle AND K43 Rifle Scope AND Scoped M1 Garand AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope
+set weapons rgrifles       = K43 Rifle AND m1 garand AND gpg40 AND m7
+set weapons scopes         = K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope
+set weapons heavymgs       = Mobile MG 42 AND Mobile Browning AND Mobile MG 42 Bipod AND Mobile Browning Bipod
+set weapons mortars        = Granatwerfer AND Mortar
+set weapons packs          = Ammo Pack AND Satchel Charge AND medicheal
+set weapons stens          = Sten gun AND MP34
+
+set weapons one_handed_weapons = Luger AND Colt AND Silenced Luger AND Silenced Colt
+set weapons two_handed_weapons = MP 40 AND Thompson AND Sten gun AND flamethrower AND panzerfaust AND bazooka AND K43 Rifle AND gpg40 AND M7 AND m1 garand AND FG 42 Paratroop Rifle AND Scoped M1 Garand AND Mobile MG 42 AND Scoped K43 Rifle AND K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope AND Mobile Browning AND MP34
 
 // broke off dynamite, since we never want to throw it overhand
-set weapons throwables           = pineapple AND grenade AND Smoke Bomb
-set weapons throwables_underhand = dynamite weapon
+set weapons throwables = pineapple AND grenade AND Smoke Bomb
 
 // weapons that the player should not hold in front of themselves as if they
 // could aim with them
-set weapons aimless = knives AND throwables AND throwables_underhand AND smokeGrenade AND Binoculars AND Landmine AND none
+set weapons aimless = knives AND throwables AND dynamite weapon AND smokeGrenade AND Binoculars AND Landmine AND none
 
-set weapons one_handed_weapons   = Luger AND Colt AND Silenced Luger AND Silenced Colt
-set weapons two_handed_weapons   = MP 40 AND Thompson AND Sten gun AND flamethrower AND panzerfaust AND bazooka AND K43 Rifle AND gpg40 AND M7 AND m1 garand AND FG 42 Paratroop Rifle AND Scoped M1 Garand AND Mobile MG 42 AND Scoped K43 Rifle AND K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope AND Mobile Browning AND MP34
-
-set weapons all                    = Luger AND Colt AND Silenced Luger AND Silenced Colt AND Binoculars AND special AND Ammo Pack AND knives AND dynamite weapon AND pineapple AND grenade AND smokeGrenade AND Smoke Bomb AND Landmine AND Satchel Charge AND MP 40 AND Thompson AND Sten gun AND flamethrower AND panzerfaust AND bazooka AND Ammo Pack AND Medicheal AND gpg40 AND M7 AND m1 garand AND FG 42 Paratroop Rifle AND Scoped M1 Garand AND Satchel Charge AND Landmine AND Mobile MG 42 AND Scoped K43 Rifle AND K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope AND Mortar AND Mounted Mortar AND Satchel Charge AND Satchel Charge Detonator AND Mobile Browning AND Granatwerfer AND Mounted Granatwerfer AND MP34
+set weapons all = Luger AND Colt AND Silenced Luger AND Silenced Colt AND Binoculars AND special AND Ammo Pack AND knives AND dynamite weapon AND pineapple AND grenade AND smokeGrenade AND Smoke Bomb AND Landmine AND Satchel Charge AND MP 40 AND Thompson AND Sten gun AND flamethrower AND panzerfaust AND bazooka AND Ammo Pack AND Medicheal AND gpg40 AND M7 AND m1 garand AND FG 42 Paratroop Rifle AND Scoped M1 Garand AND Satchel Charge AND Landmine AND Mobile MG 42 AND Scoped K43 Rifle AND K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope AND Mortar AND Mounted Mortar AND Satchel Charge AND Satchel Charge Detonator AND Mobile Browning AND Granatwerfer AND Mounted Granatwerfer AND MP34
 set weapons all_one_handed_weapons = Luger AND Colt AND Silenced Luger AND Silenced Colt AND Binoculars AND special AND Ammo Pack AND knives AND dynamite weapon AND pineapple AND grenade AND smokeGrenade AND Smoke Bomb AND Landmine AND Satchel Charge
 set weapons all_two_handed_weapons = MP 40 AND Thompson AND Sten gun AND flamethrower AND panzerfaust AND bazooka AND Ammo Pack AND Medicheal AND gpg40 AND M7 AND m1 garand AND FG 42 Paratroop Rifle AND Scoped M1 Garand AND Satchel Charge AND Landmine AND Mobile MG 42 AND Scoped K43 Rifle AND K43 Rifle Scope AND M1 Garand Scope AND FG 42 Paratroop Rifle Scope AND Mortar AND Mounted Mortar AND Satchel Charge AND Satchel Charge Detonator AND Mobile Browning AND Granatwerfer AND Mounted Granatwerfer AND MP34
 
@@ -96,6 +195,7 @@ set movetype proning = idleprone AND prone AND pronebk
 //		radio
 //		radiocr
 //		radioprone
+//		midair
 //
 //	<condition type> (see 'animConditionsStr'):
 //		weapons
@@ -120,7 +220,6 @@ set movetype proning = idleprone AND prone AND pronebk
 //		gen_bitflag
 //		aistate
 //		suicide
-//		reloading
 //
 //	<condition value> (bool if unspecified):
 //		weapons: <see weapon pickup names>
@@ -147,8 +246,99 @@ state combat
 		}
 	}
 
+	midair
+	{
+		weapons rifles, movetype jumpforward
+		{
+			legs jump_1step_2h torso stand_srifle
+			// legs jump_1step_2h torso midair_1step_rifles_2h
+			// torso jump_1step_midair_2h
+			// both jump_1step_fire_2h
+			// legs jump_1step_2h torso jump_1step_2h
+		}
+		weapons binoculars, gen_bitflag zooming
+		{
+			torso stand_binoculars
+		}
+		weapons satchel charge detonator
+		{
+			NOOP
+		}
+		weapons scopes
+		{
+			torso stand_scoped_rifle
+		}
+		weapons mortars
+		{
+			torso e_mortar_stand
+		}
+		weapons one_handed_weapons
+		{
+			torso stand_pistolB
+		}
+		weapons bazooka
+		{
+			torso stand_rifle
+		}
+		weapons panzerfaust
+		{
+			torso stand_panzer
+		}
+		weapons heavymgs
+		{
+			torso stand_mobilemg42
+		}
+		weapons two_handed_weapons, movetype jumpforward
+		{
+			torso jump_1step_midair_2h
+			// both jump_1step_2h
+			// NOOP
+			// torso jump_1step_2h
+			// torso jump_1step_fire_2h
+		}
+		weapons two_handed_weapons
+		{
+			torso stand_machinegun
+			// NOOP
+		}
+		weapons dynamite weapon
+		{
+			torso jump_1step_1h
+		}
+		weapons akimbo_pistols
+		{
+			torso stand_akimbo
+		}
+		weapons throwables, gen_bitflag holding
+		{
+			torso holding_grenadeA
+			torso holding_grenadeB
+		}
+		default
+		{
+			torso jump_1step_1h
+		}
+		// weapons knives
+		// {
+		// 	torso stand_knife
+		// }
+		// weapons pistols
+		// {
+		// 	torso stand_pistolB
+		// }
+		// default
+		// {
+		// 	torso jump_1step_2h
+		// }
+	}
+
 	idle
 	{
+		// weapons Flamethrower
+		// {
+		// 	// legs stand_panzer torso e_mortar_stand
+		// 	both stand_machinegun
+		// }
 		weapons Mortar AND Granatwerfer
 		{
 			legs stand_panzer torso e_mortar_stand
@@ -175,7 +365,7 @@ state combat
 		}
 		weapons Binoculars, gen_bitflag zooming
 		{
-			torso stand_binoculars legs stand_grenade
+			legs stand_grenade torso stand_binoculars
 		}
 		weapons Syringe AND Adrenaline Syringe
 		{
@@ -202,7 +392,7 @@ state combat
 			both holding_grenadeA
 			both holding_grenadeB
 		}
-		weapons throwables AND throwables_underhand
+		weapons throwables AND dynamite weapon
 		{
 			both stand_grenade
 		}
@@ -292,7 +482,7 @@ state combat
 		{
 			legs firing_machinegun torso stand_machinegun
 		}
-		weapons machineguns
+		weapons machineguns AND Flamethrower
 		{
 			both stand_machinegun
 		}
@@ -304,6 +494,10 @@ state combat
 
 	idlecr
 	{
+		weapons heavymgs
+		{
+			legs alert_crchidle_2h torso stand_mobilemg42
+		}
 		weapons Mortar AND Granatwerfer
 		{
 			legs alert_crchidle_2h torso e_mortar_stand
@@ -322,7 +516,7 @@ state combat
 		}
 		weapons Binoculars, gen_bitflag zooming
 		{
-			torso stand_binoculars legs alert_crchidle_1h
+			legs alert_crchidle_1h torso stand_binoculars
 		}
 		weapons Syringe AND Adrenaline Syringe
 		{
@@ -402,8 +596,8 @@ state combat
 		}
 		weapons throwables, gen_bitflag holding
 		{
-			legs alert_crchidle_1h torso  holding_grenadeA
-			legs alert_crchidle_1h torso  holding_grenadeB
+			legs alert_crchidle_1h torso holding_grenadeA
+			legs alert_crchidle_1h torso holding_grenadeB
 		}
 		weapons akimbo_pistols
 		{
@@ -421,6 +615,10 @@ state combat
 
 	walk
 	{
+		weapons heavymgs
+		{
+			legs relaxed_walk_1h_1 torso stand_mobilemg42
+		}
 		weapons Mortar AND Granatwerfer
 		{
 			legs relaxed_walk_1h_1 torso e_mortar_run
@@ -435,11 +633,12 @@ state combat
 		}
 		weapons satchel charge detonator
 		{
-			legs relaxed_walk_1h_1 torso satchel_remote_stand
+			both satchel_remote_walk
+			// legs relaxed_walk_1h_1 torso satchel_remote_stand
 		}
 		weapons Binoculars, gen_bitflag zooming
 		{
-			torso stand_binoculars legs relaxed_walk_1h_1
+			legs relaxed_walk_1h_1 torso stand_binoculars
 		}
 		weapons Syringe AND Adrenaline Syringe
 		{
@@ -534,45 +733,33 @@ state combat
 
 	walkbk
 	{
+		weapons heavymgs
+		{
+			legs relaxed_walk_1h_bk_1 torso stand_mobilemg42
+		}
 		weapons Mortar AND Granatwerfer
 		{
-			legs alert_bk_2h torso e_mortar_run
+			legs relaxed_walk_1h_bk_1 torso e_mortar_run
 		}
 		weapons Mounted Mortar AND Mounted Granatwerfer
 		{
 			both mortar_deployed
 		}
-		weapons satchel charge
-		{
-			legs alert_bk_2h torso stand_medpack
-		}
-		weapons satchel charge detonator
-		{
-			legs alert_bk_2h torso satchel_remote_stand
-		}
 		weapons one_handed_weapons
 		{
-			legs alert_bk_1h torso stand_pistolb
+			legs relaxed_walk_1h_bk_1 torso stand_pistolb
 		}
 		weapons Binoculars, gen_bitflag zooming
 		{
-			torso stand_binoculars legs alert_bk_1h
+			legs relaxed_walk_1h_bk_1 torso stand_binoculars
 		}
 		weapons Syringe AND Adrenaline Syringe
 		{
-			both alert_bk_1h
+			legs relaxed_walk_1h_bk_1 torso relaxed_walk_1h_1
 		}
-		weapons Ammo Pack
+		weapons packs
 		{
-			legs alert_bk_1h torso stand_medpack
-		}
-		weapons Satchel Charge
-		{
-			legs alert_bk_1h torso stand_medpack
-		}
-		weapons medicheal
-		{
-			legs alert_bk_1h torso stand_medpack
+			legs relaxed_walk_1h_bk_1 torso stand_medpack
 		}
 		weapons throwables, gen_bitflag holding
 		{
@@ -585,7 +772,8 @@ state combat
 		}
 		weapons FG 42 Paratroop Rifle
 		{
-			both alert_bk_srifle
+			// both alert_bk_srifle
+			legs relaxed_walk_1h_bk_1 torso stand_srifle
 		}
 		weapons K43 Rifle
 		{
@@ -609,11 +797,11 @@ state combat
 		}
 		weapons K43 Rifle Scope
 		{
-			legs alert_bk_2h torso stand_rifle
+			legs relaxed_walk_1h_bk_1 torso stand_rifle
 		}
 		weapons M1 Garand Scope
 		{
-			legs alert_bk_2h torso stand_rifle
+			legs relaxed_walk_1h_bk_1 torso stand_rifle
 		}
 		weapons FG 42 Paratroop Rifle Scope
 		{
@@ -621,15 +809,18 @@ state combat
 		}
 		weapons bazooka
 		{
-			legs alert_bk_2h torso stand_rifle
+			// legs alert_bk_2h torso stand_rifle
+			legs relaxed_walk_1h_bk_1 torso stand_rifle
 		}
 		weapons panzerfaust
 		{
-			legs alert_bk_2h torso stand_panzer
+			// legs alert_bk_2h torso stand_panzer
+			legs relaxed_walk_1h_bk_1 torso stand_panzer
 		}
 		weapons two_handed_weapons
 		{
-			both alert_bk_2h
+			legs relaxed_walk_1h_bk_1 torso stand_machinegun
+			// both alert_bk_2h
 		}
 		weapons akimbo_pistols
 		{
@@ -637,7 +828,7 @@ state combat
 		}
 		weapons aimless
 		{
-			both alert_bk_1h
+			both relaxed_walk_1h_bk_1
 		}
 		default
 		{
@@ -647,6 +838,10 @@ state combat
 
 	walkcr
 	{
+		weapons heavymgs
+		{
+			legs alert_crch_2h torso stand_mobilemg42
+		}
 		weapons Mortar AND Granatwerfer
 		{
 			legs alert_crch_2h torso e_mortar_run
@@ -669,7 +864,7 @@ state combat
 		}
 		weapons Binoculars, gen_bitflag zooming
 		{
-			torso stand_binoculars legs alert_crch_1h
+			legs alert_crch_1h torso stand_binoculars
 		}
 		weapons Syringe AND Adrenaline Syringe
 		{
@@ -696,7 +891,7 @@ state combat
 			legs alert_crch_1h torso holding_grenadeA
 			legs alert_crch_1h torso holding_grenadeB
 		}
-		weapons throwables AND throwables_underhand
+		weapons throwables AND dynamite weapon
 		{
 			both alert_crch_1h
 		}
@@ -768,6 +963,10 @@ state combat
 
 	walkcrbk
 	{
+		weapons heavymgs
+		{
+			legs alert_crbk_2h torso stand_mobilemg42
+		}
 		weapons Mortar AND Granatwerfer
 		{
 			legs alert_crbk_2h torso e_mortar_run
@@ -790,7 +989,7 @@ state combat
 		}
 		weapons Binoculars, gen_bitflag zooming
 		{
-			torso stand_binoculars legs alert_crbk_1h
+			legs alert_crbk_1h torso stand_binoculars
 		}
 		weapons Syringe AND Adrenaline Syringe
 		{
@@ -864,6 +1063,7 @@ state combat
 		weapons two_handed_weapons
 		{
 			both alert_crbk_2h
+			// both alert_crchbk_2h
 		}
 		weapons akimbo_pistols
 		{
@@ -881,6 +1081,10 @@ state combat
 
 	run
 	{
+		weapons heavymgs
+		{
+			legs alert_run_2h torso stand_mobilemg42
+		}
 		weapons Mortar AND Granatwerfer
 		{
 			legs alert_run_1h torso e_mortar_run
@@ -889,17 +1093,22 @@ state combat
 		{
 			both mortar_deployed
 		}
-		weapons satchel charge
+		weapons Satchel Charge
 		{
-			legs alert_run_1h torso stand_medpack
+			// both run_medpack
+			legs alert_run_1h torso run_medpack
 		}
+		// weapons satchel charge
+		// {
+		// 	legs alert_run_1h torso stand_medpack
+		// }
 		weapons satchel charge detonator
 		{
 			legs alert_run_1h torso satchel_remote_stand
 		}
 		weapons Binoculars, gen_bitflag zooming
 		{
-			torso stand_binoculars legs alert_run_no
+			legs alert_run_no torso stand_binoculars
 		}
 		weapons Syringe AND Adrenaline Syringe
 		{
@@ -907,15 +1116,13 @@ state combat
 		}
 		weapons Ammo Pack
 		{
-			both run_medpack
-		}
-		weapons Satchel Charge
-		{
-			both run_medpack
+			// both run_medpack
+			legs alert_run_1h torso run_medpack
 		}
 		weapons medicheal
 		{
-			both run_medpack
+			// both run_medpack
+			legs alert_run_1h torso run_medpack
 		}
 		weapons special
 		{
@@ -926,13 +1133,18 @@ state combat
 			legs alert_run_no torso holding_grenadeA
 			legs alert_run_no torso holding_grenadeB
 		}
-		weapons throwables AND throwables_underhand
+		weapons throwables AND dynamite weapon
 		{
 			both alert_run_no
 		}
 		weapons one_handed_weapons
 		{
 			legs alert_run_1h torso stand_pistolb
+		}
+		weapons rifles, movetype run AND swim
+		{
+			// legs alert_run_srifle torso stand_srifle
+			legs alert_run_srifle torso alert_run_srifle
 		}
 		weapons Scoped M1 Garand
 		{
@@ -944,7 +1156,8 @@ state combat
 		}
 		weapons K43 Rifle
 		{
-			both alert_run_srifle
+			legs alert_run_srifle torso stand_srifle
+			// both alert_run_srifle
 		}
 		weapons gpg40
 		{
@@ -1002,6 +1215,16 @@ state combat
 
 	runbk
 	{
+		weapons heavymgs
+		{
+			legs alert_bk_2h torso stand_mobilemg42
+		}
+		weapons rifles
+		{
+			// both stand_srifle
+			// legs alert_bk_srifle torso alert_bk_2h
+			legs alert_bk_srifle torso stand_srifle
+		}
 		weapons Mortar AND Granatwerfer
 		{
 			legs alert_bk_2h torso e_mortar_run
@@ -1024,7 +1247,7 @@ state combat
 		}
 		weapons Binoculars, gen_bitflag zooming
 		{
-			torso stand_binoculars legs alert_bk_1h
+			legs alert_bk_1h torso stand_binoculars
 		}
 		weapons Syringe AND Adrenaline Syringe
 		{
@@ -1051,7 +1274,7 @@ state combat
 			legs alert_bk_1h torso holding_grenadeA
 			legs alert_bk_1h torso holding_grenadeB
 		}
-		weapons throwables AND throwables_underhand
+		weapons throwables AND dynamite weapon
 		{
 			both alert_bk_1h
 		}
@@ -1105,12 +1328,17 @@ state combat
 		}
 		weapons two_handed_weapons
 		{
-			both alert_bk_2h
+			// both alert_bk_2h
+			legs alert_bk_srifle torso alert_bk_2h
 		}
 		weapons akimbo_pistols
 		{
 			legs alert_bk_2h torso stand_akimbo
 		}
+		//weapons Landmine
+		//{
+		//	both alert_run_no_bk
+		//}
 		weapons aimless
 		{
 			both alert_bk_1h
@@ -1121,238 +1349,12 @@ state combat
 		}
 	}
 
-	straferight
-	{
-		weapons Mortar AND Granatwerfer
-		{
-			legs alert_run_2h torso e_mortar_run
-		}
-		weapons Mounted Mortar AND Mounted Granatwerfer
-		{
-			both mortar_deployed
-		}
-		weapons satchel charge
-		{
-			legs alert_run_2h torso stand_medpack
-		}
-		weapons satchel charge detonator
-		{
-			legs alert_run_2h torso satchel_remote_stand
-		}
-		weapons one_handed_weapons
-		{
-			legs alert_run_1h torso stand_pistolb
-		}
-		weapons Binoculars, gen_bitflag zooming
-		{
-			torso stand_binoculars legs alert_run_1h
-		}
-		weapons Syringe AND Adrenaline Syringe
-		{
-			both alert_run_1h
-		}
-		weapons Ammo Pack
-		{
-			both run_medpack
-		}
-		weapons Satchel Charge
-		{
-			both run_medpack
-		}
-		weapons medicheal
-		{
-			both run_medpack
-		}
-		weapons special
-		{
-			both alert_run_1h
-		}
-		weapons throwables, gen_bitflag holding
-		{
-			legs alert_run_no torso holding_grenadeA
-			legs alert_run_no torso holding_grenadeB
-		}
-		weapons Scoped M1 Garand
-		{
-			both alert_run_srifle
-		}
-		weapons FG 42 Paratroop Rifle
-		{
-			both alert_run_srifle
-		}
-		weapons K43 Rifle
-		{
-			both alert_run_srifle
-		}
-		weapons gpg40
-		{
-			legs alert_run_srifle torso stand_grenlauncher
-		}
-		weapons M7
-		{
-			legs alert_run_srifle torso stand_grenlauncher
-		}
-		weapons m1 garand
-		{
-			both alert_run_srifle
-		}
-		weapons Scoped K43 Rifle
-		{
-			both alert_run_srifle
-		}
-		weapons K43 Rifle Scope
-		{
-			legs alert_run_2h torso stand_rifle
-		}
-		weapons M1 Garand Scope
-		{
-			legs alert_run_2h torso stand_rifle
-		}
-		weapons FG 42 Paratroop Rifle Scope
-		{
-			legs alert_run_2h torso stand_rifle
-		}
-		weapons bazooka
-		{
-			legs alert_run_2h torso stand_rifle
-		}
-		weapons panzerfaust
-		{
-			legs alert_run_2h torso stand_panzer
-		}
-		weapons two_handed_weapons
-		{
-			both alert_run_2h
-		}
-		weapons akimbo_pistols
-		{
-			legs alert_run_2h torso stand_akimbo
-		}
-		weapons aimless
-		{
-			both alert_run_no
-		}
-		default
-		{
-			both alert_run_1h
-		}
-	}
-
-	strafeleft
-	{
-		weapons Mortar AND Granatwerfer
-		{
-			legs alert_run_2h torso e_mortar_run
-		}
-		weapons Mounted Mortar AND Mounted Granatwerfer
-		{
-			both mortar_deployed
-		}
-		weapons satchel charge
-		{
-			legs alert_run_2h torso stand_medpack
-		}
-		weapons satchel charge detonator
-		{
-			legs alert_run_2h torso satchel_remote_stand
-		}
-		weapons one_handed_weapons
-		{
-			legs alert_run_1h torso stand_pistolb
-		}
-		weapons Binoculars, gen_bitflag zooming
-		{
-			torso stand_binoculars legs alert_run_1h
-		}
-		weapons Syringe AND Adrenaline Syringe
-		{
-			both alert_run_1h
-		}
-		weapons Ammo Pack
-		{
-			both run_medpack
-		}
-		weapons Satchel Charge
-		{
-			both run_medpack
-		}
-		weapons medicheal
-		{
-			both run_medpack
-		}
-		weapons throwables, gen_bitflag holding
-		{
-			legs alert_run_no torso holding_grenadeA
-			legs alert_run_no torso holding_grenadeB
-		}
-		weapons Scoped M1 Garand
-		{
-			both alert_run_srifle
-		}
-		weapons FG 42 Paratroop Rifle
-		{
-			both alert_run_srifle
-		}
-		weapons K43 Rifle
-		{
-			both alert_run_srifle
-		}
-		weapons gpg40
-		{
-			legs alert_run_srifle torso stand_grenlauncher
-		}
-		weapons M7
-		{
-			legs alert_run_srifle torso stand_grenlauncher
-		}
-		weapons m1 garand
-		{
-			both alert_run_srifle
-		}
-		weapons Scoped K43 Rifle
-		{
-			both alert_run_srifle
-		}
-		weapons K43 Rifle Scope
-		{
-			legs alert_run_2h torso stand_rifle
-		}
-		weapons M1 Garand Scope
-		{
-			legs alert_run_2h torso stand_rifle
-		}
-		weapons FG 42 Paratroop Rifle Scope
-		{
-			legs alert_run_2h torso stand_rifle
-		}
-		weapons bazooka
-		{
-			legs alert_run_2h torso stand_rifle
-		}
-		weapons panzerfaust
-		{
-			legs alert_run_2h torso stand_panzer
-		}
-		weapons two_handed_weapons
-		{
-			both alert_run_2h
-		}
-		weapons akimbo_pistols
-		{
-			legs alert_run_2h torso stand_akimbo
-		}
-		weapons aimless
-		{
-			both alert_run_no
-		}
-		default
-		{
-			both alert_run_1h
-		}
-	}
-
 	swim
 	{
+		weapons binoculars, gen_bitflag zooming
+		{
+			torso stand_binoculars
+		}
 		weapons none
 		{
 			both e_swim_1h
@@ -1373,6 +1375,10 @@ state combat
 
 	swimbk
 	{
+		weapons binoculars, gen_bitflag zooming
+		{
+			torso stand_binoculars
+		}
 		weapons none
 		{
 			both e_swim_1h
@@ -1406,6 +1412,10 @@ state combat
 			legs climb_up torso holding_grenadeA
 			legs climb_up torso holding_grenadeB
 		}
+		ladder_peek
+  		{
+			legs climb_up
+  		}
 		default
 		{
 			both climb_up
@@ -1427,6 +1437,10 @@ state combat
 			legs climb_down torso holding_grenadeA
 			legs climb_down torso holding_grenadeB
 		}
+		ladder_peek
+  		{
+			legs climb_down
+  		}
 		default
 		{
 			both climb_down
@@ -1461,11 +1475,13 @@ state combat
 		}
 		weapons Mobile MG 42 AND Mobile Browning
 		{
-			legs prone_legs torso prone_mg42_idle
+			// legs prone_legs torso prone_mg42_idle
+			legs prone_legs torso prone_mg_idle
 		}
 		weapons bazooka
 		{
-			legs prone_legs torso e_prone_rifle_snipeidle
+			// legs prone_legs torso e_prone_rifle_snipeidle
+			legs prone_legs torso prone_baz_idle
 		}
 		weapons panzerfaust
 		{
@@ -1512,7 +1528,7 @@ state combat
 			legs prone_legs torso holding_grenadeA
 			legs prone_legs torso holding_grenadeB
 		}
-		weapons throwables AND throwables_underhand
+		weapons throwables AND dynamite weapon
 		{
 			legs prone_legs torso prone_grenade_idle
 		}
@@ -1645,7 +1661,7 @@ state combat
 	{
 		default
 		{
-			torso stand_radio legs alert_crchidle_1h
+			legs alert_crchidle_1h torso stand_radio
 		}
 	}
 
@@ -1684,6 +1700,7 @@ state combat
 //		raiseweaponprone
 //		reloadprone
 //		raiseweapon
+//		dropweapon
 //		reload
 //		jump
 //		jumpbk
@@ -1705,39 +1722,33 @@ EVENTS
 
 fireweapon
 {
-// ADRENALINE SYRINGE
-	weapons Adrenaline Syringe
+	mounted MG42
 	{
-		torso self_inject
+		both firing_mg42
 	}
 	weapons Mounted Mortar AND Mounted Granatwerfer
 	{
 		torso mortar_fire
 	}
+	weapons Mobile MG 42 AND Mobile Browning
+	{
+		torso firing_mobilemg42
+	}
+	weapons Adrenaline Syringe
+	{
+		torso self_inject
+	}
 	weapons Satchel Charge
 	{
-		torso throw_underhand
+		torso throw_satchel
 	}
-	weapons Satchel Charge Detonator
+	// weapons Satchel Charge Detonator
+	// {
+	// 	torso satchel_remote_fire
+	// }
+	weapons packs AND Landmine
 	{
-		torso satchel_remote_fire
-	}
-	mounted MG42
-	{
-		both firing_mg42
-	}
-	// support overhand throws for airstrike tags
-	weapons smokeGrenade, underhand
-	{
-		torso firing_grenadeB
-	}
-	weapons smokeGrenade
-	{
-		torso firing_grenadeA
-	}
-	weapons medicheal AND Ammo Pack AND Landmine
-	{
-		torso throw_underhand
+		torso throw_underhand_instant
 	}
 	weapons special
 	{
@@ -1749,242 +1760,201 @@ fireweapon
 	}
 	weapons bazooka
 	{
-		torso firing_bazooka
+		// torso firing_bazooka
+		torso firing_a_drop_bazooka
 	}
 	weapons panzerfaust
 	{
 		torso firing_panzer
 	}
+	weapons dynamite weapon
+	{
+		torso throw_underhand_dyn
+	}
+	// support overhand throws for airstrike tags
+	weapons smokeGrenade, underhand
+	{
+		torso throw_underhand_instant
+	}
+	weapons smokeGrenade
+	{
+		torso firing_smoke_grenade
+	}
 	// support overhand throws for grenades
 	weapons throwables, underhand
 	{
-		torso firing_grenadeB
+		torso throw_underhand
+		// torso throw_underhand_instant
 	}
 	weapons throwables
 	{
-		torso firing_grenadeA
-	}
-	// only dynamite is still handled here, always underhand
-	weapons throwables_underhand, movetype idle
-	{
-		torso throw_underhand
-	}
-	weapons throwables_underhand, movetype run AND walk AND straferight AND strafeleft AND backstep AND turnleft AND turnright AND idlecr
-	{
-		torso throw_underhand
+		torso throw_overhand
 	}
 	weapons knives
 	{
 		torso firing_knife
 	}
 // PISTOLS
-	weapons pistols, movetype walkcrbk
+	// weapons pistols, movetype walkcrbk
+	// {
+	// 	torso firing_crbk_1h
+	// }
+	weapons pistols, movetype idlecr
 	{
-		torso firing_crbk_1h
+		// torso firing_crch_1h_idle
+		torso firing_pistol
 	}
 	weapons pistols, movetype crouching
 	{
-		torso firing_crch_1h
+		torso firing_crbk_1h
 	}
 	weapons pistols
 	{
-		torso firing_pistolB_1
-		torso firing_pistolB_2
+		// torso firing_pistolB_1
+		torso firing_pistol
 	}
 	weapons akimbo_pistols
 	{
 		torso firing_akimbo
 	}
-// MOBILE MG 42
-	weapons Mobile MG 42 AND Mobile Browning
-	{
-		torso firing_mobilemg42
-	}
-	weapons Mobile MG 42 AND Mobile Browning, movetype straferight
-	{
-		torso alert_run_2h duration 50
-	}
-	weapons Mobile MG 42 AND Mobile Browning, movetype strafeleft
-	{
-		torso alert_run_2h duration 50
-	}
-	weapons Mobile MG 42 AND Mobile Browning, movetype walk AND turnleft AND turnright AND idlecr
-	{
-		torso firing_mobilemg42 duration 50
-	}
-	weapons Mobile MG 42 AND Mobile Browning, movetype walkcrbk
-	{
-		torso firing_crbk_2h duration 50
-	}
-	weapons Mobile MG 42 AND Mobile Browning, movetype crouching
-	{
-		torso firing_crch_2h duration 50
-	}
-	weapons Mobile MG 42 AND Mobile Browning, movetype run AND swim
-	{
-		torso alert_run_2h duration 50
-	}
-	weapons Mobile MG 42 AND Mobile Browning, movetype backstep AND swimbk
-	{
-		torso alert_bk_2h duration 50
-	}
-	weapons Mobile MG 42 AND Mobile Browning
-	{
-		torso firing_mobilemg42 duration 50
-	}
+	// weapons Flamethrower
+	// {
+	// 	// torso stand_rifle
+	// 	torso alert_crchidle_1h
+	// }
 // MACHINEGUNS
-	weapons machineguns, movetype straferight
+	// weapons machineguns, movetype runbk
+	// {
+	// 	torso firing_alert_runbk_2h duration 50
+	// }
+	// weapons machineguns, movetype jumpforward
+	// {
+	// 	torso jump_1step_fire_2h
+	// }
+	weapons machineguns, movetype runbk
 	{
-		torso alert_run_2h duration 50
+		torso firing_alert_run_bk_2h
+        // torso firing_machinegun
 	}
-	weapons machineguns, movetype strafeleft
+	weapons machineguns, movetype jumpforward
 	{
-		torso alert_run_2h duration 50
-	}
-	weapons machineguns, movetype walk AND turnleft AND turnright AND idlecr
-	{
-		torso firing_machinegun duration 50
-	}
-	weapons machineguns, movetype walkcrbk
-	{
-		torso firing_crbk_2h duration 50
-	}
-	weapons machineguns, movetype crouching
-	{
-		torso firing_crch_2h duration 50
+		// torso firing_alert_run_2h
+        // torso firing_machinegun
+
+		// torso jump_1step_2h
+		// torso jump_1step_fire_2h
+        torso firing_machinegun
 	}
 	weapons machineguns, movetype run AND swim
 	{
-		torso alert_run_2h duration 50
+		torso firing_alert_run_2h
+        // torso firing_machinegun
 	}
-	weapons machineguns, movetype backstep AND swimbk
-	{
-		torso alert_bk_2h duration 50
-	}
-	weapons machineguns
+	weapons machineguns, movetype idlecr
 	{
 		torso firing_machinegun duration 50
 	}
-// RIFLES
-	weapons Scoped M1 Garand, movetype walk AND turnleft AND turnright AND idlecr AND idle
+	// weapons machineguns, movetype walkcr AND walkcrbk
+	weapons machineguns, movetype walkcrbk
 	{
-		torso firing_srifle
+		torso firing_crbk_2h
+        // torso firing_machinegun
 	}
-	weapons Scoped M1 Garand, movetype crouching
+	weapons machineguns, movetype crouching
 	{
-		torso firing_crch_srifle
+		// torso firing_crch_2h duration 50
+		torso firing_alert_crch_2h
 	}
-	weapons Scoped M1 Garand, movetype run AND swim
+	// weapons machineguns, movetype crouching
+	// {
+	// 	// torso firing_machinegun duration 50
+	// 	torso firing_alert_runbk_2h duration 50
+	// }
+	// weapons machineguns, movetype backstep AND swimbk
+	// {
+	// 	torso firing_alert_runbk_2h duration 50
+	// }
+	// weapons stens
+	// {
+        // torso firing_machinegun duration 50
+	// 	// torso firing_machinegun duration 50
+	// }
+	weapons machineguns
 	{
-		torso firing_run_srifle
+        torso firing_machinegun
+		// torso firing_machinegun duration 50
 	}
-	weapons Scoped M1 Garand, movetype backstep AND swimbk
-	{
-		torso firing_bk_srifle
-	}
-	weapons Scoped M1 Garand
-	{
-		torso firing_srifle
-	}
-	weapons FG 42 Paratroop Rifle, movetype walk AND turnleft AND turnright AND idlecr AND idle
-	{
-		torso firing_srifle
-	}
+	// FG 42 Paratroop Rifle
+	// weapons FG 42 Paratroop Rifle, movetype jumpforward
+	// {
+	// 	torso jump_1step_fire_2h
+	// }
+	// weapons FG 42 Paratroop Rifle, movetype walk AND turnleft AND turnright AND idlecr AND idle
+	// {
+	// 	torso firing_srifle
+	// }
 	weapons FG 42 Paratroop Rifle, movetype crouching
 	{
 		torso firing_crch_srifle
 	}
-	weapons FG 42 Paratroop Rifle, movetype run AND swim
-	{
-		torso firing_run_srifle
-	}
-	weapons FG 42 Paratroop Rifle, movetype backstep AND swimbk
-	{
-		torso firing_bk_srifle
-	}
+	// weapons FG 42 Paratroop Rifle, movetype run AND swim
+	// {
+	// 	torso firing_run_srifle
+	// }
+	// weapons FG 42 Paratroop Rifle, movetype backstep AND swimbk
+	// weapons FG 42 Paratroop Rifle, movetype backstep AND swimbk
+	// {
+	// 	torso firing_bk_srifle
+	// }
 	weapons FG 42 Paratroop Rifle
 	{
-		torso firing_srifle
+		torso firing_fg42
 	}
-	weapons K43 Rifle, movetype walk AND turnleft AND turnright AND idlecr AND idle
+
+	weapons rifles, movetype run
 	{
-		torso firing_srifle
+		torso fire_run_srifle
 	}
-	weapons K43 Rifle, movetype crouching
+// RIFLES (Scoped)
+	weapons K43 Rifle Scope, movetype walk AND turnleft AND turnright AND idlecr AND idle
 	{
-		torso firing_crch_srifle
+		torso firing_rifle
 	}
-	weapons K43 Rifle, movetype run AND swim
+	weapons K43 Rifle Scope, movetype crouching
 	{
-		torso firing_run_srifle
+		torso firing_crch_2h
 	}
-	weapons K43 Rifle, movetype backstep AND swimbk
+	weapons K43 Rifle Scope, movetype run AND swim
 	{
-		torso firing_bk_srifle
+		torso alert_run_2h
 	}
-	weapons K43 Rifle
+	weapons K43 Rifle Scope, movetype backstep AND swimbk
 	{
-		torso firing_srifle
+		torso firing_bk_2h
 	}
-	weapons gpg40, movetype walk AND turnleft AND turnright AND idlecr AND idle
+	weapons K43 Rifle Scope
 	{
-		torso firing_grenlauncher
+		torso firing_rifle
 	}
-	weapons gpg40, movetype crouching
+	weapons M1 Garand Scope
 	{
-		torso firing_grenlauncher
+		torso firing_rifle
 	}
-	weapons gpg40, movetype run AND swim
+	weapons M1 Garand Scope, movetype crouching
 	{
-		torso firing_grenlauncher
+		torso firing_crch_2h
 	}
-	weapons gpg40, movetype backstep AND swimbk
+	weapons M1 Garand Scope, movetype run AND swim
 	{
-		torso firing_grenlauncher
+		torso alert_run_2h
 	}
-	weapons gpg40
+	weapons M1 Garand Scope, movetype backstep AND swimbk
 	{
-		torso firing_grenlauncher
+		torso firing_bk_2h
 	}
-	weapons M7, movetype walk AND turnleft AND turnright AND idlecr AND idle
+	weapons M1 Garand Scope
 	{
-		torso firing_grenlauncher
-	}
-	weapons M7, movetype crouching
-	{
-		torso firing_grenlauncher
-	}
-	weapons M7, movetype run AND swim
-	{
-		torso firing_grenlauncher
-	}
-	weapons M7, movetype backstep AND swimbk
-	{
-		torso firing_grenlauncher
-	}
-	weapons M7
-	{
-		torso firing_grenlauncher
-	}
-	weapons m1 garand, movetype walk AND turnleft AND turnright AND idlecr AND idle
-	{
-		torso firing_srifle
-	}
-	weapons m1 garand, movetype crouching
-	{
-		torso firing_crch_srifle
-	}
-	weapons m1 garand, movetype run AND swim
-	{
-		torso firing_run_srifle
-	}
-	weapons m1 garand, movetype backstep AND swimbk
-	{
-		torso firing_bk_srifle
-	}
-	weapons m1 garand
-	{
-		torso firing_srifle
+		torso firing_rifle
 	}
 	weapons FG 42 Paratroop Rifle Scope, movetype walk AND turnleft AND turnright AND idlecr AND idle
 	{
@@ -2006,6 +1976,102 @@ fireweapon
 	{
 		torso firing_rifle
 	}
+// RIFLES
+	// K43
+	weapons K43 Rifle, movetype walk AND turnleft AND turnright AND idlecr AND idle
+	{
+		torso firing_srifle
+		// NOOP
+	}
+	weapons K43 Rifle, movetype crouching
+	{
+		// torso firing_srifle
+		torso firing_crch_srifle
+		// NOOP
+	}
+	weapons K43 Rifle, movetype run AND swim
+	{
+		torso firing_run_srifle
+		// torso firing_srifle
+		// torso firing_srifle
+		// NOOP
+	}
+	weapons K43 Rifle, movetype backstep AND swimbk
+	{
+		// torso firing_bk_srifle
+		NOOP
+	}
+	weapons K43 Rifle
+	{
+		// torso firing_srifle
+		NOOP
+	}
+	// GPG40
+	weapons gpg40, movetype walk AND turnleft AND turnright AND idlecr AND idle
+	{
+		torso firing_grenlauncher
+	}
+	weapons gpg40, movetype crouching
+	{
+		torso firing_grenlauncher
+	}
+	weapons gpg40, movetype run AND swim
+	{
+		torso firing_grenlauncher
+	}
+	weapons gpg40, movetype backstep AND swimbk
+	{
+		torso firing_grenlauncher
+	}
+	weapons gpg40
+	{
+		torso firing_grenlauncher
+	}
+	// M1 Garand
+	weapons m1 garand, movetype walk
+	{
+		torso firing_srifle
+	}
+	weapons m1 garand, movetype crouching
+	{
+		torso firing_crch_srifle
+	}
+	weapons m1 garand, movetype run AND swim
+	{
+		// torso firing_srifle
+		NOOP
+		// torso firing_run_srifle
+	}
+	weapons m1 garand, movetype backstep AND swimbk
+	{
+		torso firing_bk_srifle
+	}
+	weapons m1 garand
+	{
+		torso firing_srifle
+	}
+	// M7
+	weapons M7, movetype walk AND turnleft AND turnright AND idlecr AND idle
+	{
+		torso firing_grenlauncher
+	}
+	weapons M7, movetype crouching
+	{
+		torso firing_grenlauncher
+	}
+	weapons M7, movetype run AND swim
+	{
+		torso firing_grenlauncher
+	}
+	weapons M7, movetype backstep AND swimbk
+	{
+		torso firing_grenlauncher
+	}
+	weapons M7
+	{
+		torso firing_grenlauncher
+	}
+	// Scoped K43 Rifle
 	weapons Scoped K43 Rifle, movetype walk AND turnleft AND turnright AND idlecr AND idle
 	{
 		torso firing_srifle
@@ -2026,45 +2092,33 @@ fireweapon
 	{
 		torso firing_srifle
 	}
-	weapons K43 Rifle Scope, movetype walk AND turnleft AND turnright AND idlecr AND idle
+	// Scoped M1 Garand
+	weapons Scoped M1 Garand, movetype walk
 	{
-		torso firing_rifle
+		torso firing_srifle
 	}
-	weapons K43 Rifle Scope, movetype crouching
+	weapons Scoped M1 Garand, movetype crouching
 	{
-		torso firing_crch_2h
+		torso firing_crch_srifle
 	}
-	weapons K43 Rifle Scope, movetype run AND swim
+	weapons Scoped M1 Garand, movetype run AND swim
 	{
-		torso alert_run_2h
+		torso firing_run_srifle
 	}
-	weapons K43 Rifle Scope, movetype backstep AND swimbk
+	weapons Scoped M1 Garand, movetype backstep AND swimbk
 	{
-		torso firing_bk_2h
+		torso firing_bk_srifle
 	}
-	weapons K43 Rifle Scope
+	weapons Scoped M1 Garand
 	{
-		torso firing_rifle
+		torso firing_srifle
 	}
-	weapons M1 Garand Scope, movetype walk AND turnleft AND turnright AND idlecr AND idle
+	weapons rifles, movetype run AND swim
 	{
-		torso firing_rifle
-	}
-	weapons M1 Garand Scope, movetype crouching
-	{
-		torso firing_crch_2h
-	}
-	weapons M1 Garand Scope, movetype run AND swim
-	{
-		torso alert_run_2h
-	}
-	weapons M1 Garand Scope, movetype backstep AND swimbk
-	{
-		torso firing_bk_2h
-	}
-	weapons M1 Garand Scope
-	{
-		torso firing_rifle
+		torso firing_srifle
+		//torso firing_run_srifle
+		// torso firing_srifle
+		// NOOP
 	}
 }
 
@@ -2086,33 +2140,30 @@ fireweapon2
 
 fireweaponprone
 {
-	weapons satchel charge
+	weapons Mobile MG 42 AND Mobile Browning
 	{
-		torso prone_grenade_fire
+		// torso prone_mg42_fire
+		torso prone_mg_fire
 	}
-	weapons satchel charge detonator
+	weapons Mobile MG 42 Bipod AND Mobile Browning Bipod
 	{
-		torso prone_poke_fire
+		torso prone_mg42_fire
 	}
-	weapons smokeGrenade
+	weapons Adrenaline Syringe
 	{
-		torso prone_grenade_fire
-	}
-	weapons Ammo Pack
-	{
-		torso prone_grenade_fire
-	}
-	weapons Landmine
-	{
-		torso prone_grenade_fire
+		torso self_inject
 	}
 	weapons Satchel Charge
 	{
 		torso prone_grenade_fire
 	}
-	weapons medicheal
+	// weapons Satchel Charge Detonator
+	// {
+	// 	torso prone_poke_fire
+	// }
+	weapons packs AND Landmine
 	{
-		torso prone_poke_fire
+		torso prone_grenade_fire
 	}
 	weapons special
 	{
@@ -2122,10 +2173,6 @@ fireweaponprone
 	{
 		torso prone_syringe_attack
 	}
-	weapons Adrenaline Syringe
-	{
-		torso self_inject
-	}
 	weapons bazooka
 	{
 		torso e_prone_rifle_snipefire
@@ -2134,7 +2181,11 @@ fireweaponprone
 	{
 		torso prone_panzer_idle
 	}
-	weapons throwables AND throwables_underhand
+	weapons throwables AND dynamite weapon
+	{
+		torso prone_grenade_fire
+	}
+	weapons smokeGrenade
 	{
 		torso prone_grenade_fire
 	}
@@ -2142,6 +2193,11 @@ fireweaponprone
 	{
 		torso prone_knife_attack
 	}
+	weapons flamethrower
+	{
+		torso prone_flamethrower_fire
+	}
+// PISTOLS
 	weapons pistols
 	{
 		torso prone_pistol_fire
@@ -2150,27 +2206,17 @@ fireweaponprone
 	{
 		torso e_prone_pistols_fire
 	}
-	weapons Mobile MG 42 AND Mobile Browning
-	{
-		torso prone_mg42_fire
-	}
-	weapons Mobile MG 42 Bipod  AND Mobile Browning Bipod
-	{
-		torso prone_mg42_fire
-	}
+// MACHINEGUNS
 	weapons machineguns
 	{
 		torso prone_mg_fire
 	}
+// RIFLES (Scoped)
+	weapons scopes
+	{
+		torso e_prone_rifle_snipefire
+	}
 // RIFLES
-	weapons Scoped M1 Garand
-	{
-		torso prone_rifle_fire
-	}
-	weapons FG 42 Paratroop Rifle
-	{
-		torso prone_rifle_fire
-	}
 	weapons K43 Rifle
 	{
 		torso prone_rifle_fire
@@ -2179,11 +2225,15 @@ fireweaponprone
 	{
 		torso e_prone_rifle_fire
 	}
+	weapons m1 garand
+	{
+		torso prone_rifle_fire
+	}
 	weapons M7
 	{
 		torso e_prone_rifle_fire
 	}
-	weapons m1 garand
+	weapons FG 42 Paratroop Rifle
 	{
 		torso prone_rifle_fire
 	}
@@ -2191,17 +2241,9 @@ fireweaponprone
 	{
 		torso prone_rifle_fire
 	}
-	weapons K43 Rifle Scope
+	weapons Scoped M1 Garand
 	{
-		torso e_prone_rifle_snipefire
-	}
-	weapons M1 Garand Scope
-	{
-		torso e_prone_rifle_snipefire
-	}
-	weapons FG 42 Paratroop Rifle Scope
-	{
-		torso e_prone_rifle_snipefire
+		torso prone_rifle_fire
 	}
 }
 
@@ -2261,13 +2303,14 @@ raiseweaponprone
 	}
 	weapons bazooka
 	{
-		torso prone_rifle_switch
+		// torso prone_rifle_switch
+		torso prone_baz_raise
 	}
 	weapons panzerfaust
 	{
-		torso prone_panzer_switch
+		torso prone_panzer_raise
 	}
-	weapons throwables AND throwables_underhand
+	weapons throwables AND dynamite weapon
 	{
 		torso prone_grenade_switch
 	}
@@ -2279,7 +2322,7 @@ raiseweaponprone
 	{
 		torso e_prone_pistol_switch
 	}
-	weapons akimbo_pistols	// FIXedME
+	weapons akimbo_pistols
 	{
 		torso e_prone_pistols_switch
 	}
@@ -2360,9 +2403,13 @@ reloadprone
 	{
 		torso prone_poke_switch
 	}
-	weapons throwables AND throwables_underhand
+	weapons throwables AND dynamite weapon
 	{
 		torso prone_grenade_switch
+	}
+	weapons pistols, fast_reload
+	{
+		torso prone_pistol_freload
 	}
 	weapons pistols
 	{
@@ -2372,13 +2419,13 @@ reloadprone
 	{
 		torso e_prone_pistols_reload
 	}
-	weapons Mobile MG 42 AND Mobile Browning
+	weapons heavymgs
 	{
 		torso prone_mg42_reload
 	}
-	weapons Mobile MG 42 Bipod  AND Mobile Browning Bipod
+	weapons machineguns, fast_reload
 	{
-		torso prone_mg42_reload
+		torso prone_mg_reload_fast
 	}
 	weapons machineguns
 	{
@@ -2399,12 +2446,20 @@ reloadprone
 	}
 	weapons gpg40
 	{
-		torso e_prone_rifle_attach
+		NOOP
 	}
 	weapons M7
 	{
-		torso e_prone_rifle_attach
+		NOOP
 	}
+	// weapons gpg40
+	// {
+	// 	torso e_prone_rifle_attach
+	// }
+	// weapons M7
+	// {
+	// 	torso e_prone_rifle_attach
+	// }
 	weapons m1 garand
 	{
 		torso prone_rifle_reload
@@ -2435,12 +2490,12 @@ raiseweapon
 	}
 	weapons satchel charge
 	{
-		torso raise_medpack
+		torso raise_satchel
 	}
-	weapons satchel charge detonator
-	{
-		torso satchel_remote_raise
-	}
+	// weapons satchel charge detonator
+	// {
+	// 	torso satchel_remote_raise
+	// }
 	weapons smokeGrenade AND binoculars
 	{
 		torso raise_grenade
@@ -2449,19 +2504,11 @@ raiseweapon
 	{
 		NOOP
 	}
-	weapons Ammo Pack
-	{
-		torso raise_medpack
-	}
 	weapons Landmine
 	{
 		torso raise_grenade
 	}
-	weapons Satchel Charge
-	{
-		torso raise_medpack
-	}
-	weapons medicheal
+	weapons packs
 	{
 		torso raise_medpack
 	}
@@ -2488,6 +2535,10 @@ raiseweapon
 	weapons Mobile MG 42 AND Mobile Browning
 	{
 		torso raise_mobilemg42
+	}
+	weapons flamethrower
+	{
+		torso raise_flamethrower
 	}
 	weapons machineguns
 	{
@@ -2530,6 +2581,10 @@ raiseweapon
 	{
 		torso raise_sniper
 	}
+	weapons dynamite weapon
+	{
+		torso raise_dynamite
+	}
 	weapons aimless
 	{
 		torso raise_grenade
@@ -2540,23 +2595,35 @@ raiseweapon
 	}
 }
 
+activate
+{
+	default
+	{
+		torso open_door_1
+	}
+}
+
+// dropweapon
+// {
+// 	weapons bazooka
+// 	{
+// 		torso reload_bazooka
+// 	}
+// }
+
 reload
 {
 	weapons satchel charge
 	{
 		torso raise_medpack
 	}
-	/*weapons Mortar AND Granatwerfer
-	{
-		torso mortar_reload
-	}*/
+	// weapons Mortar AND Granatwerfer AND Mounted Mortar AND Mounted Granatwerfer
+	// {
+	// 	torso mortar_reload
+	// }
 	weapons smokeGrenade
 	{
 		torso raise_grenade
-	}
-	weapons Syringe AND Adrenaline Syringe
-	{
-		torso raise_knife
 	}
 	weapons Ammo Pack
 	{
@@ -2590,9 +2657,17 @@ reload
 	{
 		NOOP
 	}
-	weapons pistols, movetype idlecr
+	// weapons Syringe AND Adrenaline Syringe
+	// {
+	// 	torso reload_syringe
+	// }
+	// weapons pistols, movetype idlecr
+	// {
+	// 	torso reload_pistol_cr
+	// }
+	weapons pistols, fast_reload
 	{
-		torso reload_pistol_cr
+		torso reload_pistol_fast
 	}
 	weapons pistols
 	{
@@ -2600,7 +2675,7 @@ reload
 	}
 	weapons akimbo_pistols, movetype idlecr
 	{
-		torso reload_akimbo	// FIXed you!
+		torso reload_akimbo
 	}
 	weapons akimbo_pistols
 	{
@@ -2610,27 +2685,35 @@ reload
 	{
 		torso reload_mobilemg42
 	}
-	weapons machineguns, movetype idlecr
+	weapons Sten gun AND MP34, fast_reload
 	{
-		torso reload_machinegun_cr
+		torso reload_sten_fast
+	}
+	weapons Sten gun AND MP34
+	{
+		torso reload_sten
+	}
+	weapons FG 42 Paratroop Rifle, fast_reload
+	{
+		torso reload_fg42_fast
+	}
+	weapons FG 42 Paratroop Rifle
+	{
+		torso reload_fg42
+	}
+	// weapons machineguns, movetype idlecr
+	// {
+	// 	torso reload_machinegun_cr
+	// }
+	weapons machineguns, fast_reload
+	{
+		torso reload_machinegun_fast
 	}
 	weapons machineguns
 	{
 		torso reload_machinegun
 	}
 // RIFLES
-	weapons Scoped M1 Garand
-	{
-		torso reload_machinegun
-	}
-	weapons FG 42 Paratroop Rifle
-	{
-		torso reload_machinegun
-	}
-	weapons K43 Rifle
-	{
-		torso reload_machinegun
-	}
 	weapons gpg40
 	{
 		NOOP
@@ -2639,63 +2722,86 @@ reload
 	{
 		NOOP
 	}
-	weapons m1 garand
-	{
-		torso reload_machinegun
-	}
-	weapons Scoped K43 Rifle
-	{
-		torso reload_machinegun
-	}
-	weapons K43 Rifle Scope
+	weapons rifles
 	{
 		torso reload_rifle
 	}
-	weapons M1 Garand Scope
-	{
-		torso reload_rifle
-	}
-	weapons FG 42 Paratroop Rifle Scope
-	{
-		torso reload_rifle
-	}
+	// weapons Scoped M1 Garand
+	// {
+	//	torso reload_rifle
+	// }
+	// weapons K43 Rifle
+	// {
+	// 	torso reload_rifle
+	// }
+	// weapons m1 garand
+	// {
+	// 	torso reload_rifle
+	// }
+	// weapons Scoped K43 Rifle
+	// {
+	// 	torso reload_rifle
+	// }
+	// weapons K43 Rifle Scope
+	// {
+	// 	torso reload_rifle
+	// }
+	// weapons M1 Garand Scope
+	// {
+	// 	torso reload_rifle
+	// }
+	// weapons FG 42 Paratroop Rifle Scope
+	// {
+	// 	torso reload_rifle
+	// }
 }
 
 jump
 {
-	weapons none, movetype run, reloading
+	// weapons none, movetype jumpforward
+	// {
+	// 	both jump_1step_1h
+	// }
+	// weapons none
+	// {
+	// 	both jump_nostep_1h
+	// }
+	// weapons rifles, movetype jumpforward
+	// {
+	// 	legs jump_1step_2h torso stand_srifle
+	// 	// both jump_1step_fire_2h
+	// 	// legs jump_1step_2h torso jump_1step_2h
+	// }
+	weapons satchel charge detonator, movetype jumpforward
 	{
 		legs jump_1step_1h
 	}
-	weapons none, movetype run
-	{
-		both jump_1step_1h
-	}
-	weapons none, reloading
+	weapons satchel charge detonator
 	{
 		legs jump_nostep_1h
 	}
-	weapons none
+	weapons Granatwerfer AND Mortar, movetype jumpforward
 	{
-		both jump_nostep_1h
+		//legs stand_panzer torso e_mortar_stand
+		//legs jump_1step_2h torso jump_1step_2h
+		legs jump_1step_2h torso e_mortar_stand
 	}
-	weapons one_handed_weapons, movetype run, reloading
+	weapons Granatwerfer AND Mortar
 	{
-		legs jump_1step_1h
+		//legs jump_nostep_1h torso jump_1step_2h
+		legs jump_nostep_1h torso e_mortar_stand
 	}
-	weapons one_handed_weapons, movetype run
+	weapons one_handed_weapons, movetype jumpforward
 	{
-		both jump_1step_1h
-	}
-	weapons one_handed_weapons, reloading
-	{
-		legs jump_nostep_1h
+		//both jump_1step_1h
+		legs jump_1step_1h torso stand_pistolB
 	}
 	weapons one_handed_weapons
 	{
-		both jump_nostep_1h
+		//both jump_nostep_1h
+		legs jump_nostep_1h torso stand_pistolB
 	}
-	weapons bazooka, movetype run
+	weapons bazooka, movetype jumpforward
 	{
 		legs jump_1step_2h torso stand_rifle
 	}
@@ -2703,7 +2809,7 @@ jump
 	{
 		legs jump_nostep_1h torso stand_rifle
 	}
-	weapons panzerfaust, movetype run
+	weapons panzerfaust, movetype jumpforward
 	{
 		legs jump_1step_2h torso stand_panzer
 	}
@@ -2715,21 +2821,37 @@ jump
 	{
 		legs jump_1step_1h
 	}
-	weapons two_handed_weapons, movetype run, reloading
+	// TODO
+	// weapons two_handed_weapons, movetype run, reloading
+	// {
+	// 	// legs jump_nostep_1h torso jump_1step_2h
+	// 	// legs jump_nostep_1h torso stand_srifle
+	// 	// legs jump_nostep_1h torso jump_1step_2h
+	// 	legs jump_nostep_1h torso stand_mobilemg42
+	// }
+
+	// weapons Flamethrower, movetype jumpforward
+	// {
+	// 	both jump_1step_2h
+	// }
+	// weapons Flamethrower
+	// {
+	// 	// legs jump_nostep_1h torso jump_1step_2h
+	// 	// legs jump_nostep_1h torso stand_srifle
+	// 	// legs jump_nostep_1h torso both jump_nostep_1h
+	// 	// both jump_nostep_1h
+	// 	// both jump_1step_2h
+	// 	legs jump_nostep_1h torso jump_1step_2h
+	// }
+	weapons two_handed_weapons, movetype jumpforward
 	{
-		legs jump_1step_2h
-	}
-	weapons two_handed_weapons, movetype run
-	{
+		// both jump_1step_fire_2h
 		both jump_1step_2h
-	}
-	weapons two_handed_weapons, reloading
-	{
-		legs jump_nostep_1h
+		// legs jump_1step_2h torso jump_1step_2h
 	}
 	weapons two_handed_weapons
 	{
-		both jump_nostep_1h
+		legs jump_nostep_1h torso stand_machinegun
 	}
 	weapons dynamite weapon
 	{
@@ -2743,29 +2865,51 @@ jump
 	{
 		legs jump_1step_1h
 	}
-	default
+	weapons akimbo_pistols, movetype jumpforward
 	{
-		both jump_1step_1h
+		legs jump_1step_2h torso stand_akimbo
 	}
+	weapons akimbo_pistols
+	{
+		legs jump_nostep_1h torso stand_akimbo
+	}
+	// default
+	// {
+	// 	both jump_1step_1h
+	// }
 }
 
 jumpbk
 {
-	weapons one_handed_weapons, movetype run, reloading
+	weapons heavymgs
 	{
-		legs jump_1step_1h
+		legs jump_nostep_1h torso stand_mobilemg42
 	}
-	weapons one_handed_weapons, movetype run
+	weapons Granatwerfer AND Mortar
 	{
-		both jump_1step_1h
+		legs jump_nostep_1h torso e_mortar_stand
 	}
-	weapons one_handed_weapons, reloading
+	weapons satchel charge detonator
 	{
 		legs jump_nostep_1h
 	}
+	// weapons one_handed_weapons, movetype run, reloading
+	// {
+	// 	legs jump_1step_1h
+	// }
+	weapons one_handed_weapons, movetype run
+	{
+		//both jump_1step_1h
+		legs jump_1step_1h torso stand_pistolB
+	}
+	// weapons one_handed_weapons, reloading
+	// {
+	// 	legs jump_nostep_1h
+	// }
 	weapons one_handed_weapons
 	{
-		both jump_nostep_1h
+		//both jump_nostep_1h
+		legs jump_nostep_1h torso stand_pistolB
 	}
 	weapons bazooka, movetype run
 	{
@@ -2787,22 +2931,29 @@ jumpbk
 	{
 		legs jump_1step_1h
 	}
-	weapons two_handed_weapons, movetype run, reloading
-	{
-		legs jump_1step_2h
-	}
+	// TODO
+	// weapons two_handed_weapons, movetype run, reloading
+	// {
+	// 	legs jump_1step_2h
+	// }
+
 	weapons two_handed_weapons, movetype run
 	{
 		both jump_1step_2h
 	}
-	weapons two_handed_weapons, reloading
-	{
-		legs jump_nostep_1h
-	}
 	weapons two_handed_weapons
 	{
-		both jump_nostep_1h
+		legs jump_nostep_1h torso stand_machinegun
 	}
+	// weapons two_handed_weapons, reloading
+	// {
+	// 	legs jump_nostep_1h
+	// }
+	// weapons two_handed_weapons
+	// {
+	// 	legs jump_nostep_1h torso stand_srifle
+	// 	// both jump_nostep_1h
+	// }
 	weapons dynamite weapon
 	{
 		both jump_1step_1h
@@ -2814,6 +2965,21 @@ jumpbk
 	firing
 	{
 		legs jump_1step_1h
+	}
+	weapons machineguns
+	{
+		legs jump_nostep_1h torso stand_machinegun
+	}
+	weapons two_handed_weapons
+	{
+		// both jump_nostep_1h
+		legs jump_nostep_1h torso stand_srifle
+		// legs jump_nostep_1h torso jump_1step_2h
+		// legs alert_crchidle_2h torso jump_1step_2h
+	}
+	weapons akimbo_pistols
+	{
+		legs jump_nostep_1h torso stand_akimbo
 	}
 	default
 	{
@@ -2838,7 +3004,7 @@ climbdismount
 	}
 	default
 	{
-		both climb_dis
+		legs climb_dis
 	}
 }
 
@@ -2876,6 +3042,10 @@ nopower
 
 pain
 {
+	impact_point legs
+	{
+		legs break_legs
+	}
 	movetype fallen
 	{
 		legs wounded_idle_1
@@ -2958,35 +3128,15 @@ pain
 
 do_alt_weapon_mode
 {
-	weapons K43 Rifle
+	weapons heavymgs
+	{
+		torso attach_mobilemg42
+	}
+	weapons rgrifles
 	{
 		torso attach_grenlauncher
 	}
-	weapons m1 garand
-	{
-		torso attach_grenlauncher
-	}
-	weapons gpg40
-	{
-		torso attach_grenlauncher
-	}
-	weapons M7
-	{
-		torso attach_grenlauncher
-	}
-	weapons Luger
-	{
-		torso attach_silencer
-	}
-	weapons Colt
-	{
-		torso attach_silencer
-	}
-	weapons Silenced Luger
-	{
-		torso attach_silencer
-	}
-	weapons Silenced Colt
+	weapons pistols
 	{
 		torso attach_silencer
 	}
@@ -2994,35 +3144,15 @@ do_alt_weapon_mode
 
 undo_alt_weapon_mode
 {
-	weapons K43 Rifle
+	weapons heavymgs
+	{
+		torso detach_mobilemg42
+	}
+	weapons rgrifles
 	{
 		torso detach_grenlauncher
 	}
-	weapons m1 garand
-	{
-		torso detach_grenlauncher
-	}
-	weapons gpg40
-	{
-		torso detach_grenlauncher
-	}
-	weapons M7
-	{
-		torso detach_grenlauncher
-	}
-	weapons Luger
-	{
-		torso detach_silencer
-	}
-	weapons Colt
-	{
-		torso detach_silencer
-	}
-	weapons Silenced Luger
-	{
-		torso detach_silencer
-	}
-	weapons Silenced Colt
+	weapons pistols
 	{
 		torso detach_silencer
 	}
@@ -3030,35 +3160,15 @@ undo_alt_weapon_mode
 
 do_alt_weapon_mode_prone
 {
-	weapons K43 Rifle
+	weapons heavymgs
+	{
+		torso e_prone_heavymg_attach
+	}
+	weapons rgrifles
 	{
 		torso e_prone_rifle_attach
 	}
-	weapons m1 garand
-	{
-		torso e_prone_rifle_attach
-	}
-	weapons gpg40
-	{
-		torso e_prone_rifle_attach
-	}
-	weapons M7
-	{
-		torso e_prone_rifle_attach
-	}
-	weapons Luger
-	{
-		torso e_prone_pistol_attach
-	}
-	weapons Colt
-	{
-		torso e_prone_pistol_attach
-	}
-	weapons Silenced Luger
-	{
-		torso e_prone_pistol_attach
-	}
-	weapons Silenced Colt
+	weapons pistols
 	{
 		torso e_prone_pistol_attach
 	}
@@ -3066,35 +3176,15 @@ do_alt_weapon_mode_prone
 
 undo_alt_weapon_mode_prone
 {
-	weapons K43 Rifle
+	weapons heavymgs
+	{
+		torso e_prone_heavymg_detach
+	}
+	weapons rgrifles
 	{
 		torso e_prone_rifle_detach
 	}
-	weapons m1 garand
-	{
-		torso e_prone_rifle_detach
-	}
-	weapons gpg40
-	{
-		torso e_prone_rifle_detach
-	}
-	weapons M7
-	{
-		torso e_prone_rifle_detach
-	}
-	weapons Luger
-	{
-		torso e_prone_pistol_detach
-	}
-	weapons Colt
-	{
-		torso e_prone_pistol_detach
-	}
-	weapons Silenced Luger
-	{
-		torso e_prone_pistol_detach
-	}
-	weapons Silenced Colt
+	weapons pistols
 	{
 		torso e_prone_pistol_detach
 	}

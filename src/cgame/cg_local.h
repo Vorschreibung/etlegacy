@@ -2971,6 +2971,7 @@ extern vmCvar_t cg_shoutcastGrenadeTrail;
 extern vmCvar_t cg_activateLean;
 
 extern vmCvar_t cg_drawBreathPuffs;
+extern vmCvar_t cg_drawAirplanes;
 
 extern vmCvar_t cg_customFont1;
 extern vmCvar_t cg_customFont2;

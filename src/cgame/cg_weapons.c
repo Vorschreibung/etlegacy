@@ -70,6 +70,8 @@ static char *weapAnimNumberStr[] =
 	"DROP2",
 };
 
+static vec3_t forward, right, up;
+
 /**
  * @brief CG_StartWeaponAnim
  * @param[in] anim
@@ -1743,6 +1745,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 			spunpart      = qfalse;
 			barrel.hModel = weapon->partModels[modelViewType][i].model;
 
+			// blend out visor after firing - would otherwise freeze at the viewport border
 			if (weaponNum == WP_PANZERFAUST && i == 1
 			    && ps->weaponstate == WEAPON_FIRING
 			    && cent->firedTime > 0 && cg.time - cent->firedTime > 700
@@ -1750,6 +1753,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 			{
 				continue;
 			}
+			// rotate mortar depending on viewangles
 			else if (CHECKBITWISE(GetWeaponTableData(weaponNum)->type, WEAPON_TYPE_MORTAR | WEAPON_TYPE_SET))
 			{
 				if (i == W_PART_3)
@@ -1795,30 +1799,48 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 					CG_PositionEntityOnTag(&barrel, parent, weapon->partModels[modelViewType][i].tagName, 0, NULL);
 				}
 
-				// reposition clip-mag for covi rifle when reloading
-				if (weaponNum == WP_GARAND && (i == 3 || i == 5))
+				// reposition clip-mag for allied covi rifle when reloading
+				if ((weaponNum == WP_GARAND || weaponNum == WP_GARAND_SCOPE) && (i == 3 || i == 5))
 				{
-					vec3_t forward, left, up;
-
-					AxisToAngles(barrel.axis, angles);
-					AngleVectors(angles, forward, up, left);
-
-					switch (i)
+					// if (cent->firedTime > 0 && cg.time - cent->firedTime > 50) {
+					// 	continue;
+					// }
+					if (isSelfFirstPerson && ps->weaponstate == WEAPON_RELOADING)
 					{
-					case 3:
-						VectorMA(barrel.origin, (-1.0) + (0.0), forward, barrel.origin);
-						VectorMA(barrel.origin, (0.7) + (0.0), left, barrel.origin);
-						VectorMA(barrel.origin, (-0.2) + (0.0), up, barrel.origin);
-						break;
-					case 5:
-						VectorMA(barrel.origin, (-1.0) + (0.7), forward, barrel.origin);
-						VectorMA(barrel.origin, (0.7) + (0.0), left, barrel.origin);
-						VectorMA(barrel.origin, (-0.2) + (0.4), up, barrel.origin);
-						break;
-					}
+						vec3_t forward, left, up;
 
-					angles[YAW]   -= 1.0;
-					angles[PITCH] -= 8.0;
+						AxisToAngles(barrel.axis, angles);
+						AngleVectors(angles, forward, up, left);
+
+						switch (i)
+						{
+						case 3:
+							VectorMA(barrel.origin, (-1.0) + (0.0), forward, barrel.origin);
+							VectorMA(barrel.origin, (0.7) + (0.0), left, barrel.origin);
+							VectorMA(barrel.origin, (-0.2) + (0.0), up, barrel.origin);
+							break;
+						case 5:
+							VectorMA(barrel.origin, (-1.0) + (0.7), forward, barrel.origin);
+							VectorMA(barrel.origin, (0.7) + (0.0), left, barrel.origin);
+							VectorMA(barrel.origin, (-0.2) + (0.4), up, barrel.origin);
+							break;
+						}
+
+						angles[YAW]   -= 1.0;
+						angles[PITCH] -= 8.0;
+						AnglesToAxis(angles, barrel.axis);
+					}
+					else
+					{
+						continue;
+					}
+				}
+				// fix silenced colt angle
+				else if (weaponNum == WP_SILENCED_COLT && i == 5)
+				{
+					// rotate
+					AxisToAngles(barrel.axis, angles);
+					angles[YAW] += 1.5;
 					AnglesToAxis(angles, barrel.axis);
 				}
 
@@ -1940,6 +1962,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 	// add the scope model to the rifle if you've got it
 	if (isSelfFirstPerson)  // for now just do it on the first person weapons
 	{
+		// TODO : add silencer also for 3rd person
 		if (CHECKBITWISE(GetWeaponTableData(weaponNum)->type, (WEAPON_TYPE_RIFLE | WEAPON_TYPE_SCOPABLE))
 		    || CHECKBITWISE(GetWeaponTableData(weaponNum)->type, (WEAPON_TYPE_RIFLE | WEAPON_TYPE_SCOPED)))
 		{
@@ -1976,26 +1999,31 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 			// misaligned by default
 			if (weaponNum == WP_K43 || weaponNum == WP_K43_SCOPE)
 			{
+				// rotate
 				AxisToAngles(barrel.axis, angles);
+				angles[YAW] += 3.4;
+				AnglesToAxis(angles, barrel.axis);
 
+				// translate
+				AxisToAngles(barrel.axis, angles);
 				AngleVectors(angles, NULL, right, up);
 				VectorMA(barrel.origin, -0.50, right, barrel.origin);
-				VectorMA(barrel.origin, -0.1, up, barrel.origin);
-
-				angles[YAW] += 2.0;
-
+				VectorMA(barrel.origin, -0.05, up, barrel.origin);
 				AnglesToAxis(angles, barrel.axis);
+
 			}
 			else if (weaponNum == WP_GARAND || weaponNum == WP_GARAND_SCOPE)
 			{
+				// rotate
 				AxisToAngles(barrel.axis, angles);
+				angles[YAW] += 1.6;
+				AnglesToAxis(angles, barrel.axis);
 
+				// translate
+				AxisToAngles(barrel.axis, angles);
 				AngleVectors(angles, NULL, right, up);
 				VectorMA(barrel.origin, 0.0, right, barrel.origin);
 				VectorMA(barrel.origin, -0.1, up, barrel.origin);
-
-				angles[YAW] += 2.0;
-
 				AnglesToAxis(angles, barrel.axis);
 			}
 
@@ -2352,6 +2380,257 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent)
 }
 
 /**
+ * @brief
+ * Applies per 'cg_fov' shifts of the hands axis when 'cg_gunFov 0'.
+ */
+static void CG_ApplyViewWeaponShift(refEntity_t *hand, vec3_t shifts_90, vec3_t shifts_120)
+{
+	if (cg_fov.integer == 120)
+	{
+		VectorMA(hand->origin, shifts_120[0], up, hand->origin);
+		VectorMA(hand->origin, shifts_120[1], forward, hand->origin);
+		VectorMA(hand->origin, shifts_120[2], right, hand->origin);
+	}
+	else if (cg_fov.integer == 90)
+	{
+		VectorMA(hand->origin, shifts_90[0], up, hand->origin);
+		VectorMA(hand->origin, shifts_90[1], forward, hand->origin);
+		VectorMA(hand->origin, shifts_90[2], right, hand->origin);
+	}
+	else
+	{
+		// interpolate via the distance of 'shifts_90' and 'shifts_120'
+		VectorMA(hand->origin,
+		         shifts_120[0] - (
+					 (120.0f - cg_fov.value) * ((shifts_120[0] - shifts_90[0]) / 30)
+					 ),
+		         up, hand->origin);
+		VectorMA(hand->origin,
+		         shifts_120[1] - (
+					 (120.0f - cg_fov.value) * ((shifts_120[1] - shifts_90[1]) / 30)
+					 ),
+		         forward, hand->origin);
+		VectorMA(hand->origin,
+		         shifts_120[2] - (
+					 (120.0f - cg_fov.value) * ((shifts_120[2] - shifts_90[2]) / 30)
+					 ),
+		         right,
+		         hand->origin);
+	}
+}
+
+/**
+ * @brief
+ * Applies hand axis modifier for each gun depending on 'cg_fov' according to 2
+ * sets of references.
+ */
+static void CG_ApplyETLDynamicGunFov(refEntity_t *hand, weapon_t weapon)
+{
+	// NOTE : these values were determined by finding 'up', 'forward' and 'right'
+	//		  shifts for each gun separately for 'cg_fov' 90 and 120 - along the
+	//		  following principles:
+	//
+	// 1. visibility - (as players are used to cg_gunFov 75 now, which
+	//	  essentially removes a good chunk of all vanilla weapon models, they
+	//	  are used to good visibility, i.e. the gun model not taking up too much
+	//	  space) - neither the idle gun model nor reloading it should take up
+	//	  too much space
+	//
+	// 2. perspective consistency - without good reasons, it doesn't make sense
+	//	  that 2 guns that are held by the player at the same distance have a
+	// 	  jarring size/fov difference - i.e. perspective between guns should be
+	// 	  consistent as much as possible
+	//
+	// 3. prevent animation issues - guns were never made for higher fov and it can
+	//	  reveal issues like hands/mags not going out of playerview or hand/arms
+	//	  being too short and being "cut off" - we can make sure by picking
+	//	  correct values to not expose animation weaknesses where possible
+
+	switch (weapon)
+	{
+	case WP_FLAMETHROWER:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -1.0, 3.0, 1.0 },
+		                        (vec3_t) { 5.0, -4.0, 1.0 });
+		break;
+	case WP_MOBILE_BROWNING:
+	case WP_MOBILE_BROWNING_SET:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 6.0, -0.5 },
+		                        (vec3_t) { 2.0, 1.0, 0.5 });
+		break;
+	case WP_MOBILE_MG42:
+	case WP_MOBILE_MG42_SET:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -2.0, 2.5, 0.0 },
+		                        (vec3_t) { 3.0, -2.0, 0.0 });
+		break;
+	case WP_BAZOOKA:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 1.0, -0.5 },
+		                        (vec3_t) { 2.0, -4.0, -0.5 });
+		break;
+	case WP_PANZERFAUST:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -0.5, 0.5, 0.5 },
+		                        (vec3_t) { 2.5, -3.0, 0.5 });
+		break;
+	case WP_MORTAR:
+	case WP_MORTAR_SET:
+	case WP_MORTAR2:
+	case WP_MORTAR2_SET:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { 0.0, 0.0, 0.0 },
+		                        (vec3_t) { 0.0, -5.0, 0.0 });
+		break;
+	case WP_MEDKIT:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -4.0, 5.0, -2.0 },
+		                        (vec3_t) { -2.0, -4.0, -0.5 });
+		break;
+	case WP_AMMO:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 3.0, 0.0 },
+		                        (vec3_t) { 3.0, -9.5, -1.0 });
+		break;
+	case WP_SMOKE_MARKER:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -2.0, 2.5, 0.0 },
+		                        (vec3_t) { 0.0, 0.4, -1.5 });
+		break;
+	case WP_SMOKE_BOMB:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.1, 3.0, 4.0 },
+		                        (vec3_t) { 2.0, -5.0, -4.0 });
+		break;
+	case WP_GRENADE_LAUNCHER:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.75, 5.0, 0.0 },
+		                        (vec3_t) { 0.65, -5.0, 0.0 });
+		break;
+	case WP_GRENADE_PINEAPPLE:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { 0.85, -1.0, 0.0 },
+		                        (vec3_t) { 3.2, -7.0, 0.0 });
+		break;
+	case WP_STEN:
+	case WP_MP34:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 3.0, 0.0 },
+		                        (vec3_t) { 0.5, -2.5, 1.0 });
+		break;
+	case WP_FG42:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 3.0, 0.0 },
+		                        (vec3_t) { 0.0, -2.5, 0.0 });
+		break;
+	case WP_GARAND:
+	case WP_GARAND_SCOPE:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 5.0, 0.0 },
+		                        (vec3_t) { 1.0, 1.2, 2.0 });
+		break;
+	case WP_CARBINE:
+	case WP_M7:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 0.0, 1.0 },
+		                        (vec3_t) { 1.0, -4.0, 1.0 });
+		break;
+	case WP_K43:
+	case WP_K43_SCOPE:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -2.0, 5.0, -1.5 },
+		                        (vec3_t) { 3.0, 0.0, 0.0 });
+		break;
+	case WP_KAR98:
+	case WP_GPG40:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -4.0, 5.0, 1.5 },
+		                        (vec3_t) { 1.0, -2.0, 1.5 });
+		break;
+	case WP_THOMPSON:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 3.5, 0.0 },
+		                        (vec3_t) { 2.5, -0.8, 0.5 });
+		break;
+	case WP_MP40:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -4.4, 5.0, 0.0 },
+		                        (vec3_t) { 1.0, 0.0, 0.0 });
+		break;
+	case WP_LUGER:
+	case WP_SILENCER:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { 0.0, 6.0, 2.0 },
+		                        (vec3_t) { 5.0, -3.0, 2.0 });
+		break;
+	case WP_COLT:
+	case WP_SILENCED_COLT:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -2.0, 6.0, 2.2 },
+		                        (vec3_t) { 3.0, -3.5, 2.2 });
+		break;
+	case WP_AKIMBO_LUGER:
+	case WP_AKIMBO_SILENCEDLUGER:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 2.0, 0.0 },
+		                        (vec3_t) { 1.0, -3.0, 0.0 });
+		break;
+	case WP_AKIMBO_COLT:
+	case WP_AKIMBO_SILENCEDCOLT:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -2.5, 2.0, 0.0 },
+		                        (vec3_t) { 0.0, -3.0, 0.0 });
+		break;
+	case WP_KNIFE:
+	case WP_KNIFE_KABAR:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -4.5, 3.0, 0.0 },
+		                        (vec3_t) { 2.0, -4.0, 0.0 });
+		break;
+	case WP_LANDMINE:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -4.0, 6.0, 0.0 },
+		                        (vec3_t) { -2.0, 0.0, 0.0 });
+		break;
+	case WP_SATCHEL:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 4.0, 0.0 },
+		                        (vec3_t) { 1.0, -5.0, 0.0 });
+		break;
+	case WP_SATCHEL_DET:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 2.0, 0.0 },
+		                        (vec3_t) { 1.0, -5.0, 0.0 });
+		break;
+	case WP_DYNAMITE:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -1.0, 1.0, 0.0 },
+		                        (vec3_t) { 5.0, -7.0, 0.0 });
+		break;
+	case WP_MEDIC_SYRINGE:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 0.0, 0.0 },
+		                        (vec3_t) { -4.0, 0.0, 0.0 });
+		break;
+	case WP_MEDIC_ADRENALINE:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.0, 5.0, 0.0 },
+		                        (vec3_t) { 3.0, 0.0, 2.0 });
+		break;
+	case WP_PLIERS:
+		CG_ApplyViewWeaponShift(hand,
+		                        (vec3_t) { -3.5, 2.0, 0.0 },
+		                        (vec3_t) { -7.8, 0.0, 6.0 });
+		break;
+	default:
+		// default to `cg_gunFov 75` - which was the universal default in 8.82.1
+		VectorMA(hand->origin, -3.0, up, hand->origin);
+		break;
+	}
+}
+
+/**
  * @brief Add the weapon, and flash for the player's view
  * @param[in] ps
  */
@@ -2452,6 +2731,7 @@ void CG_AddViewWeapon(playerState_t *ps)
 	if (cg_fov.value >= 75)
 	{
 		fovOffset = -0.2f * (cg_fov.value - cg_gunFov.integer);
+		fovOffset = -0.2f * (cg_fov.value - (cg_gunFov.integer ? cg_gunFov.integer : 90 /* ETL customizations were determined with 90 */));
 	}
 	else
 	{
@@ -2614,6 +2894,15 @@ void CG_AddViewWeapon(playerState_t *ps)
 			hand->axis[0][1]       *= .8f;
 			hand->axis[0][2]       *= .8f;
 			hand->nonNormalizedAxes = qtrue;
+		}
+
+		// apply ETL dynamic gun fov
+		if (cg_gunFov.integer == 0)
+		{
+			AxisToAngles(hand->axis, angles);
+			AngleVectors(angles, forward, right, up);
+
+			CG_ApplyETLDynamicGunFov(hand, ps->weapon);
 		}
 
 		// add everything onto the hand

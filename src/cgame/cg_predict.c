@@ -1156,8 +1156,6 @@ void CG_PredictPlayerState(void)
 		cg.predictedPlayerState = cg.nextSnap->ps;
 		cg.physicsTime          = cg.nextSnap->serverTime;
 	}
-	else
-	{
 #endif
 	cg.predictedPlayerState = cg.snap->ps;
 	cg.physicsTime          = cg.snap->serverTime;
@@ -1229,7 +1227,8 @@ void CG_PredictPlayerState(void)
 					// too much change?
 					if (returncode)
 					{
-						if (cg_showmiss.integer)
+						// Com_Printf("FULL PREDICT: %d\n", returncode);
+						if (returncode == 9)
 						{
 							CG_Printf("CG_PredictPlayerState: errorcode %i '%s' at cg.time: %i\n", returncode, predictionStrings[returncode], cg.time);
 						}

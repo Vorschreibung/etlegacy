@@ -23,6 +23,7 @@
 // [ ] Fix Rifle/GPG40 Running suddenly looks like K98
 // [ ] Fix Scoped Rifles backwards walk
 // [ ] Fix gpg40 being held like normal rifle when running
+// [ ] Improve GPG40 fire animation straight into normal rifle firing
 // [X] Fix 1P MP34 Firing jiggle (go back to 'master')
 // [X] Fix binocing mid-air not putting on binocs ! :(
 // [X] Fix rifle prone raise
@@ -69,7 +70,6 @@
 // [X] Fix walkback with Panzer
 // [/] Reduce dead-body height (only for item collision?)
 // [X] Fix mid-air switch from pliers-smg
-// [ ] Improve GPG40 fire animation straight into normal rifle firing
 // [X] Improve SMG idle firing - crouch firing
 // [ ] Make 2 separate FG42 prone reloads
 // [ ] Make 2 separate sten prone reloads
@@ -89,13 +89,15 @@
 // [X] Do a double check over the climbing animations (still too fast)
 // [ ] Make a HEAT shader for the tip of guns that overheat that gets more red as overheating increases
 // [ ] New Icons for: Where to !? & Follow me! & Cover me! & All Clear
+// [ ] Fix tracers sometimes coming out of your face thirdperson, sometimes out of your muzzle
 // [X] Really reduce muzzle flashes
 // [X] Change SMG run shooting back to running
-// [ ] Fix tracers sometimes coming out of your face thirdperson, sometimes out of your muzzle
 // [X] Fix SMG forward jump shooting
 // [/] Fix Airplane Alpha (totally wrong)
 // [X] Bake shadows into Airplane model
 // [/] Fix standing on dynamite jiggle - Happens only when bots are enabled for some reason !?
+// [ ] Make characters bite their teeth when they hold down firing stationary MG42 ? - Only works for self atm?
+// [ ] Reset 'healme' player float icon when re-rezzed with green syringe or being healed to full
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // [O] Pick a custom frame when corpses/bodies fly through the air (???)
 // [ ] Fix flamethrower muzzle flame tip bugging out - Happens because of 500 com_maxfps
@@ -1836,7 +1838,12 @@ fireweapon
 		torso firing_alert_run_bk_2h
         // torso firing_machinegun
 	}
-	weapons machineguns, movetype jumpforward
+	// weapons machineguns, movetype jumpforward
+	// {
+	// 	torso firing_alert_run_2h
+        // // torso firing_machinegun
+	// }
+	weapons machineguns, movetype midair AND jumpforward
 	{
 		// torso firing_alert_run_2h
         // torso firing_machinegun
@@ -1844,6 +1851,7 @@ fireweapon
 		// torso jump_1step_2h
 		// torso jump_1step_fire_2h
         torso firing_machinegun
+		// torso firing_alert_run_2h
 	}
 	weapons machineguns, movetype run AND swim
 	{

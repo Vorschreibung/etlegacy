@@ -7,7 +7,6 @@
 allied_covertops
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/covertops.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -17,7 +16,6 @@ allied_covertops
 allied_eng
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/eng.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -27,7 +25,6 @@ allied_eng
 allied_lt
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/lt.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -37,7 +34,6 @@ allied_lt
 allied_medic
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/medic.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -47,7 +43,6 @@ allied_medic
 allied_soldier
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/soldier.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -56,8 +51,7 @@ allied_soldier
 
 alliedhelmet
 {
-	nomipmap
-	nopicmip
+	nomipmaps
 	{
 		clampmap gfx/2d/lives_allies.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -68,7 +62,6 @@ alliedhelmet
 axis_covertops
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/covertops_ger.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -78,7 +71,6 @@ axis_covertops
 axis_eng
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/eng_ger.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -88,7 +80,6 @@ axis_eng
 axis_lt
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/LT_ger.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -98,7 +89,6 @@ axis_lt
 axis_medic
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/medic_ger.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -108,7 +98,6 @@ axis_medic
 axis_soldier
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/soldier_ger.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -117,8 +106,7 @@ axis_soldier
 
 axishelmet
 {
-	nomipmap
-	nopicmip
+	nomipmaps
 	{
 		clampmap gfx/2d/lives_axis.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -129,17 +117,18 @@ axishelmet
 blackgrad
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/BLACKGRAD.tga
 		blendfunc blend
 	}
 }
 
+// {{{ blacksmoke*
 blacksmokeanimb1
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr000.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -151,6 +140,7 @@ blacksmokeanimb2
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr001.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -162,6 +152,7 @@ blacksmokeanimb3
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr002.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -173,6 +164,7 @@ blacksmokeanimb4
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr003.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -184,6 +176,7 @@ blacksmokeanimb5
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr004.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -195,6 +188,7 @@ blacksmokeanimb6
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr005.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -217,6 +211,7 @@ blacksmokeanimb8
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr007.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -228,6 +223,7 @@ blacksmokeanimb9
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr008.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -239,6 +235,7 @@ blacksmokeanimb10
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr009.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -250,6 +247,7 @@ blacksmokeanimb11
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr010.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -261,6 +259,7 @@ blacksmokeanimb12
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr011.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -272,6 +271,7 @@ blacksmokeanimb13
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr012.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -283,6 +283,7 @@ blacksmokeanimb14
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr013.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -294,6 +295,7 @@ blacksmokeanimb15
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr014.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -305,6 +307,7 @@ blacksmokeanimb16
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr015.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -316,6 +319,7 @@ blacksmokeanimb17
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr016.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -327,6 +331,7 @@ blacksmokeanimb18
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr017.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -338,6 +343,7 @@ blacksmokeanimb19
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr018.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -349,6 +355,7 @@ blacksmokeanimb20
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr019.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -360,6 +367,7 @@ blacksmokeanimb21
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr020.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -371,6 +379,7 @@ blacksmokeanimb22
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr021.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -382,6 +391,7 @@ blacksmokeanimb23
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr022.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -393,6 +403,7 @@ blacksmokeanimb24
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/explode1/spr022.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -405,7 +416,6 @@ blacksmokeanimc1
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr000.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -418,7 +428,6 @@ blacksmokeanimc2
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr001.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -431,7 +440,6 @@ blacksmokeanimc3
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr002.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -444,7 +452,6 @@ blacksmokeanimc4
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr003.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -457,7 +464,6 @@ blacksmokeanimc5
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr004.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -470,7 +476,6 @@ blacksmokeanimc6
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr005.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -483,7 +488,6 @@ blacksmokeanimc7
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr006.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -496,7 +500,6 @@ blacksmokeanimc8
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr007.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -509,7 +512,6 @@ blacksmokeanimc9
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr008.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -522,7 +524,6 @@ blacksmokeanimc10
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr009.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -535,7 +536,6 @@ blacksmokeanimc11
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr010.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -548,7 +548,6 @@ blacksmokeanimc12
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr011.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -561,7 +560,6 @@ blacksmokeanimc13
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr012.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -574,7 +572,6 @@ blacksmokeanimc14
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr013.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -587,7 +584,6 @@ blacksmokeanimc15
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr014.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -600,7 +596,6 @@ blacksmokeanimc16
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr015.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -613,7 +608,6 @@ blacksmokeanimc17
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr016.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -626,7 +620,6 @@ blacksmokeanimc18
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr017.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -639,7 +632,6 @@ blacksmokeanimc19
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr018.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -652,7 +644,6 @@ blacksmokeanimc20
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr019.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -665,7 +656,6 @@ blacksmokeanimc21
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr020.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -678,7 +668,6 @@ blacksmokeanimc22
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr021.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -691,7 +680,6 @@ blacksmokeanimc23
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr022.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -704,7 +692,6 @@ blacksmokeanim1
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr000.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -717,7 +704,6 @@ blacksmokeanim2
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr001.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -730,7 +716,6 @@ blacksmokeanim3
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr002.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -743,7 +728,6 @@ blacksmokeanim4
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr003.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -756,7 +740,6 @@ blacksmokeanim5
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr004.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -769,7 +752,6 @@ blacksmokeanim6
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr005.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -782,7 +764,6 @@ blacksmokeanim7
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr006.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -795,7 +776,6 @@ blacksmokeanim8
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr007.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -808,7 +788,6 @@ blacksmokeanim9
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr008.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -821,7 +800,6 @@ blacksmokeanim10
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr009.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -834,7 +812,6 @@ blacksmokeanim11
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr010.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -847,7 +824,6 @@ blacksmokeanim12
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr011.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -860,7 +836,6 @@ blacksmokeanim13
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr012.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -873,7 +848,6 @@ blacksmokeanim14
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr013.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -886,7 +860,6 @@ blacksmokeanim15
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr014.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -899,7 +872,6 @@ blacksmokeanim16
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr015.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -912,7 +884,6 @@ blacksmokeanim17
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr016.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -925,7 +896,6 @@ blacksmokeanim18
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr017.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -938,7 +908,6 @@ blacksmokeanim19
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr018.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -951,7 +920,6 @@ blacksmokeanim20
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr019.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -964,7 +932,6 @@ blacksmokeanim21
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr020.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -977,7 +944,6 @@ blacksmokeanim22
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr021.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
@@ -990,17 +956,18 @@ blacksmokeanim23
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr022.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_ALPHA
 		alphaGen const 0.2
 	}
 }
+// }}} blacksmoke*
 
 blood_dot1
 {
 	polygonOffset
+	nomipmaps
 	{
 		map sprites/blood_dot1.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1011,6 +978,7 @@ blood_dot1
 blood_dot2
 {
 	polygonOffset
+	nomipmaps
 	{
 		map sprites/blood_dot2.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1021,6 +989,7 @@ blood_dot2
 blood_dot3
 {
 	polygonOffset
+	nomipmaps
 	{
 		map sprites/blood_dot3.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1031,6 +1000,7 @@ blood_dot3
 blood_dot4
 {
 	polygonOffset
+	nomipmaps
 	{
 		map sprites/blood_dot4.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1041,6 +1011,7 @@ blood_dot4
 blood_dot5
 {
 	polygonOffset
+	nomipmaps
 	{
 		map sprites/blood_dot5.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1052,6 +1023,7 @@ bloodcloud
 {
 	cull none
 	entityMergable
+	nomipmaps
 	{
 		map sprites/bloodcloud.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1062,6 +1034,7 @@ bloodcloud
 bloodexplosion
 {
 	cull disable
+	nomipmaps
 	{
 		animmap 5 models/weaphits/blood201.tga models/weaphits/blood202.tga models/weaphits/blood203.tga models/weaphits/blood204.tga models/weaphits/blood205.tga
 		blendfunc blend
@@ -1071,6 +1044,7 @@ bloodexplosion
 bloodmark
 {
 	polygonOffset
+	nomipmaps
 	{
 		map models/weaphits/blood201.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1081,6 +1055,7 @@ bloodmark
 bloodtrail
 {
 	entityMergable
+	nomipmaps
 	{
 		map sprites/blood_dot4.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1091,6 +1066,7 @@ bloodtrail
 blood1
 {
 	cull disable
+	nomipmaps
 	{
 		map models/weaphits/blood201.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1100,6 +1076,7 @@ blood1
 blood2
 {
 	cull disable
+	nomipmaps
 	{
 		map models/weaphits/blood202.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1109,6 +1086,7 @@ blood2
 blood3
 {
 	cull disable
+	nomipmaps
 	{
 		map models/weaphits/blood203.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1118,6 +1096,7 @@ blood3
 blood4
 {
 	cull disable
+	nomipmaps
 	{
 		map models/weaphits/blood204.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1127,6 +1106,7 @@ blood4
 blood5
 {
 	cull disable
+	nomipmaps
 	{
 		map models/weaphits/blood205.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1137,6 +1117,7 @@ bulletparticletrail
 {
 	cull none
 	entityMergable
+	nomipmaps
 	{
 		map sprites/bullettrail.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1148,6 +1129,7 @@ bullet1
 {
 	cull disable
 	sort additive
+	nomipmaps
 	{
 		map models/weaphits/bullet1.tga
 		blendfunc GL_ONE GL_ONE
@@ -1164,6 +1146,7 @@ bullet2
 {
 	cull disable
 	sort additive
+	nomipmaps
 	{
 		map models/weaphits/bullet2.tga
 		blendfunc GL_ONE GL_ONE
@@ -1180,6 +1163,7 @@ bullet3
 {
 	cull disable
 	sort additive
+	nomipmaps
 	{
 		map models/weaphits/bullet3.tga
 		blendfunc GL_ONE GL_ONE
@@ -1190,7 +1174,6 @@ bullet3
 console2_old
 {
 	nocompress
-	nopicmip
 	{
 		map ui/assets/wolficonback4.tga
 		blendfunc blend
@@ -1199,7 +1182,6 @@ console2_old
 
 console-16bit
 {
-	nopicmip
 	{
 		map textures/skies_sd/wurzburg_clouds.tga
 		rgbGen identityLighting
@@ -1234,7 +1216,6 @@ console-16bit
 console-16bit_old
 {
 	nocompress
-	nopicmip
 	{
 		map ui/assets/SMOKE-16bit.tga
 		blendfunc GL_ONE GL_ZERO
@@ -1253,7 +1234,6 @@ console-16bit_old
 
 console2-16bit
 {
-	nopicmip
 	{
 		map ui/assets/et_logo.tga
 		blendFunc GL_SRC_ALPHA GL_ONE
@@ -1264,7 +1244,6 @@ console2-16bit
 console2-16bit_old
 {
 	nocompress
-	nopicmip
 	{
 		map ui/assets/wolficonback4.tga
 		blendfunc blend
@@ -1302,7 +1281,6 @@ debugsurfaces
 dirt_splash
 {
 	entityMergable
-	nopicmip
 	{
 		map models/weaphits/sand_splash.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -1322,8 +1300,7 @@ entityonfire1
 {
 	cull none
 	deformVertexes wave 45 sin 0 10 0 -.6
-	nomipmap
-	nopicmip
+	nomipmaps
 	{
 		animmap 20 sprites/clnfire/spr000.tga sprites/clnfire/spr001.tga sprites/clnfire/spr002.tga sprites/clnfire/spr003.tga sprites/clnfire/spr004.tga sprites/clnfire/spr005.tga sprites/clnfire/spr006.tga sprites/clnfire/spr007.tga sprites/clnfire/spr008.tga sprites/clnfire/spr009.tga sprites/clnfire/spr010.tga sprites/clnfire/spr011.tga sprites/clnfire/spr012.tga sprites/clnfire/spr013.tga sprites/clnfire/spr014.tga sprites/clnfire/spr015.tga
 		blendFunc GL_SRC_ALPHA GL_ONE
@@ -1333,8 +1310,7 @@ entityonfire1
 
 entityonfire2
 {
-	nomipmap
-	nopicmip
+	nomipmaps
 	{
 		animmap 20 sprites/clnfire/spr000.tga sprites/clnfire/spr001.tga sprites/clnfire/spr002.tga sprites/clnfire/spr003.tga sprites/clnfire/spr004.tga sprites/clnfire/spr005.tga sprites/clnfire/spr006.tga sprites/clnfire/spr007.tga sprites/clnfire/spr008.tga sprites/clnfire/spr009.tga sprites/clnfire/spr010.tga sprites/clnfire/spr011.tga sprites/clnfire/spr012.tga sprites/clnfire/spr013.tga sprites/clnfire/spr014.tga sprites/clnfire/spr015.tga
 		blendFunc GL_SRC_ALPHA GL_ONE
@@ -1347,12 +1323,12 @@ entityonfire2
 	}
 }
 
+// {{{ explode
 explode11
 {
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr000.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1364,7 +1340,6 @@ explode12
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr001.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1376,7 +1351,6 @@ explode13
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr002.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1388,7 +1362,6 @@ explode14
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr003.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1400,7 +1373,6 @@ explode15
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr004.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1412,7 +1384,6 @@ explode16
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr005.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1424,7 +1395,6 @@ explode17
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr006.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1436,7 +1406,6 @@ explode18
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr007.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1448,7 +1417,6 @@ explode19
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr008.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1460,7 +1428,6 @@ explode110
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr009.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1472,7 +1439,6 @@ explode111
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr010.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1484,7 +1450,6 @@ explode112
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr011.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1496,7 +1461,6 @@ explode113
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr012.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1508,7 +1472,6 @@ explode114
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr013.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1520,7 +1483,6 @@ explode115
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr014.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1532,7 +1494,6 @@ explode116
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr015.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1544,7 +1505,6 @@ explode117
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr016.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1556,7 +1516,6 @@ explode118
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr017.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1568,7 +1527,6 @@ explode119
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr018.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1580,7 +1538,6 @@ explode120
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr019.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1592,7 +1549,6 @@ explode121
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr020.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1604,7 +1560,6 @@ explode122
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr021.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1616,18 +1571,17 @@ explode123
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/explode1/spr022.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
 	}
 }
+// }}} explode
 
 filmnoise
 {
 	nocompress
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/noise1.tga
 		blendfunc gl_one gl_one
@@ -1647,7 +1601,6 @@ filmnoise
 flame
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/flame.tga
 		blendfunc blend
@@ -1706,7 +1659,6 @@ flamethrowerfire1
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr000.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1718,7 +1670,6 @@ flamethrowerfire2
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr001.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1730,7 +1681,6 @@ flamethrowerfire3
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr002.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1742,7 +1692,6 @@ flamethrowerfire4
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr003.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1754,7 +1703,6 @@ flamethrowerfire5
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr004.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1766,7 +1714,6 @@ flamethrowerfire6
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr005.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1778,7 +1725,6 @@ flamethrowerfire7
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr006.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1790,7 +1736,6 @@ flamethrowerfire8
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr007.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1802,7 +1747,6 @@ flamethrowerfire9
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr008.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1814,7 +1758,6 @@ flamethrowerfire10
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr009.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1826,7 +1769,6 @@ flamethrowerfire11
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr010.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1838,7 +1780,6 @@ flamethrowerfire12
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr011.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1850,7 +1791,6 @@ flamethrowerfire13
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr012.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1862,7 +1802,6 @@ flamethrowerfire14
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr013.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1874,7 +1813,6 @@ flamethrowerfire15
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr014.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1886,7 +1824,6 @@ flamethrowerfire16
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr015.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1898,7 +1835,6 @@ flamethrowerfire17
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr016.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1910,7 +1846,6 @@ flamethrowerfire18
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr017.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1922,7 +1857,6 @@ flamethrowerfire19
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr018.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1934,7 +1868,6 @@ flamethrowerfire20
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr019.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1946,7 +1879,6 @@ flamethrowerfire21
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr020.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1958,7 +1890,6 @@ flamethrowerfire22
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr021.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1970,7 +1901,6 @@ flamethrowerfire23
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr022.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1982,7 +1912,6 @@ flamethrowerfire24
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr023.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -1994,7 +1923,6 @@ flamethrowerfire25
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr024.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2006,7 +1934,6 @@ flamethrowerfire26
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr025.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2018,7 +1945,6 @@ flamethrowerfire27
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr026.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2030,7 +1956,6 @@ flamethrowerfire28
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr027.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2042,7 +1967,6 @@ flamethrowerfire29
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr028.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2054,7 +1978,6 @@ flamethrowerfire30
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr029.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2066,7 +1989,6 @@ flamethrowerfire31
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr030.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2078,7 +2000,6 @@ flamethrowerfire32
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr031.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2090,7 +2011,6 @@ flamethrowerfire33
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr032.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2102,7 +2022,6 @@ flamethrowerfire34
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr033.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2114,7 +2033,6 @@ flamethrowerfire35
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr034.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2126,7 +2044,6 @@ flamethrowerfire36
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr035.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2138,7 +2055,6 @@ flamethrowerfire37
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr036.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2150,7 +2066,6 @@ flamethrowerfire38
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr037.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2162,7 +2077,6 @@ flamethrowerfire39
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr038.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2174,7 +2088,6 @@ flamethrowerfire40
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr039.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2186,7 +2099,6 @@ flamethrowerfire41
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr040.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2198,7 +2110,6 @@ flamethrowerfire42
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr041.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2210,7 +2121,6 @@ flamethrowerfire43
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr042.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2222,7 +2132,6 @@ flamethrowerfire44
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr043.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2234,7 +2143,6 @@ flamethrowerfire45
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr044.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2245,7 +2153,6 @@ flareshader
 {
 	cull none
 	nofog
-	nopicmip
 	{
 		map gfx/misc/flare5.tga
 		blendFunc GL_SRC_ALPHA GL_ONE
@@ -2258,6 +2165,7 @@ fleshimpactsmokepuff
 	cull none
 	entityMergable
 	nofog
+	nomipmaps
 	{
 		map gfx/misc/smokepuffflesh.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2268,7 +2176,6 @@ fleshimpactsmokepuff
 gold_line
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/gold_line.tga
 		blendfunc blend
@@ -2278,6 +2185,7 @@ gold_line
 grenadeexplosion
 {
 	cull disable
+	nomipmaps
 	{
 		animmap 7 gfx/colors/ablack.tga sprites/fire_sm_a.tga sprites/fire_sm_b.tga sprites/fire_sm_c.tga sprites/fire_sm_d.tga sprites/fire_sm_e.tga sprites/fire_sm_f.tga
 		blendFunc GL_SRC_ALPHA GL_ONE
@@ -2294,7 +2202,6 @@ jpwhud1
 {
 	cull none
 	nofog
-	nopicmip
 	{
 		clampmap gfx/2d/classic1.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2306,7 +2213,6 @@ jpwhud2
 {
 	cull none
 	nofog
-	nopicmip
 	{
 		clampmap gfx/2d/pistol1.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2318,7 +2224,6 @@ jpwhud3
 {
 	cull none
 	nofog
-	nopicmip
 	{
 		clampmap gfx/2d/mp401.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2330,7 +2235,6 @@ jpwhud4
 {
 	cull none
 	nofog
-	nopicmip
 	{
 		clampmap gfx/2d/minigun1.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2342,7 +2246,6 @@ jpwhud5
 {
 	cull none
 	nofog
-	nopicmip
 	{
 		clampmap gfx/2d/knife1.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2376,7 +2279,6 @@ jpwtest2
 
 lagometer
 {
-	nopicmip
 	{
 		map gfx/2d/lag.tga
 	}
@@ -2406,6 +2308,7 @@ markshadow
 markshadowfoot
 {
 	polygonOffset
+	nomipmaps
 	{
 		map sprites/shadow_foot.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_COLOR
@@ -2416,6 +2319,7 @@ markshadowfoot
 markshadowtorso
 {
 	polygonOffset
+	nomipmaps
 	{
 		map sprites/shadow_torso.tga
 		blendFunc GL_ZERO GL_ONE_MINUS_SRC_COLOR
@@ -2426,7 +2330,6 @@ markshadowtorso
 menu_select
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/menu_select.tga
 		blendfunc blend
@@ -2436,7 +2339,6 @@ menu_select
 multi_alliedflag
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/alliedflag.tga
 	}
@@ -2450,7 +2352,6 @@ multi_alliedflag
 multi_axisflag
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/axisflag.tga
 	}
@@ -2464,7 +2365,6 @@ multi_axisflag
 multi_spectator
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/portraits/spectator.tga
 	}
@@ -2482,6 +2382,7 @@ nozzleflame1
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/nozzle/noz001.tga
 		blendfunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2493,6 +2394,7 @@ nozzleflame2
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/nozzle/noz002.tga
 		blendfunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2504,6 +2406,7 @@ nozzleflame3
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/nozzle/noz003.tga
 		blendfunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2515,6 +2418,7 @@ nozzleflame4
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/nozzle/noz004.tga
 		blendfunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2526,6 +2430,7 @@ nozzleflame5
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/nozzle/noz005.tga
 		blendfunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2537,6 +2442,7 @@ nozzleflame6
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/nozzle/noz006.tga
 		blendfunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2548,6 +2454,7 @@ nozzleflame7
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/nozzle/noz007.tga
 		blendfunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2559,6 +2466,7 @@ nozzleflame8
 {
 	cull none
 	nofog
+	nomipmaps
 	{
 		map sprites/nozzle/noz008.tga
 		blendfunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -2570,6 +2478,7 @@ oilparticle
 {
 	cull none
 	entityMergable
+	nomipmaps
 	{
 		map sprites/oil_PARTICLE.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2582,6 +2491,7 @@ oilslick
 	entityMergable
 	polygonOffset
 	surfaceparm slick
+	nomipmaps
 	{
 		map textures/decals/oil_slick.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2598,14 +2508,14 @@ oilslick
 powerbar
 {
 	nocompress
-	nomipmap
-	nopicmip
+	nomipmaps
 	{
 		map ui/assets/hudpower.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 	}
 }
 
+// TODO
 projectionshadow
 {
 	deformVertexes projectionShadow
@@ -2628,8 +2538,9 @@ railcore
 {
 	cull none
 	sort nearest
+	nomipmaps
 	{
-		map gfx/misc/railcorethin_mono.tga
+		map gfx/misc/railcorethin_mono.jpg
 		blendFunc GL_ONE GL_ONE
 		rgbGen vertex
 		tcMod scroll -1 0
@@ -2639,6 +2550,7 @@ railcore
 rocketexplosion
 {
 	cull disable
+	nomipmaps
 	{
 		animmap 7 gfx/colors/ablack.tga sprites/fire_sm_a.tga sprites/fire_sm_b.tga sprites/fire_sm_c.tga sprites/fire_sm_d.tga sprites/fire_sm_e.tga sprites/fire_sm_f.tga
 		blendFunc GL_SRC_ALPHA GL_ONE
@@ -2654,6 +2566,7 @@ rocketexplosion
 shotgunsmokepuff
 {
 	cull none
+	nomipmaps
 	{
 		map gfx/misc/smokepuff2b.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2662,6 +2575,7 @@ shotgunsmokepuff
 	}
 }
 
+// XXX : Missing
 skeletonskin
 {
 	cull disable
@@ -2677,9 +2591,8 @@ skeletonskin
 sliderbutt_1
 {
 	nomipmaps
-	nopicmip
 	{
-		map ui/assets/SLIDERBUTT_1.tga
+		map ui/assets/sliderbutt_1.tga
 		blendfunc blend
 	}
 }
@@ -2687,9 +2600,8 @@ sliderbutt_1
 slider2
 {
 	nomipmaps
-	nopicmip
 	{
-		map ui/assets/SLIDER2.tga
+		map ui/assets/slider2.tga
 		blendfunc blend
 	}
 }
@@ -2697,6 +2609,7 @@ slider2
 smokeparticle
 {
 	cull none
+	nomipmaps
 	{
 		map sprites/smokepuff.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2709,6 +2622,7 @@ smokepuff
 	cull none
 	entityMergable
 	nofog
+	nomipmaps
 	{
 		map gfx/misc/smokepuff.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2719,6 +2633,7 @@ smokepuff
 smokepuffblack1
 {
 	cull none
+	nomipmaps
 	{
 		map gfx/misc/smokepuff_b1.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2729,6 +2644,7 @@ smokepuffblack1
 smokepuffblack2
 {
 	cull none
+	nomipmaps
 	{
 		map gfx/misc/smokepuff_b2.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2739,6 +2655,7 @@ smokepuffblack2
 smokepuffblack3
 {
 	cull none
+	nomipmaps
 	{
 		map gfx/misc/smokepuff_b3.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2749,6 +2666,7 @@ smokepuffblack3
 smokepuffblack4
 {
 	cull none
+	nomipmaps
 	{
 		map gfx/misc/smokepuff_b4.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2759,6 +2677,7 @@ smokepuffblack4
 smokepuffblack5
 {
 	cull none
+	nomipmaps
 	{
 		map gfx/misc/smokepuff_b5.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2770,6 +2689,7 @@ smokepuffdirty
 {
 	cull none
 	entityMergable
+	nomipmaps
 	{
 		map gfx/misc/smokepuff_d.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2781,6 +2701,7 @@ smokepuffragepro
 {
 	cull none
 	entityMergable
+	nomipmaps
 	{
 		map gfx/misc/smokepuffragepro.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2791,6 +2712,7 @@ smoketrail
 {
 	cull none
 	entityMergable
+	nomipmaps
 	{
 		map sprites/smoketrail2.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2802,6 +2724,7 @@ snow_tri
 {
 	cull none
 	entityMergable
+	nomipmaps
 	{
 		map gfx/misc/snow_tri.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2813,8 +2736,9 @@ sparkflareparticle
 {
 	cull none
 	entityMergable
+	nomipmaps
 	{
-		map gfx/misc/sunflare1.tga
+		map gfx/misc/sunflare1.jpg
 		blendFunc GL_SRC_ALPHA GL_ONE
 		rgbGen vertex
 	}
@@ -2824,6 +2748,7 @@ sparkparticle
 {
 	cull none
 	entityMergable
+	nomipmaps
 	{
 		map sprites/spark.tga
 		blendFunc GL_SRC_ALPHA GL_ONE
@@ -2833,6 +2758,7 @@ sparkparticle
 
 splashripple
 {
+	nomipmaps
 	{
 		clampmap sprites/splashalpha.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2844,6 +2770,7 @@ splashripple
 spotlight
 {
 	polygonOffset
+	nomipmaps
 	{
 		clampmap sprites/splashalpha.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -2854,19 +2781,20 @@ spotlight
 sprintbar
 {
 	nocompress
-	nomipmap
-	nopicmip
+	nomipmaps
 	{
 		clampmap ui/assets/hudsprint.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
 	}
 }
 
+// XXX : Missing
 sun
 {
 	cull none
 	nocompress
 	nofog
+	nomipmaps
 	{
 		map gfx/misc/sun.tga
 		blendFunc blend
@@ -2877,8 +2805,9 @@ sun
 sunflare1
 {
 	cull none
+	nomipmaps
 	{
-		map gfx/misc/sunflare1.tga
+		map gfx/misc/sunflare1.jpg
 		blendFunc GL_ONE GL_ONE
 		rgbGen vertex
 	}
@@ -2922,12 +2851,12 @@ tesladamageeffect
 	}
 }
 
+// {{{ twiltb
 twiltb21
 {
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr020.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_COLOR
@@ -2939,7 +2868,6 @@ twiltb22
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr021.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_COLOR
@@ -2951,7 +2879,6 @@ twiltb23
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr022.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_COLOR
@@ -2963,7 +2890,6 @@ twiltb24
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr023.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_COLOR
@@ -2975,7 +2901,6 @@ twiltb25
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr024.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_COLOR
@@ -2987,7 +2912,6 @@ twiltb26
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr025.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_COLOR
@@ -2999,7 +2923,6 @@ twiltb27
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr026.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_COLOR
@@ -3011,7 +2934,6 @@ twiltb28
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr027.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_COLOR
@@ -3023,7 +2945,6 @@ twiltb29
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr028.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_COLOR
@@ -3035,7 +2956,6 @@ twiltb210
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr009.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3047,7 +2967,6 @@ twiltb211
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr010.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3059,7 +2978,6 @@ twiltb212
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr011.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3071,7 +2989,6 @@ twiltb213
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr012.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3083,7 +3000,6 @@ twiltb214
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr013.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3095,7 +3011,6 @@ twiltb215
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr014.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3107,7 +3022,6 @@ twiltb216
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr015.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3119,7 +3033,6 @@ twiltb217
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr016.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3131,7 +3044,6 @@ twiltb218
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr017.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3143,7 +3055,6 @@ twiltb219
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr018.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3155,7 +3066,6 @@ twiltb220
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr019.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3167,7 +3077,6 @@ twiltb221
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr020.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3179,7 +3088,6 @@ twiltb222
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr021.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3191,7 +3099,6 @@ twiltb223
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr022.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3203,7 +3110,6 @@ twiltb224
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr023.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3215,7 +3121,6 @@ twiltb225
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr024.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3227,7 +3132,6 @@ twiltb226
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr025.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3239,7 +3143,6 @@ twiltb227
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr026.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3251,7 +3154,6 @@ twiltb228
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr027.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3263,7 +3165,6 @@ twiltb229
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr028.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3275,7 +3176,6 @@ twiltb230
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr029.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3287,7 +3187,6 @@ twiltb231
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr030.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3299,7 +3198,6 @@ twiltb232
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr031.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3311,7 +3209,6 @@ twiltb233
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr032.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3323,7 +3220,6 @@ twiltb234
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr033.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3335,7 +3231,6 @@ twiltb235
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr034.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3347,7 +3242,6 @@ twiltb236
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr035.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3359,7 +3253,6 @@ twiltb237
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr036.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3371,7 +3264,6 @@ twiltb238
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr037.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3383,7 +3275,6 @@ twiltb239
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr038.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3395,7 +3286,6 @@ twiltb240
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr039.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3407,7 +3297,6 @@ twiltb241
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr040.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3419,7 +3308,6 @@ twiltb242
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr041.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3431,7 +3319,6 @@ twiltb243
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr042.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3443,7 +3330,6 @@ twiltb244
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr043.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
@@ -3455,16 +3341,17 @@ twiltb245
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/twiltb2/spr044.tga
 		blendFunc GL_ONE GL_ONE_MINUS_SRC_COLOR
 	}
 }
+// }}} twiltb
 
 viewbloodblend1
 {
 	sort nearest
+	nomipmaps
 	{
 		map models/weaphits/blood201.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3476,6 +3363,7 @@ viewbloodblend1
 viewbloodblend2
 {
 	sort nearest
+	nomipmaps
 	{
 		map models/weaphits/blood202.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3487,6 +3375,7 @@ viewbloodblend2
 viewbloodblend3
 {
 	sort nearest
+	nomipmaps
 	{
 		map models/weaphits/blood203.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3498,6 +3387,7 @@ viewbloodblend3
 viewbloodblend4
 {
 	sort nearest
+	nomipmaps
 	{
 		map models/weaphits/blood204.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3509,6 +3399,7 @@ viewbloodblend4
 viewbloodblend5
 {
 	sort nearest
+	nomipmaps
 	{
 		map models/weaphits/blood205.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3531,6 +3422,7 @@ viewfadeblack
 viewflashblood
 {
 	sort nearest
+	nomipmaps
 	{
 		map sprites/viewflash_red.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3543,7 +3435,6 @@ viewflashfire1
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr000.tga
 		blendFunc GL_ONE GL_ONE
@@ -3556,7 +3447,6 @@ viewflashfire2
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr001.tga
 		blendFunc GL_ONE GL_ONE
@@ -3569,7 +3459,6 @@ viewflashfire3
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr002.tga
 		blendFunc GL_ONE GL_ONE
@@ -3582,7 +3471,6 @@ viewflashfire4
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr003.tga
 		blendFunc GL_ONE GL_ONE
@@ -3595,7 +3483,6 @@ viewflashfire5
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr004.tga
 		blendFunc GL_ONE GL_ONE
@@ -3608,7 +3495,6 @@ viewflashfire6
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr005.tga
 		blendFunc GL_ONE GL_ONE
@@ -3621,7 +3507,6 @@ viewflashfire7
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr006.tga
 		blendFunc GL_ONE GL_ONE
@@ -3634,7 +3519,6 @@ viewflashfire8
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr007.tga
 		blendFunc GL_ONE GL_ONE
@@ -3647,7 +3531,6 @@ viewflashfire9
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr008.tga
 		blendFunc GL_ONE GL_ONE
@@ -3660,7 +3543,6 @@ viewflashfire10
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr009.tga
 		blendFunc GL_ONE GL_ONE
@@ -3673,7 +3555,6 @@ viewflashfire11
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr010.tga
 		blendFunc GL_ONE GL_ONE
@@ -3686,7 +3567,6 @@ viewflashfire12
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr011.tga
 		blendFunc GL_ONE GL_ONE
@@ -3699,7 +3579,6 @@ viewflashfire13
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr012.tga
 		blendFunc GL_ONE GL_ONE
@@ -3712,7 +3591,6 @@ viewflashfire14
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr013.tga
 		blendFunc GL_ONE GL_ONE
@@ -3725,7 +3603,6 @@ viewflashfire15
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr014.tga
 		blendFunc GL_ONE GL_ONE
@@ -3738,7 +3615,6 @@ viewflashfire16
 	cull none
 	nofog
 	nomipmaps
-	nopicmip
 	{
 		map sprites/clnfire/spr015.tga
 		blendFunc GL_ONE GL_ONE
@@ -3793,7 +3669,6 @@ viewtesladamageeffect
 wake
 {
 	cull none
-	nopicmip
 	nomipmaps
 
 	// pass 1
@@ -3846,6 +3721,7 @@ wake
 
 wakeanim
 {
+	nomipmaps
 	{
 		clampmap sprites/splashalpha.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3857,7 +3733,7 @@ wakeanim
 water_splash
 {
 	entityMergable
-	nopicmip
+	nomipmaps
 	{
 		map models/weaphits/water_splash.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3870,6 +3746,7 @@ waterbubble
 	cull none
 	entityMergable
 	sort underwater
+	nomipmaps
 	{
 		map sprites/bubble.tga
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3880,6 +3757,7 @@ waterbubble
 watersplash
 {
 	cull disable
+	nomipmaps
 	{
 		animmap 20 models/weaphits/splash2_1.tga models/weaphits/splash2_2.tga models/weaphits/splash2_3.tga models/weaphits/splash2_4.tga gfx/colors/ablack.tga
 		blendfunc blend
@@ -3890,6 +3768,7 @@ watersplash
 watersplash_almost
 {
 	cull disable
+	nomipmaps
 	{
 		animmap 12 models/weaphits/splash2_1.tga models/weaphits/splash2_2.tga models/weaphits/splash2_3.tga models/weaphits/splash2_4.tga gfx/colors/ablack.tga
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -3905,6 +3784,7 @@ watersplash_almost
 watersplash_test2
 {
 	cull disable
+	nomipmaps
 	{
 		animmap 10 models/weaphits/splash2_1.tga models/weaphits/splash2_2.tga models/weaphits/splash2_3.tga models/weaphits/splash2_4.tga
 		blendfunc GL_SRC_ALPHA GL_ZERO
@@ -3923,7 +3803,6 @@ white
 wolfflamelogo
 {
 	nomipmaps
-	nopicmip
 	{
 		map ui/assets/WOLFFLAMELOGO.tga
 		blendfunc blend

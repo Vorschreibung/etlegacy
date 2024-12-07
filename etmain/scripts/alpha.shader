@@ -8,7 +8,6 @@
 textures/alpha/barb_wire
 {
 	cull disable
-	nomipmaps
 	nopicmip
 	surfaceparm nomarks
 	surfaceparm alphashadow
@@ -22,7 +21,6 @@ textures/alpha/barb_wire_clip
 {
 	qer_editorimage textures/alpha/barb_wire.tga
 	cull disable
-	nomipmaps
 	nopicmip
 	surfaceparm nomarks
 	surfaceparm alphashadow

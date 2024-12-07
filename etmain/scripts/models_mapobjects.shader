@@ -1471,7 +1471,7 @@ models/mapobjects/plants_sd/bush_desert1
 	surfaceparm alphashadow
 	surfaceparm trans
 	surfaceparm nomarks
-	nopicmip
+	nomipmaps
 	implicitMask -
 }
 
@@ -1485,7 +1485,7 @@ models/mapobjects/plants_sd/bush_desert2
      surfaceparm nomarks
      surfaceparm pointlight
      surfaceparm trans
-     nopicmip
+	 nomipmaps
      implicitMask -
 }
 
@@ -1498,7 +1498,7 @@ models/mapobjects/plants_sd/bush_snow1
 	surfaceparm alphashadow
 	surfaceparm trans
 	surfaceparm nomarks
-	nopicmip
+	nomipmaps
 	implicitMask -
 }
 
@@ -1510,7 +1510,7 @@ models/mapobjects/plants_sd/bush_snow2
 	surfaceparm alphashadow
 	surfaceparm trans
 	surfaceparm nomarks
-	nopicmip
+	nomipmaps
 	implicitMask -
 }
 
@@ -1520,7 +1520,7 @@ models/mapobjects/plants_sd/catail1
 	qer_alphafunc greater 0.5
 	qer_editorimage models/mapobjects/plants_sd/catail1.tga
 	cull disable
-	nopicmip
+	nomipmaps
 	surfaceparm alphashadow
 	surfaceparm trans
 	surfaceparm nomarks
@@ -1534,7 +1534,7 @@ models/mapobjects/plants_sd/catail2
 	qer_alphafunc greater 0.5
 	qer_editorimage models/mapobjects/plants_sd/catail2.tga
 	cull disable
-	nopicmip
+	nomipmaps
 	surfaceparm alphashadow
 	surfaceparm trans
 	surfaceparm nomarks
@@ -1548,7 +1548,7 @@ models/mapobjects/plants_sd/catail3
 	qer_alphafunc greater 0.5
 	qer_editorimage models/mapobjects/plants_sd/catail3.tga
 	cull disable
-	nopicmip
+	nomipmaps
 	surfaceparm alphashadow
 	surfaceparm trans
 	surfaceparm nomarks
@@ -1558,7 +1558,7 @@ models/mapobjects/plants_sd/catail3
 
 models/mapobjects/plants_sd/deadbranch1
 {
-	nopicmip
+	nomipmaps
 	qer_alphafunc greater 0.5
 	qer_editorimage models/mapobjects/plants_sd/deadbranch1.tga
 	cull disable
@@ -1570,7 +1570,7 @@ models/mapobjects/plants_sd/deadbranch1
 
 models/mapobjects/plants_sd/deadbranch2
 {
-	nopicmip
+	nomipmaps
 	qer_alphafunc greater 0.5
 	qer_editorimage models/mapobjects/plants_sd/deadbranch2.tga
 	cull disable
@@ -1582,7 +1582,7 @@ models/mapobjects/plants_sd/deadbranch2
 
 models/mapobjects/plants_sd/deadbranch3
 {
-	nopicmip
+	nomipmaps
 	qer_alphafunc greater 0.5
 	qer_editorimage models/mapobjects/plants_sd/deadbranch3.tga
 	cull disable
@@ -1594,7 +1594,7 @@ models/mapobjects/plants_sd/deadbranch3
 
 models/mapobjects/plants_sd/deadbranch1_damp
 {
-	nopicmip
+	nomipmaps
 	qer_alphafunc greater 0.5
 	qer_editorimage models/mapobjects/plants_sd/deadbranch1_damp.tga
 	cull disable
@@ -1606,7 +1606,7 @@ models/mapobjects/plants_sd/deadbranch1_damp
 
 models/mapobjects/plants_sd/deadbranch2_damp
 {
-	nopicmip
+	nomipmaps
 	qer_alphafunc greater 0.5
 	qer_editorimage models/mapobjects/plants_sd/deadbranch2_damp.tga
 	cull disable
@@ -1618,7 +1618,7 @@ models/mapobjects/plants_sd/deadbranch2_damp
 
 models/mapobjects/plants_sd/deadbranch3_damp
 {
-	nopicmip
+	nomipmaps
 	qer_alphafunc greater 0.5
 	qer_editorimage models/mapobjects/plants_sd/deadbranch3_damp.tga
 	cull disable

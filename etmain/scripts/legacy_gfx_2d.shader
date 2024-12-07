@@ -147,6 +147,17 @@ gfx/2d/legacy_disarmhint
 		rgbGen vertex
 	}
 }
+
+gfx/2d/legacy_lockedHint
+{
+	nomipmaps
+	nopicmip
+	{
+		clampMap gfx/2d/lockedhint.tga
+		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+		rgbGen vertex
+	}
+}
 //========================================//
 
 

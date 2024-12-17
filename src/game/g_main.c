@@ -476,7 +476,7 @@ cvarTable_t gameCvarTable[] =
 	{ &voteFlags,                         "voteFlags",                         "0",                          CVAR_TEMP | CVAR_ROM | CVAR_SERVERINFO,          0, qfalse, qfalse },
 
 	{ &g_complaintlimit,                  "g_complaintlimit",                  "6",                          CVAR_ARCHIVE,                                    0, qtrue,  qfalse },
-    { &g_teambleedComplaint,              "g_teambleedComplaint",              "50",                         CVAR_ARCHIVE,                                    0, qtrue,  qfalse },
+	{ &g_teambleedComplaint,              "g_teambleedComplaint",              "50",                         CVAR_ARCHIVE,                                    0, qtrue,  qfalse },
 	{ &g_ipcomplaintlimit,                "g_ipcomplaintlimit",                "3",                          CVAR_ARCHIVE,                                    0, qtrue,  qfalse },
 	{ &g_filtercams,                      "g_filtercams",                      "0",                          CVAR_ARCHIVE,                                    0, qfalse, qfalse },
 	{ &g_maxlives,                        "g_maxlives",                        "0",                          CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO,     0, qtrue,  qfalse },
@@ -667,7 +667,7 @@ cvarTable_t gameCvarTable[] =
 	{ &g_debugPlayerHitboxes,             "g_debugPlayerHitboxes",             "0",                          0,                                               0, qfalse, qfalse },     // no need to make this CVAR_CHEAT
 	{ &g_debugForSingleClient,            "g_debugForSingleClient",            "-1",                         0,                                               0, qfalse, qfalse },     // no need to make this CVAR_CHEAT
 	{ &g_debugEvents,                     "g_debugevents",                     "0",                          0,                                               0, qfalse, qfalse },
-	{ &g_debugAnim,                       "g_debuganim",                       "0",                          CVAR_CHEAT,                                               0, qfalse, qfalse },
+	{ &g_debugAnim,                       "g_debuganim",                       "0",                          CVAR_CHEAT,                                      0, qfalse, qfalse },
 
 	{ &g_corpses,                         "g_corpses",                         "0",                          CVAR_LATCH | CVAR_ARCHIVE,                       0, qfalse, qfalse },
 	{ &g_realHead,                        "g_realHead",                        "1",                          0,                                               0, qfalse, qfalse },

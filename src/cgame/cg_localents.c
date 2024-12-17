@@ -255,7 +255,8 @@ void CG_ProjectBloodDecal(vec3_t *points, float radius)
  */
 void CG_FragmentBounceMark(localEntity_t *le, trace_t *trace)
 {
-	if (le->leMarkType == LEMT_BLOOD && cg_bloodTime.integer)
+	if (le->leMarkType == LEMT_BLOOD && (cg_bloodTime.integer))
+	// if (le->leMarkType == LEMT_BLOOD && (cg_bloodTime.integer || cg_blood.integer))
 	{
 		static int lastBloodMark;
 
@@ -1181,7 +1182,8 @@ static void CG_AddMoveScaleFade(localEntity_t *le, qboolean master)
 
 	BG_EvaluateTrajectory(&le->pos, cg.time, re->origin, qfalse, -1);
 
-	if (master) {
+	if (master)
+	{
 		// if the view would be "inside" the sprite, kill the sprite
 		// so it doesn't add too much overdraw
 		len = VectorDistance(re->origin, cg.refdef_current->vieworg);
@@ -1215,7 +1217,8 @@ static void CG_AddScaleFade(localEntity_t *le, qboolean master)
 		re->radius = le->radius * (1.0f - c) + 8;
 	}
 
-	if (master) {
+	if (master)
+	{
 		// if the view would be "inside" the sprite, kill the sprite
 		// so it doesn't add too much overdraw
 		len = VectorDistance(re->origin, cg.refdef_current->vieworg);
@@ -1250,7 +1253,8 @@ static void CG_AddFallScaleFade(localEntity_t *le, qboolean master)
 
 	re->radius = le->radius * (1.0f - c) + 16;
 
-	if (master) {
+	if (master)
+	{
 		// if the view would be "inside" the sprite, kill the sprite
 		// so it doesn't add too much overdraw
 		len = VectorDistance(re->origin, cg.refdef_current->vieworg);

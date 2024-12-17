@@ -256,7 +256,24 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace, int impactDamage)
 	// splash damage (doesn't apply to person directly hit)
 	if (ent->splashDamage)
 	{
-		G_RadiusDamage(trace->endpos, ent, ent->parent, ent->splashDamage, ent->splashRadius, other, ent->splashMethodOfDeath);
+		// if (cg_debugMissiles.integer)
+		// {
+		// 	vec3_t mins = { 0 };
+		// 	vec3_t maxs = { 0 };
+
+		// 	G_RailBox(trace->endpos, mins, maxs, colorRed, 99999);
+
+		// 	{
+		// 		vec3_t fuck = { 0 };
+		// 		VectorCopy(trace->endpos, fuck);
+		// 		VectorMA(fuck, 18, trace->plane.normal, fuck);
+
+		// 		G_RailBox(fuck, mins, maxs, colorBlue, 89999);
+		// 	}
+		// }
+
+		G_RadiusDamageOffset(trace, 18, ent, ent->parent, ent->splashDamage, ent->splashRadius, other, ent->splashMethodOfDeath);
+		// G_RadiusDamage(trace->endpos, ent, ent->parent, ent->splashDamage, ent->splashRadius, other, ent->splashMethodOfDeath);
 	}
 
 	// the missile exploded right after being fired
@@ -333,6 +350,7 @@ void G_ExplodeMissile(gentity_t *ent)
 		else
 		{
 			G_RadiusDamage(origin, ent, ent->parent, ent->splashDamage, ent->splashRadius, ent, ent->splashMethodOfDeath);
+			// G_RadiusDamage(origin, ent, ent->parent, ent->splashDamage, ent->splashRadius, ent, ent->splashMethodOfDeath);
 		}
 	}
 

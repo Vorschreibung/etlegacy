@@ -1743,6 +1743,8 @@ void CG_DrawCrosshair(hudComponent_t *comp)
 	float     x, y;
 	int       weapnum;
 
+	// Com_Printf("TIME %d\n", cg.predictedPlayerState.weaponTime);
+
 	if (cg.snap->ps.stats[STAT_HEALTH] <= 0 && !(cg.snap->ps.pm_flags & PMF_FOLLOW) && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR)
 	{
 		return;

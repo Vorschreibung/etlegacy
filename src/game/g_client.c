@@ -1855,7 +1855,7 @@ void ClientUserinfoChanged(int clientNum)
 	}
 
 #ifndef DEBUG_STATS
-	if (g_developer.integer || *g_log.string || g_dedicated.integer)
+	if (g_developer.integer || g_dedicated.integer)
 #endif
 	{
 		G_Printf("Userinfo: %s\n", userinfo);

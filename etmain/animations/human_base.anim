@@ -44,11 +44,11 @@ animgroup
 		default_animation		0		32	0	20		0	0	0	0  // previously 'death_machinegun_1'
 		// FIXED_ORDER }}}
 
-		dead_corpse		 		31		1	1	20		0	0	0	99
+		dead_corpse		 		31		1	1	26		0	0	0	99
 
-		death_general			9		23	0	21		0	0	0	99
-		death_crouch			11		21	0	13		0	0	0	99  // from 'death_general'
-		death_prone				13		19	0	11		0	0	0	99  // from 'death_general'
+		death_general			9		23	0	35		0	0	0	99
+		death_crouch			11		21	0	17		0	0	0	99  // from 'death_general'
+		death_prone				13		19	0	14		0	0	0	99  // from 'death_general'
 
 		wounded_idle_1			173		144	144	20		0	0	0	0
 

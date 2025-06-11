@@ -1575,6 +1575,8 @@ int Q_vsnprintf(char *str, size_t size, const char *format, va_list args)
  */
 void Q_strncpyz(char *dest, const char *src, size_t destsize)
 {
+	size_t i;
+
 	etl_assert(dest && src && destsize > 0 && dest != src);
 	if (!dest)
 	{
@@ -1589,8 +1591,24 @@ void Q_strncpyz(char *dest, const char *src, size_t destsize)
 		Com_Error(ERR_FATAL, "Q_strncpyz: destsize < 1");
 	}
 
-	strncpy(dest, src, destsize - 1);
-	dest[destsize - 1] = 0;
+	// why we chose against 'strncpy':
+	//
+	// 1. strncpy is usually optimized (often with SIMD or word-wise copying on
+	// some platforms), but it is required by spec to pad the rest of the buffer
+	// with zeros if the source is shorter than the limit. This is often slower
+	// if most of your strings are short.
+	//
+	// 2. With high optimization (-O2 or higher), modern compilers will unroll or
+	// vectorize simple loops like this. The difference is usually minimal for
+	// real-world string lengths.
+	//
+	// 3. 'strncpy' generates warning on some platforms with gcc by default
+	// (e.g. aarch64)
+	for (i = 0; i < destsize - 1 && src[i]; ++i)
+	{
+		dest[i] = src[i];
+	}
+	dest[i] = '\0';
 }
 
 /**

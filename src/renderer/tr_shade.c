@@ -1853,6 +1853,148 @@ void RB_StageIteratorLightmappedMultitexture(void)
 	}
 }
 
+// Forward (or place above RB_EndSurface and make it static)
+static void RB_PlayerGlowPass(void)
+{
+	// Guard: only when enabled and for models (players)
+	if (!r_playerGlow || !r_playerGlow->integer)
+	{
+		return;
+	}
+	if (!backEnd.currentEntity)
+	{
+		return;
+	}
+	if (backEnd.currentEntity->e.reType != RT_MODEL)
+	{
+		return;
+	}
+
+	// Optional: mode 2 only when the game flags the entity
+	if (r_playerGlow->integer == 2 &&
+	    !(backEnd.currentEntity->e.renderfx & RF_PLAYER_GLOW))
+	{
+		return;
+	}
+
+	// Parse color once per draw (or cache it)
+	vec3_t glowRGB = { 1.f, 0.6f, 0.1f };
+	if (r_playerGlowColor && r_playerGlowColor->string && r_playerGlowColor->string[0])
+	{
+		float r, g, b;
+		if (sscanf(r_playerGlowColor->string, "%f %f %f", &r, &g, &b) == 3)
+		{
+			glowRGB[0] = r; glowRGB[1] = g; glowRGB[2] = b;
+		}
+	}
+
+	// Save tiny bit of state we touch
+	GLboolean blendWasEnabled = glIsEnabled(GL_BLEND);
+	GLint     oldCull; glGetIntegerv(GL_CULL_FACE_MODE, &oldCull);
+	GLint     oldArrayBuffer = 0;
+	if (__glewBindBufferARB)
+	{
+		glGetIntegerv(GL_ARRAY_BUFFER_BINDING_ARB, &oldArrayBuffer);
+	}
+
+	// Depth test ON (unchanged), but don't write depth
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);                 // backfaces only (inverted hull)
+	glDisable(GL_TEXTURE_2D);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisable(GL_LIGHTING);
+
+	// ---- Key change: extrude vertices along THEIR NORMALS (world units) ----
+	// This guarantees backfaces move farther from the camera, so they never
+	// overdraw the model interior when depth testing.
+	float extrude = (r_playerGlowExtrude ? r_playerGlowExtrude->value : 2.0f);
+	if (extrude < 0.0f)
+	{
+		extrude = 0.0f;
+	}
+
+	static vec4_t s_glowXYZ[SHADER_MAX_VERTEXES];
+	const int     nv = tess.numVertexes;
+	for (int i = 0; i < nv; ++i)
+	{
+		// tess.xyz is vec4_t; tess.normal is vec3_t
+		s_glowXYZ[i][0] = tess.xyz[i][0] + tess.normal[i][0] * extrude;
+		s_glowXYZ[i][1] = tess.xyz[i][1] + tess.normal[i][1] * extrude;
+		s_glowXYZ[i][2] = tess.xyz[i][2] + tess.normal[i][2] * extrude;
+		s_glowXYZ[i][3] = 1.0f;
+	}
+
+	// If a VBO is bound, temporarily unbind so we can point to client memory
+	if (__glewBindBufferARB && oldArrayBuffer)
+	{
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+	}
+
+	// Use the extruded positions
+	glVertexPointer(3, GL_FLOAT, sizeof(s_glowXYZ[0]), s_glowXYZ[0]);
+
+	glColor4f(glowRGB[0], glowRGB[1], glowRGB[2],
+	          r_playerGlowAlpha ? r_playerGlowAlpha->value : 0.30f);
+
+	// Optional small uniform scale on top (kept for people who want it)
+	if (r_playerGlowScale && r_playerGlowScale->value != 1.0f)
+	{
+		glPushMatrix();
+		float s = r_playerGlowScale->value;
+		// if (s < 1.0f)
+		// {
+		// 	s = 1.0f;
+		// }
+		glScalef(s, s, s);
+		R_DrawElements(tess.numIndexes, tess.indexes);
+		glPopMatrix();
+	}
+	else
+	{
+		R_DrawElements(tess.numIndexes, tess.indexes);
+	}
+
+	// glPushMatrix();
+	// {
+	//     float s = r_playerGlowScale ? r_playerGlowScale->value : 1.05f;
+	//     if (s < 1.0f) s = 1.0f;           // never shrink
+	//     glScalef(s, s, s);
+
+	//     glColor4f(glowRGB[0], glowRGB[1], glowRGB[2],
+	//               r_playerGlowAlpha ? r_playerGlowAlpha->value : 0.30f);
+
+	//     // Draw the same geometry again; arrays/VBOs are still bound
+	//     R_DrawElements(tess.numIndexes, tess.indexes);
+	// }
+	// glPopMatrix();
+
+	// Restore states
+	if (__glewBindBufferARB && oldArrayBuffer)
+	{
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, oldArrayBuffer);
+		// restore the original vertex pointer the VBO path expects
+		// RB_UpdateVBOVertexPointers();
+	}
+	else
+	{
+		glVertexPointer(3, GL_FLOAT, sizeof(tess.xyz[0]), tess.xyz[0]);
+	}
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_2D);
+	glCullFace(oldCull);
+	if (!blendWasEnabled)
+	{
+		glDisable(GL_BLEND);
+	}
+	glDepthMask(GL_TRUE);
+}
+
 /**
  * @brief RB_EndSurface
  */
@@ -1894,6 +2036,7 @@ void RB_EndSurface(void)
 
 	// call off to shader specific tess end function
 	tess.currentStageIteratorFunc();
+	RB_PlayerGlowPass();
 
 	// draw debugging stuff
 	if (r_showTris->integer)

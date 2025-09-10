@@ -49,6 +49,12 @@ cvar_t *com_altivec;
 #endif
 #endif
 
+cvar_t *r_playerGlow;  // 0=off, 1=all models, 2=flagged only (RF_PLAYER_GLOW)
+cvar_t *r_playerGlowScale;  // uniform scale for the glow shell
+cvar_t *r_playerGlowAlpha;  // alpha of glow shell
+cvar_t *r_playerGlowColor;  // "r g b" (0..1)
+cvar_t *r_playerGlowExtrude; // world-space extrusion along normals
+
 cvar_t *r_flareSize;
 cvar_t *r_flareFade;
 
@@ -1142,6 +1148,13 @@ void R_Register(void)
 	r_drawFoliage = ri.Cvar_Get("r_drawfoliage", "1", CVAR_CHEAT);
 	r_lightMap    = ri.Cvar_Get("r_lightmap", "0", CVAR_CHEAT);
 	r_portalOnly  = ri.Cvar_Get("r_portalOnly", "0", CVAR_CHEAT);
+
+
+	r_playerGlow        = ri.Cvar_Get("r_playerGlow", "0", CVAR_CHEAT); // 0=off, 1=all models, 2=flagged only (RF_PLAYER_GLOW)
+	r_playerGlowScale   = ri.Cvar_Get("r_playerGlowScale", "0", CVAR_CHEAT); // uniform scale for the glow shell
+	r_playerGlowAlpha   = ri.Cvar_Get("r_playerGlowAlpha", "0", CVAR_CHEAT); // alpha of glow shell
+	r_playerGlowColor   = ri.Cvar_Get("r_playerGlowColor", "0", CVAR_CHEAT); // "r g b" (0..1)
+	r_playerGlowExtrude = ri.Cvar_Get("r_playerGlowExtrude", "2.0", CVAR_ARCHIVE);    // ~units in world
 
 	r_flareSize = ri.Cvar_Get("r_flareSize", "40", CVAR_CHEAT);
 	ri.Cvar_Set("r_flareFade", "5");    // to force this when people already have "7" in their config

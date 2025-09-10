@@ -108,6 +108,12 @@ extern float    maxAnisotropy;
 
 // cvars used by both renderers
 
+extern cvar_t *r_playerGlow;  // 0=off, 1=all models, 2=flagged only (RF_PLAYER_GLOW)
+extern cvar_t *r_playerGlowScale;  // uniform scale for the glow shell
+extern cvar_t *r_playerGlowAlpha;  // alpha of glow shell
+extern cvar_t *r_playerGlowColor;  // "r g b" (0..1)
+extern cvar_t *r_playerGlowExtrude; // world-space extrusion along normals
+
 extern cvar_t *r_flareSize;
 extern cvar_t *r_flareFade;
 

@@ -70,6 +70,8 @@
 #define RF_BLINK            0x000200    ///< eyes in 'blink' state
 #define RF_FORCENOLOD       0x000400
 
+#define RF_PLAYER_GLOW      0x000800
+
 // refdef flags
 #define RDF_NOWORLDMODEL    1           ///< used for player configuration screen
 #define RDF_HYPERSPACE      4           ///< teleportation effect

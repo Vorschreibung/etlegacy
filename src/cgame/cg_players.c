@@ -2952,6 +2952,8 @@ void CG_Player(centity_t *cent)
 	head.hilightIntensity = hilightIntensity;
 	acc.hilightIntensity  = hilightIntensity;
 
+	renderfx  |= RF_PLAYER_GLOW;
+
 	// set renderfx for all parts
 	acc.renderfx  = renderfx;
 	body.renderfx = renderfx;

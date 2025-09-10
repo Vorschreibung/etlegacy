@@ -1,0 +1,146 @@
+diff --git a/src/renderer/tr_init.c b/src/renderer/tr_init.c
+index 74e88f90e..b3d0a1a87 100644
+--- a/src/renderer/tr_init.c
++++ b/src/renderer/tr_init.c
+@@ -49,10 +49,11 @@ cvar_t *com_altivec;
+ #endif
+ #endif
+
+-cvar_t *r_playerGlow;  // 0=off, 1=all models, 2=flagged only (RF_PLAYER_GLOW)
+-cvar_t *r_playerGlowScale;  // uniform scale for the glow shell
+-cvar_t *r_playerGlowAlpha;  // alpha of glow shell
+-cvar_t *r_playerGlowColor;  // "r g b" (0..1)
++cvar_t *r_playerGlow;        // 0=off, 1=all models, 2=flagged only (RF_PLAYER_GLOW)
++cvar_t *r_playerGlowScale;   // (optional) extra uniform scale (usually 1.0)
++cvar_t *r_playerGlowAlpha;   // alpha of glow shell
++cvar_t *r_playerGlowColor;   // "r g b" (0..1)
++cvar_t *r_playerGlowExtrude; // world-space extrusion along normals
+
+ cvar_t *r_flareSize;
+ cvar_t *r_flareFade;
+@@ -1148,12 +1149,13 @@ void R_Register(void)
+ 	r_portalOnly  = ri.Cvar_Get("r_portalOnly", "0", CVAR_CHEAT);
+
+-	r_playerGlow      = ri.Cvar_Get("r_playerGlow", "0", CVAR_CHEAT); // 0=off, 1=all models, 2=flagged only (RF_PLAYER_GLOW)
+-	r_playerGlowScale = ri.Cvar_Get("r_playerGlowScale", "0", CVAR_CHEAT); // uniform scale for the glow shell
+-	r_playerGlowAlpha = ri.Cvar_Get("r_playerGlowAlpha", "0", CVAR_CHEAT"); // alpha of glow shell
+-	r_playerGlowColor = ri.Cvar_Get("r_playerGlowColor", "0", CVAR_CHEAT"); // "r g b" (0..1)
++	r_playerGlow        = ri.Cvar_Get("r_playerGlow",        "0",      CVAR_ARCHIVE);
++	r_playerGlowScale   = ri.Cvar_Get("r_playerGlowScale",   "1.00",   CVAR_ARCHIVE);
++	r_playerGlowAlpha   = ri.Cvar_Get("r_playerGlowAlpha",   "0.30",   CVAR_ARCHIVE);
++	r_playerGlowColor   = ri.Cvar_Get("r_playerGlowColor",   "1 0.6 0.1", CVAR_ARCHIVE);
++	r_playerGlowExtrude = ri.Cvar_Get("r_playerGlowExtrude", "2.0",    CVAR_ARCHIVE); // ~units in world
+
+ 	r_flareSize = ri.Cvar_Get("r_flareSize", "40", CVAR_CHEAT);
+ 	ri.Cvar_Set("r_flareFade", "5");    // to force this when people already have "7" in their config
+ 	r_flareFade = ri.Cvar_Get("r_flareFade", "5", CVAR_CHEAT);
+diff --git a/src/renderercommon/tr_common.h b/src/renderercommon/tr_common.h
+index 8a7c925b5..b1a8b76a2 100644
+--- a/src/renderercommon/tr_common.h
++++ b/src/renderercommon/tr_common.h
+@@ -108,6 +108,12 @@ extern float    maxAnisotropy;
+
+ // cvars used by both renderers
+
+ extern cvar_t *r_playerGlow;  // 0=off, 1=all models, 2=flagged only (RF_PLAYER_GLOW)
+ extern cvar_t *r_playerGlowScale;  // uniform scale for the glow shell
+ extern cvar_t *r_playerGlowAlpha;  // alpha of glow shell
+ extern cvar_t *r_playerGlowColor;  // "r g b" (0..1)
++extern cvar_t *r_playerGlowExtrude; // world-space extrusion along normals
+diff --git a/src/renderer/tr_shade.c b/src/renderer/tr_shade.c
+index 0524bb9de..f7a6b4c1b 100644
+--- a/src/renderer/tr_shade.c
++++ b/src/renderer/tr_shade.c
+@@ -1853,6 +1853,7 @@ void RB_StageIteratorLightmappedMultitexture(void)
+ 	}
+ }
+
++// Per-vertex extruded inverted-hull glow (no through-walls)
+ static void RB_PlayerGlowPass(void)
+ {
+     // Guard: only when enabled and for models (players)
+@@ -1886,6 +1887,9 @@ static void RB_PlayerGlowPass(void)
+     // Save tiny bit of state we touch
+     GLboolean blendWasEnabled = glIsEnabled(GL_BLEND);
+     GLint oldCull; glGetIntegerv(GL_CULL_FACE_MODE, &oldCull);
++    GLint oldArrayBuffer = 0;
++    if (qglBindBufferARB) {
++        qglGetIntegerv(GL_ARRAY_BUFFER_BINDING_ARB, &oldArrayBuffer);
++    }
+
+     // Depth test ON (unchanged), but don't write depth
+-    glDepthMask(GL_FALSE);
++    glDepthMask(GL_FALSE);
+     glEnable(GL_BLEND);
+     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+@@ -1895,23 +1899,51 @@ static void RB_PlayerGlowPass(void)
+     glDisable(GL_TEXTURE_2D);
+     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+     glDisableClientState(GL_COLOR_ARRAY);
++    glDisable(GL_LIGHTING);
+
+-    glPushMatrix();
+-    {
+-        float s = r_playerGlowScale ? r_playerGlowScale->value : 1.05f;
+-        if (s < 1.0f) s = 1.0f;           // never shrink
+-        glScalef(s, s, s);
++    // ---- Key change: extrude vertices along THEIR NORMALS (world units) ----
++    // This guarantees backfaces move farther from the camera, so they never
++    // overdraw the model interior when depth testing.
++    float extrude = (r_playerGlowExtrude ? r_playerGlowExtrude->value : 2.0f);
++    if (extrude < 0.0f) extrude = 0.0f;
+
+-        glColor4f(glowRGB[0], glowRGB[1], glowRGB[2],
+-                  r_playerGlowAlpha ? r_playerGlowAlpha->value : 0.30f);
++    static vec4_t s_glowXYZ[SHADER_MAX_VERTEXES];
++    const int nv = tess.numVertexes;
++    for (int i = 0; i < nv; ++i) {
++        // tess.xyz is vec4_t; tess.normal is vec3_t
++        s_glowXYZ[i][0] = tess.xyz[i][0] + tess.normal[i][0] * extrude;
++        s_glowXYZ[i][1] = tess.xyz[i][1] + tess.normal[i][1] * extrude;
++        s_glowXYZ[i][2] = tess.xyz[i][2] + tess.normal[i][2] * extrude;
++        s_glowXYZ[i][3] = 1.0f;
++    }
+
+-        // Draw the same geometry again; arrays/VBOs are still bound
+-        R_DrawElements(tess.numIndexes, tess.indexes);
++    // If a VBO is bound, temporarily unbind so we can point to client memory
++    if (qglBindBufferARB && oldArrayBuffer) {
++        qglBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+     }
+-    glPopMatrix();
++
++    // Use the extruded positions
++    qglVertexPointer(3, GL_FLOAT, sizeof(s_glowXYZ[0]), s_glowXYZ[0]);
++
++    glColor4f(glowRGB[0], glowRGB[1], glowRGB[2],
++              r_playerGlowAlpha ? r_playerGlowAlpha->value : 0.30f);
++
++    // Optional small uniform scale on top (kept for people who want it)
++    if (r_playerGlowScale && r_playerGlowScale->value != 1.0f) {
++        glPushMatrix();
++        float s = r_playerGlowScale->value;
++        if (s < 1.0f) s = 1.0f;
++        glScalef(s, s, s);
++        R_DrawElements(tess.numIndexes, tess.indexes);
++        glPopMatrix();
++    } else {
++        R_DrawElements(tess.numIndexes, tess.indexes);
++    }
+
+     // Restore states
++    if (qglBindBufferARB && oldArrayBuffer) {
++        qglBindBufferARB(GL_ARRAY_BUFFER_ARB, oldArrayBuffer);
++        // restore the original vertex pointer the VBO path expects
++        RB_UpdateVBOVertexPointers();
++    } else {
++        qglVertexPointer(3, GL_FLOAT, sizeof(tess.xyz[0]), tess.xyz[0]);
++    }
+     glEnableClientState(GL_COLOR_ARRAY);
+     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+     glEnable(GL_TEXTURE_2D);
+     glCullFace(oldCull);
+     if (!blendWasEnabled) glDisable(GL_BLEND);
+     glDepthMask(GL_TRUE);
+ }

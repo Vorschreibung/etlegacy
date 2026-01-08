@@ -71,6 +71,7 @@ static void CG_ResetEntity(centity_t *cent)
 
 	VectorClear(cent->rawOrigin);
 	VectorClear(cent->rawAngles);
+	VectorClear(cent->rifleGrenadeDir);
 
 	cent->lastFuseSparkTime = 0;
 	cent->highlightTime     = 0;
@@ -80,6 +81,8 @@ static void CG_ResetEntity(centity_t *cent)
 	cent->akimboFire = qfalse;
 
 	cent->miscInt = 0;
+	cent->rifleGrenadeLerpTime   = 0;
+	cent->rifleGrenadeLaunchTime = 0;
 }
 
 /**

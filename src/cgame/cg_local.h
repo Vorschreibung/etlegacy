@@ -452,6 +452,10 @@ typedef struct centity_s
 	qboolean back;
 	qboolean moving;
 
+	int rifleGrenadeLerpTime;
+	int rifleGrenadeLaunchTime;
+	vec3_t rifleGrenadeDir;
+
 	int tankframe;
 	int tankparent;
 	tag_t mountedMG42Base;

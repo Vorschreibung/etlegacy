@@ -36,6 +36,58 @@
 #include "cg_local.h"
 
 /**
+ * @brief Check if the current render resolution should use compact killfeed icons.
+ * @return qtrue when vidWidth * vidHeight is below 8,000,000 pixels
+ */
+static ID_INLINE qboolean CG_ShouldUseCompactObituaryIcons(void)
+{
+	return ((long long)cgs.glconfig.vidWidth * (long long)cgs.glconfig.vidHeight) < 8000000LL;
+}
+
+/**
+ * @brief Register killfeed icon shader, preferring icons/<name>_32.tga on low resolutions.
+ * @param[in] filename
+ * @return
+ */
+static qhandle_t CG_RegisterObituaryIcon(const char *filename)
+{
+	const char *extension;
+	int        baseLen;
+	char       compactIconPath[MAX_QPATH];
+
+	if (!filename || !filename[0] || !CG_ShouldUseCompactObituaryIcons() || Q_stricmpn(filename, "icons/", 6))
+	{
+		return trap_R_RegisterShaderNoMip(filename);
+	}
+
+	extension = strrchr(filename, '.');
+	if (extension && !Q_stricmp(extension, ".tga"))
+	{
+		baseLen = (int)(extension - filename);
+	}
+	else
+	{
+		baseLen = (int)strlen(filename);
+	}
+
+	if (baseLen <= 0 || baseLen + (int)strlen("_32.tga") + 1 > (int)sizeof(compactIconPath))
+	{
+		return trap_R_RegisterShaderNoMip(filename);
+	}
+
+	Q_strncpyz(compactIconPath, filename, baseLen + 1);
+	Q_strcat(compactIconPath, sizeof(compactIconPath), "_32.tga");
+
+	// Only use the compact icon when the asset exists; otherwise keep the original path.
+	if (CG_FileExists(compactIconPath))
+	{
+		return trap_R_RegisterShaderNoMip(compactIconPath);
+	}
+
+	return trap_R_RegisterShaderNoMip(filename);
+}
+
+/**
  * @brief Read information for weapon animations (first/length/fps)
  * @param[in] filename
  * @param[out] wi
@@ -1435,7 +1487,8 @@ static qboolean CG_RW_ParseClient(int handle, weaponInfo_t *weaponInfo)
 				return CG_RW_ParseError(handle, "expected weaponIcon filename");
 			}
 
-			weaponInfo->weaponIcon[0] = trap_R_RegisterShaderNoMip(filename);
+			weaponInfo->weaponIcon[0]         = trap_R_RegisterShaderNoMip(filename);
+			weaponInfo->weaponObituaryIcon[0] = CG_RegisterObituaryIcon(filename);
 		}
 		else if (!Q_stricmp(token.string, "weaponIconScale"))
 		{
@@ -1451,7 +1504,8 @@ static qboolean CG_RW_ParseClient(int handle, weaponInfo_t *weaponInfo)
 				return CG_RW_ParseError(handle, "expected weaponSelectedIcon filename");
 			}
 
-			weaponInfo->weaponIcon[1] = trap_R_RegisterShaderNoMip(filename);
+			weaponInfo->weaponIcon[1]         = trap_R_RegisterShaderNoMip(filename);
+			weaponInfo->weaponObituaryIcon[1] = CG_RegisterObituaryIcon(filename);
 		}
 		else if (!Q_stricmp(token.string, "weaponSimpleIcon"))
 		{

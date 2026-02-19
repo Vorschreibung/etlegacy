@@ -55,14 +55,18 @@ void CG_GetObituaryIcon(meansOfDeath_t mod, weapon_t weapon, qhandle_t *weaponSh
 	// if weapon is still valid
 	if (IS_VALID_WEAPON(weap))
 	{
-		if ((style & POPUP_WEAPON_ICON_ALT) && cg_weapons[weap].weaponIcon[0])
+		const weaponInfo_t *weaponInfo  = &cg_weapons[weap];
+		const qhandle_t    primaryIcon  = CG_GetWeaponIconSlot(weaponInfo, 0);
+		const qhandle_t    selectedIcon = CG_GetWeaponIconSlot(weaponInfo, 1);
+
+		if ((style & POPUP_WEAPON_ICON_ALT) && primaryIcon)
 		{
-			*weaponShader = cg_weapons[weap].weaponIcon[0];
+			*weaponShader = primaryIcon;
 			*scaleShader  = cg_weapons[weap].weaponIconScale;
 		}
-		else if (cg_weapons[weap].weaponIcon[1])
+		else if (selectedIcon)
 		{
-			*weaponShader = cg_weapons[weap].weaponIcon[1];
+			*weaponShader = selectedIcon;
 			*scaleShader  = cg_weapons[weap].weaponIconScale;
 		}
 		else

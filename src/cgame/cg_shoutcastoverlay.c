@@ -160,16 +160,17 @@ static void CG_ShoutcastPlayerAmmoValue(clientInfo_t *ci, int *ammo, int *clips)
 */
 static void CG_DrawShoutcastPlayerOverlayAxis(hudComponent_t *comp, clientInfo_t *player, float y, int index)
 {
-	int    curWeap, weapScale, textWidth, textHeight;
-	int    ammo, clip, powerups;
-	float  fraction;
-	float  statusWidth = comp->location.w / 5.f;
-	float  topRowX     = comp->location.x;
-	float  bottomRowX  = comp->location.x;
-	float  height      = comp->location.h / MAX_PLAYERS;
-	char   *text;
-	char   name[MAX_NAME_LENGTH + 2] = { 0 };
-	vec4_t hcolor, borderColor;
+	int       curWeap, weapScale, textWidth, textHeight;
+	int       ammo, clip, powerups;
+	qhandle_t icon;
+	float     fraction;
+	float     statusWidth = comp->location.w / 5.f;
+	float     topRowX     = comp->location.x;
+	float     bottomRowX  = comp->location.x;
+	float     height      = comp->location.h / MAX_PLAYERS;
+	char      *text;
+	char      name[MAX_NAME_LENGTH + 2] = { 0 };
+	vec4_t    hcolor, borderColor;
 
 	if (player->health > 0)
 	{
@@ -267,20 +268,16 @@ static void CG_DrawShoutcastPlayerOverlayAxis(hudComponent_t *comp, clientInfo_t
 	curWeap    = CG_GetPlayerCurrentWeapon(player);
 	weapScale  = cg_weapons[curWeap].weaponIconScale * 10;
 	bottomRowX = comp->location.x + comp->location.w - 73;
+	icon       = CG_GetPreferredWeaponIcon(curWeap);
 
 	if (IS_VALID_WEAPON(curWeap) && cg_weapons[curWeap].weaponIconScale == 1)
 	{
 		bottomRowX += weapScale;
 	}
 
-	// note: WP_NONE is excluded
-	if (IS_VALID_WEAPON(curWeap) && cg_weapons[curWeap].weaponIcon[0])     // do not try to draw nothing
+	if (icon)
 	{
-		CG_DrawPic(bottomRowX, y + (height * 0.75f) - 5, -weapScale, 10, cg_weapons[curWeap].weaponIcon[0]);
-	}
-	else if (IS_VALID_WEAPON(curWeap) && cg_weapons[curWeap].weaponIcon[1])
-	{
-		CG_DrawPic(bottomRowX, y + (height * 0.75f) - 5, -weapScale, 10, cg_weapons[curWeap].weaponIcon[1]);
+		CG_DrawPic(bottomRowX, y + (height * 0.75f) - 5, -weapScale, 10, icon);
 	}
 
 	// draw ammo count
@@ -314,16 +311,17 @@ static void CG_DrawShoutcastPlayerOverlayAxis(hudComponent_t *comp, clientInfo_t
 */
 static void CG_DrawShoutcastPlayerOverlayAllies(hudComponent_t *comp, clientInfo_t *player, float y, int index)
 {
-	int    curWeap, weapScale, textWidth, textHeight;
-	int    ammo, clip, powerups;
-	float  fraction;
-	float  statusWidth = comp->location.w / 5.f;
-	float  topRowX     = comp->location.x;
-	float  bottomRowX  = comp->location.x + comp->location.w - statusWidth;
-	float  height      = comp->location.h / MAX_PLAYERS;
-	char   *text;
-	char   name[MAX_NAME_LENGTH + 2] = { 0 };
-	vec4_t hcolor, borderColor;
+	int       curWeap, weapScale, textWidth, textHeight;
+	int       ammo, clip, powerups;
+	qhandle_t icon;
+	float     fraction;
+	float     statusWidth = comp->location.w / 5.f;
+	float     topRowX     = comp->location.x;
+	float     bottomRowX  = comp->location.x + comp->location.w - statusWidth;
+	float     height      = comp->location.h / MAX_PLAYERS;
+	char      *text;
+	char      name[MAX_NAME_LENGTH + 2] = { 0 };
+	vec4_t    hcolor, borderColor;
 
 	if (player->health > 0)
 	{
@@ -427,15 +425,11 @@ static void CG_DrawShoutcastPlayerOverlayAllies(hudComponent_t *comp, clientInfo
 	curWeap    = CG_GetPlayerCurrentWeapon(player);
 	weapScale  = cg_weapons[curWeap].weaponIconScale * 10;
 	bottomRowX = comp->location.x + 53;
+	icon       = CG_GetPreferredWeaponIcon(curWeap);
 
-	// note: WP_NONE is excluded
-	if (IS_VALID_WEAPON(curWeap) && cg_weapons[curWeap].weaponIcon[0])     // do not try to draw nothing
+	if (icon)
 	{
-		CG_DrawPic(bottomRowX, y + (height * 0.75f) - 5, weapScale, 10, cg_weapons[curWeap].weaponIcon[0]);
-	}
-	else if (IS_VALID_WEAPON(curWeap) && cg_weapons[curWeap].weaponIcon[1])
-	{
-		CG_DrawPic(bottomRowX, y + (height * 0.75f) - 5, weapScale, 10, cg_weapons[curWeap].weaponIcon[1]);
+		CG_DrawPic(bottomRowX, y + (height * 0.75f) - 5, weapScale, 10, icon);
 	}
 
 	// draw ammo count
@@ -732,6 +726,7 @@ void CG_DrawShoutcastPlayerStatus(hudComponent_t *comp)
 	float         textWidth, textWidth2, textHeight;
 	char          *kills, *deaths, *selfkills, *dmgGiven, *dmgRcvd, *text;
 	int           ammo, clip, akimbo, curWeap, weapScale, tmpX;
+	qhandle_t     icon;
 	char          name[MAX_NAME_LENGTH + 2] = { 0 };
 	float         scale;
 	float         scale2;
@@ -841,20 +836,16 @@ void CG_DrawShoutcastPlayerStatus(hudComponent_t *comp)
 	curWeap   = CG_GetPlayerCurrentWeapon(player);
 	weapScale = cg_weapons[curWeap].weaponIconScale * 10;
 	tmpX      = statsBoxX + statsBoxWidth - 50;
+	icon      = CG_GetPreferredWeaponIcon(curWeap);
 
 	if (IS_VALID_WEAPON(curWeap) && cg_weapons[curWeap].weaponIconScale == 1)
 	{
 		tmpX += weapScale;
 	}
 
-	// note: WP_NONE is excluded
-	if (IS_VALID_WEAPON(curWeap) && cg_weapons[curWeap].weaponIcon[0])     // do not try to draw nothing
+	if (icon)
 	{
-		CG_DrawPic(tmpX, statsBoxY + (statsBoxHeight / 2) - 5, -weapScale, 10, cg_weapons[curWeap].weaponIcon[0]);
-	}
-	else if (IS_VALID_WEAPON(curWeap) && cg_weapons[curWeap].weaponIcon[1])
-	{
-		CG_DrawPic(tmpX, statsBoxY + (statsBoxHeight / 2) - 5, -weapScale, 10, cg_weapons[curWeap].weaponIcon[1]);
+		CG_DrawPic(tmpX, statsBoxY + (statsBoxHeight / 2) - 5, -weapScale, 10, icon);
 	}
 
 	// draw hp

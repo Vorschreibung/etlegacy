@@ -152,6 +152,46 @@ qboolean CG_ConfigFileExists(const char *filename)
 }
 
 /**
+ * @brief Return qtrue when a file path exists in the virtual filesystem.
+ * @param[in] filename
+ * @return
+ */
+qboolean CG_FileExists(const char *filename)
+{
+	fileHandle_t handle;
+	int          len;
+
+	len = trap_FS_FOpenFile(filename, &handle, FS_READ);
+	if (handle)
+	{
+		trap_FS_FCloseFile(handle);
+	}
+
+	return len > 0;
+}
+
+/**
+ * @brief Return preferred weapon icon for UI drawing (normal slot, then selected slot).
+ * @param[in] weapon
+ * @return icon handle or 0 when weapon/icon is unavailable
+ */
+qhandle_t CG_GetPreferredWeaponIcon(weapon_t weapon)
+{
+	const weaponInfo_t *weaponInfo;
+	qhandle_t          icon;
+
+	if (!IS_VALID_WEAPON(weapon))
+	{
+		return 0;
+	}
+
+	weaponInfo = &cg_weapons[weapon];
+	icon       = CG_GetWeaponIconSlot(weaponInfo, 0);
+
+	return icon ? icon : CG_GetWeaponIconSlot(weaponInfo, 1);
+}
+
+/**
  * @brief Execs a .cfg file
  * @param[in] filename
  */

@@ -597,11 +597,13 @@ static float CG_FTOverlay_NameWidth(fireteamOverlay_t *fto, const int row)
 
 static float CG_FTOverlay_WeaponIconWidthScale(fireteamOverlay_t *fto)
 {
-	fto->currentWeapon = CG_FireTeamClientCurrentWeapon(fto->ci);
+	qhandle_t weaponIcon;
 
-	// ensure we actually have a valid weapon (should always be the case)
-	if (IS_VALID_WEAPON(fto->currentWeapon) &&
-	    (cg_weapons[fto->currentWeapon].weaponIcon[0] || cg_weapons[fto->currentWeapon].weaponIcon[1]))
+	fto->currentWeapon = CG_FireTeamClientCurrentWeapon(fto->ci);
+	weaponIcon         = CG_GetPreferredWeaponIcon(fto->currentWeapon);
+
+	// ensure we actually have a valid weapon icon to draw (should always be the case)
+	if (weaponIcon)
 	{
 		return cg_weapons[fto->currentWeapon].weaponIconScale;
 	}
@@ -792,24 +794,20 @@ static void CG_FTOverlay_DrawName(fireteamOverlay_t *fto, const int row, const h
 
 static void CG_FTOverlay_DrawWeaponIcon(fireteamOverlay_t *fto)
 {
+	qhandle_t weaponIcon;
+
 	fto->currentWeapon = CG_FireTeamClientCurrentWeapon(fto->ci);
+	weaponIcon         = CG_GetPreferredWeaponIcon(fto->currentWeapon);
 
-	if (IS_VALID_WEAPON(fto->currentWeapon))
+	if (weaponIcon)
 	{
-		const qhandle_t shader = cg_weapons[fto->currentWeapon].weaponIcon[0]
-		    ? cg_weapons[fto->currentWeapon].weaponIcon[0]
-		    : cg_weapons[fto->currentWeapon].weaponIcon[1];
+		const float width = cg_weapons[fto->currentWeapon].weaponIconScale * fto->weaponIconSize;
 
-		if (shader)
-		{
-			const float width = cg_weapons[fto->currentWeapon].weaponIconScale * fto->weaponIconSize;
-
-			trap_R_SetColor((cg_entities[fto->ci->clientNum].currentValid || fto->ci->clientNum == cg.clientNum)
-			       ? fto->iconColor
-			       : fto->iconColorAlt);
-			CG_DrawPic(fto->x + (fto->bestWeaponIconWidthScale * fto->weaponIconSize - width) * 0.5f, fto->y + fto->weaponIconHeightOffset,
-			           width, fto->weaponIconSize, shader);
-		}
+		trap_R_SetColor((cg_entities[fto->ci->clientNum].currentValid || fto->ci->clientNum == cg.clientNum)
+		       ? fto->iconColor
+		       : fto->iconColorAlt);
+		CG_DrawPic(fto->x + (fto->bestWeaponIconWidthScale * fto->weaponIconSize - width) * 0.5f, fto->y + fto->weaponIconHeightOffset,
+		           width, fto->weaponIconSize, weaponIcon);
 	}
 
 	fto->x += (fto->bestWeaponIconWidthScale * fto->weaponIconSize) + fto->spacerInner;
@@ -820,10 +818,10 @@ static void CG_FTOverlay_DrawWeaponIcon(fireteamOverlay_t *fto)
 
 static void CG_FTOverlay_DrawHealth(fireteamOverlay_t *fto, hudComponent_t *comp)
 {
-	const int  health          = fto->ci->health;
-	const int  healthTextWidth = HEALTH_TEXT_WIDTH;
-	int        maxHealth;
-	vec4_t     color;
+	const int health          = fto->ci->health;
+	const int healthTextWidth = HEALTH_TEXT_WIDTH;
+	int       maxHealth;
+	vec4_t    color;
 
 	if (!(comp->style & FT_HEALTH_TEXT) && !(comp->style & FT_MINI_HEALTH_BAR))
 	{

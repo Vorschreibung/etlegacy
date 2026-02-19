@@ -973,6 +973,7 @@ typedef struct weaponInfo_s
 	weaponSounds_t lastShotSound;       ///< sound of the last shot can be different (mauser doesn't have bolt action on last shot for example)
 
 	qhandle_t weaponIcon[2];            ///< [0] is weap icon, [1] is highlight icon
+	qhandle_t weaponObituaryIcon[2];    ///< dedicated killfeed icons, can differ from HUD icon resolution
 	int weaponIconScale;
 	qhandle_t weaponSimpleIcon;
 	vec2_t weaponSimpleIconScale;
@@ -1022,6 +1023,17 @@ typedef struct weaponInfo_s
 	weaponSounds_t impactSound[W_MAX_SND_SURF];
 	impactParticle_t *impactParticle;
 } weaponInfo_t;
+
+/**
+ * @brief Return the icon for a slot, preferring obituary overrides when present.
+ * @param[in] weaponInfo
+ * @param[in] slot
+ * @return icon handle for the requested slot or 0
+ */
+static ID_INLINE qhandle_t CG_GetWeaponIconSlot(const weaponInfo_t *weaponInfo, int slot)
+{
+	return weaponInfo->weaponObituaryIcon[slot] ? weaponInfo->weaponObituaryIcon[slot] : weaponInfo->weaponIcon[slot];
+}
 
 #define MAX_VIEWDAMAGE  8
 
@@ -2885,6 +2897,8 @@ void CG_QueueMusic(void);
 void CG_UpdateCvars(void);
 
 qboolean CG_ConfigFileExists(const char *filename);
+qboolean CG_FileExists(const char *filename);
+qhandle_t CG_GetPreferredWeaponIcon(weapon_t weapon);
 void CG_execFile(const char *filename);
 int CG_CrosshairPlayer(void);
 int CG_LastAttacker(void);

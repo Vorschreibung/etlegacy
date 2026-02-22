@@ -2564,6 +2564,7 @@ qboolean CG_CommandCentreSpawnPointClick(void)
 
 		if (BG_RectContainsPoint((point[0] - FLAGSIZE_NORMAL * 0.5f) + cgs.wideXoffset, point[1] - FLAGSIZE_NORMAL * 0.5f, FLAGSIZE_NORMAL, FLAGSIZE_NORMAL, cgDC.cursorx, cgDC.cursory))
 		{
+			trap_S_StartLocalSound(cgs.media.sndLimboSelect, CHAN_LOCAL_SOUND);
 			trap_SendConsoleCommand(va("setspawnpt %i\n", i));
 			cgs.ccSelectedSpawnPoint = i;
 			cgs.ccRequestedObjective = -1;

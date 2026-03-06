@@ -1908,6 +1908,15 @@ int G_TeamCount(gentity_t *ent, int weap)
 
 		if (weap != -1)
 		{
+			// Only count players whose current or latched class can legitimately use
+			// this primary weapon. This prevents stale off-class selections from
+			// reserving heavy weapon slots across map transitions.
+			if (!BG_WeaponIsPrimaryForClassAndTeam(level.clients[j].sess.playerType, level.clients[j].sess.sessionTeam, weap)
+			    && !BG_WeaponIsPrimaryForClassAndTeam(level.clients[j].sess.latchPlayerType, level.clients[j].sess.sessionTeam, weap))
+			{
+				continue;
+			}
+
 			if (level.clients[j].sess.playerWeapon != weap && level.clients[j].sess.latchPlayerWeapon != weap)
 			{
 				continue;

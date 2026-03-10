@@ -217,6 +217,7 @@ vmCvar_t g_nextmap;
 vmCvar_t g_nextcampaign;
 
 vmCvar_t g_disableComplaints;
+vmCvar_t g_advertiseKilledBy;
 
 // zinx etpro antiwarp
 vmCvar_t g_antiwarp;
@@ -571,6 +572,7 @@ cvarTable_t gameCvarTable[] =
 	{ &g_nextcampaign,                    "nextcampaign",                      "",                           CVAR_TEMP,                                       0, qfalse, qfalse },
 
 	{ &g_disableComplaints,               "g_disableComplaints",               "0",                          CVAR_ARCHIVE,                                    0, qfalse, qfalse },
+	{ &g_advertiseKilledBy,               "g_advertiseKilledBy",               "0",                          CVAR_ARCHIVE,                                    0, qfalse, qfalse },
 
 	// zinx etpro antiwarp
 	{ &g_maxWarp,                         "g_maxWarp",                         "4",                          0,                                               0, qfalse, qfalse },

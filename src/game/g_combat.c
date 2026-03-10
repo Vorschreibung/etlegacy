@@ -498,7 +498,8 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 		killerName = "<world>";
 	}
 
-	if (attackerClient && attacker != self)
+	// Only advertise the killer when the server explicitly enables the centerprint.
+	if (g_advertiseKilledBy.integer && attackerClient && attacker != self)
 	{
 		trap_SendServerCommand(self - g_entities, va("cp \"Killed by %s\" 1", attacker->client->pers.netname));
 	}

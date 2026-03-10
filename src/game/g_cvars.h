@@ -211,6 +211,7 @@ extern vmCvar_t g_nextmap;
 extern vmCvar_t g_nextcampaign;
 
 extern vmCvar_t g_disableComplaints;
+extern vmCvar_t g_advertiseKilledBy;       ///< advertise the killer via centerprint on death
 
 extern vmCvar_t g_antiwarp;
 extern vmCvar_t g_maxWarp;

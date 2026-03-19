@@ -35,6 +35,7 @@
 #include "cg_local.h"
 
 static int sortedFireTeamClients[MAX_CLIENTS];
+static int sortedFireTeamClientNum = -1;
 
 #define FONT_HEADER         &cgs.media.limboFont1
 #define FONT_TEXT           &cgs.media.limboFont2
@@ -76,6 +77,7 @@ typedef struct fireteamOverlay_s
 	float maxSpawnWidth;
 
 	int currentWeapon;
+	int displayClientNum;
 
 	clientInfo_t *ci;
 	fireteamData_t *ftData;
@@ -97,6 +99,35 @@ typedef struct fireteamOverlay_s
 static fireteamOverlay_t ftOverlay;
 
 /**
+ * @brief Returns the client whose fireteam context should be shown.
+ */
+static int CG_FireteamDisplayClientNum(void)
+{
+	// During demo playback the overlay should track the viewed player instead
+	// of the original recorder stored in cg.clientNum.
+	if (cg.demoPlayback && cg.snap
+	    && !cgs.demoCamera.renderingFreeCam
+	    && !cgs.demoCamera.renderingWeaponCam
+	    && ISVALIDCLIENTNUM(cg.snap->ps.clientNum))
+	{
+		return cg.snap->ps.clientNum;
+	}
+
+	return cg.clientNum;
+}
+
+/**
+ * @brief Resort fireteam members when the viewed demo client changes.
+ */
+static void CG_EnsureSortedFireTeamClients(void)
+{
+	if (sortedFireTeamClientNum != CG_FireteamDisplayClientNum())
+	{
+		CG_SortClientFireteam();
+	}
+}
+
+/**
  * @brief CG_SortFireTeam
  * @param[in] a
  * @param[in] b
@@ -106,19 +137,21 @@ int QDECL CG_SortFireTeam(const void *a, const void *b)
 {
 	clientInfo_t *ca, *cb;
 	int          cna, cnb;
+	int          sortClientNum;
 
-	cna = *(const int *)a;
-	cnb = *(const int *)b;
+	cna           = *(const int *)a;
+	cnb           = *(const int *)b;
+	sortClientNum = (sortedFireTeamClientNum >= 0) ? sortedFireTeamClientNum : CG_FireteamDisplayClientNum();
 
 	ca = &cgs.clientinfo[cna];
 	cb = &cgs.clientinfo[cnb];
 
 	// not on our team, so shove back
-	if (!CG_IsOnSameFireteam(cnb, cg.clientNum))
+	if (!CG_IsOnSameFireteam(cnb, sortClientNum))
 	{
 		return -1;
 	}
-	if (!CG_IsOnSameFireteam(cna, cg.clientNum))
+	if (!CG_IsOnSameFireteam(cna, sortClientNum))
 	{
 		return 1;
 	}
@@ -160,6 +193,8 @@ int QDECL CG_SortFireTeam(const void *a, const void *b)
 void CG_SortClientFireteam()
 {
 	int i;
+
+	sortedFireTeamClientNum = CG_FireteamDisplayClientNum();
 
 	for (i = 0; i < MAX_CLIENTS; i++)
 	{
@@ -397,7 +432,10 @@ clientInfo_t *CG_SortedFireTeamPlayerForPosition(int pos)
 {
 	int            i;
 	int            cnt = 0;
-	fireteamData_t *f  = CG_IsOnFireteam(cg.clientNum);
+	fireteamData_t *f;
+	const int      displayClientNum = CG_FireteamDisplayClientNum();
+
+	f = CG_IsOnFireteam(displayClientNum);
 
 	if (!f)
 	{
@@ -696,7 +734,7 @@ static void CG_FTOverlay_DrawHeader(fireteamOverlay_t *fto, hudComponent_t *comp
 
 	CG_FillRect(fto->x + 1, fto->y + 1, fto->w - 2, fto->h - 1, comp->colorSecondary);
 
-	Com_sprintf(buf, sizeof(buf), "%s: %s", header, cgs.clientinfo[cg.clientNum].team == TEAM_AXIS
+	Com_sprintf(buf, sizeof(buf), "%s: %s", header, cgs.clientinfo[fto->displayClientNum].team == TEAM_AXIS
 	                                                                ? bg_fireteamNamesAxis[fto->ftData->ident]
 	                                                                : bg_fireteamNamesAllies[fto->ftData->ident]);
 	Q_strupr(buf);
@@ -804,7 +842,7 @@ static void CG_FTOverlay_DrawWeaponIcon(fireteamOverlay_t *fto)
 		{
 			const float width = cg_weapons[fto->currentWeapon].weaponIconScale * fto->weaponIconSize;
 
-			trap_R_SetColor((cg_entities[fto->ci->clientNum].currentValid || fto->ci->clientNum == cg.clientNum)
+			trap_R_SetColor((cg_entities[fto->ci->clientNum].currentValid || fto->ci->clientNum == fto->displayClientNum)
 			       ? fto->iconColor
 			       : fto->iconColorAlt);
 			CG_DrawPic(fto->x + (fto->bestWeaponIconWidthScale * fto->weaponIconSize - width) * 0.5f, fto->y + fto->weaponIconHeightOffset,
@@ -1005,13 +1043,16 @@ void CG_DrawFireTeamOverlay(hudComponent_t *comp)
 
 	Com_Memset(fto, 0, sizeof(fireteamOverlay_t));
 
-	fto->x = comp->location.x;
-	fto->y = comp->location.y;
+	fto->x                = comp->location.x;
+	fto->y                = comp->location.y;
+	fto->displayClientNum = CG_FireteamDisplayClientNum();
 
-	fto->ftData = CG_IsOnFireteam(cg.clientNum);
+	CG_EnsureSortedFireTeamClients();
+
+	fto->ftData = CG_IsOnFireteam(fto->displayClientNum);
 
 	// early exit
-	if (cgs.clientinfo[cg.clientNum].shoutcaster || !fto->ftData)
+	if (cgs.clientinfo[fto->displayClientNum].shoutcaster || !fto->ftData)
 	{
 		// XXX : TODO : we currently don't generate any noise for the
 		// fireteamoverlay, as it's pretty involved - so we do the minimum here,

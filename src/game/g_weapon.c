@@ -1764,6 +1764,8 @@ void G_RepairEmplacedGun(gentity_t *traceEnt, gentity_t *ent)
  */
 void G_RecoverLandmine(gentity_t *traceEnt, gentity_t *ent)
 {
+	gclient_t *statsClient = NULL;
+
 	G_FreeEntity(traceEnt);
 
 	Add_Ammo(ent, WP_LANDMINE, 1, qfalse);
@@ -1777,7 +1779,26 @@ void G_RecoverLandmine(gentity_t *traceEnt, gentity_t *ent)
 	{
 		ent->client->ps.classWeaponTime -= .5f * level.engineerChargeTime[ent->client->sess.sessionTeam - 1];
 	}
-	ent->client->sess.aWeaponStats[WS_LANDMINE].atts--;
+
+	// Record Stats
+	{
+#ifndef DEBUG_STATS
+		if (g_gamestate.integer == GS_PLAYING)
+#endif
+		{
+			// Only player-thrown landmines during live play increment WS_LANDMINE attempts.
+			// Map mines and other recovered mines must not roll back the current actor's stats.
+			if (traceEnt && traceEnt->parent && traceEnt->parent->client)
+			{
+				statsClient = traceEnt->parent->client;
+			}
+		}
+
+		if (statsClient && statsClient->sess.aWeaponStats[WS_LANDMINE].atts > 0)
+		{
+			statsClient->sess.aWeaponStats[WS_LANDMINE].atts--;
+		}
+	}
 }
 
 /**

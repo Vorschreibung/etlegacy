@@ -4,6 +4,7 @@
 #
 # REQUIRES: python uncrustify git
 import os
+import struct
 import sys
 import difflib
 from pathlib import Path
@@ -148,6 +149,82 @@ def check_jpeg(path: Path, errors: List[Error]):
         errors.append(Error(path, f"Failed to check JPEG: {e}"))
 
 
+def check_wav(path: Path, errors: List[Error]):
+    try:
+        with open(path, "rb") as f:
+            riff_header = f.read(12)
+
+            # WAV files are RIFF containers with a WAVE form type.
+            if len(riff_header) != 12:
+                errors.append(Error(path, "File too small to be a valid WAV."))
+                return
+
+            riff_id, _riff_size, wave_id = struct.unpack("<4sI4s", riff_header)
+            if riff_id != b"RIFF" or wave_id != b"WAVE":
+                errors.append(Error(path, "Not a valid RIFF/WAVE file."))
+                return
+
+            fmt = None
+
+            # Find the mandatory fmt chunk and skip all unrelated chunks.
+            while True:
+                chunk_header = f.read(8)
+                if not chunk_header:
+                    break
+                if len(chunk_header) != 8:
+                    errors.append(Error(path, "Truncated WAV chunk header."))
+                    return
+
+                chunk_id, chunk_size = struct.unpack("<4sI", chunk_header)
+                chunk_data = f.read(chunk_size)
+                if len(chunk_data) != chunk_size:
+                    errors.append(Error(path, "Truncated WAV chunk data."))
+                    return
+
+                # RIFF chunks are padded to even byte boundaries.
+                if chunk_size & 1:
+                    f.seek(1, os.SEEK_CUR)
+
+                if chunk_id == b"fmt ":
+                    fmt = chunk_data
+                    break
+
+            if fmt is None:
+                errors.append(Error(path, "WAV file is missing fmt chunk."))
+                return
+
+            if len(fmt) < 16:
+                errors.append(Error(path, "WAV fmt chunk is too small."))
+                return
+
+            (
+                audio_format,
+                channels,
+                sample_rate,
+                _byte_rate,
+                _block_align,
+                bits_per_sample,
+            ) = struct.unpack("<HHIIHH", fmt[:16])
+
+            if audio_format != 1:
+                errors.append(Error(path, "WAV file must be uncompressed PCM."))
+            if bits_per_sample != 16:
+                errors.append(Error(path, "WAV file must be 16-bit."))
+            if channels != 1:
+                errors.append(Error(path, "WAV file must be mono."))
+            if sample_rate not in (22050, 44100):
+                errors.append(
+                    Error(
+                        path,
+                        "WAV file must use a 22050 Hz or 44100 Hz sample rate. "
+                        "This is not an engine limitation; other sample rates make "
+                        "little practical sense for game content.",
+                    )
+                )
+    except Exception as e:
+        errors.append(Error(path, f"Failed to check WAV: {e}"))
+
+
 def check_yml(path: Path, errors: List[Error]):
     result = run_command(["prettier", "--no-config", str(path)], check=False)
 
@@ -182,6 +259,8 @@ def check_file(path: Path) -> Optional[List[Error]]:
             check_tga(path, errors)
         case ".jpg" | ".jpeg":
             check_jpeg(path, errors)
+        case ".wav":
+            check_wav(path, errors)
         case ".py":
             check_black(path, errors)
         case ".sh":

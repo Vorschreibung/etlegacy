@@ -7,7 +7,6 @@ import re
 import requests
 import sys
 
-
 EXPLICITLY_IGNORED_WARNINGS = {
     "android": [],
     "lnx-aarch64": [
@@ -59,51 +58,31 @@ def clean_and_process_file(arch: str, filename: str):
             if not stanza in line:
                 continue
 
-            # Handle only game code
+            # Parse the warning path before classifying whether it is ours.
+            parts = line.split(sep=" ", maxsplit=1)[1]
+            parts = parts.split(sep=stanza, maxsplit=1)
+            if arch.startswith("win"):
+                # MSVC paths use '(line,col)', so keep the drive letter intact.
+                fpath = re.sub(r"\(\d+(,\d+)?\)$", "", parts[0])
+            else:
+                fpath = parts[0].rsplit(sep=":", maxsplit=3)[0]
+            fpath = fpath.strip()
+            project_source_paths = {
+                "prefixes": wrangle_os_paths(arch, ["src/", "../src/"]),
+                "contains": wrangle_os_paths(arch, ["/etlegacy/src/"]),
+            }
+
+            # Handle only project code from ./src.
             if any(
-                sub in line
-                for sub in wrangle_os_paths(
-                    arch,
-                    [
-                        "etlegacy/src/",
-                        "src/botlib/",
-                        "src/cgame/",
-                        "src/client/",
-                        "src/db/",
-                        "src/game/",
-                        "src/irc/",
-                        "src/luacjson/",
-                        "src/null/",
-                        "src/qcommon/",
-                        "src/renderer/",
-                        "src/renderer2/",
-                        "src/rendererGLES/",
-                        "src/renderer_vk/",
-                        "src/renderercommon/",
-                        "src/sdl/",
-                        "src/server/",
-                        "src/sys/",
-                        "src/tests/",
-                        "src/tools/",
-                        "src/tvgame/",
-                        "src/ui/",
-                        "vendor/Omnibot/",
-                        "vendor/luasql/",
-                    ],
-                )
+                fpath.startswith(project_source_path)
+                for project_source_path in project_source_paths["prefixes"]
+            ) or any(
+                project_source_path in fpath
+                for project_source_path in project_source_paths["contains"]
             ):
-                ## skip explicitly ignored warnings - TODO fixup for
-                ## Windows
-                # strip timestamp
-                parts = line.split(sep=" ", maxsplit=1)[1]
-                # split at 'warning:'
-                parts = parts.split(sep=stanza, maxsplit=1)
-                # reattach 'warning:' to rhs
+                # Reattach 'warning:' to rhs.
                 msg = stanza + parts[1]
                 msg = msg.strip()
-                # strip the line/col info
-                fpath = parts[0].rsplit(sep=":", maxsplit=3)[0]
-                fpath = fpath.strip()
 
                 ignored = False
                 for ignore_fpath, ignore_msg in EXPLICITLY_IGNORED_WARNINGS[arch]:

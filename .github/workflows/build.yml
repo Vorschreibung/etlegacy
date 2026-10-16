@@ -73,7 +73,7 @@ jobs:
           options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI_ETL_UID=${{needs.pre-build.outputs.uid}} -e CI=true
           run: |
             git config --global --add safe.directory /code
-            ./easybuild.sh build -64 -mod
+            ./dev.py build --config dev-cfg-release-linux.toml -64 --mod
 
       - uses: actions/upload-artifact@v7
         with:
@@ -110,7 +110,7 @@ jobs:
           options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI_ETL_UID=${{needs.pre-build.outputs.uid}} -e CI=true
           run: |
             git config --global --add safe.directory /code
-            ./easybuild.sh build -mod
+            ./dev.py build --config dev-cfg-release-linux.toml --mod
 
       - uses: actions/upload-artifact@v7
         with:
@@ -139,7 +139,7 @@ jobs:
           CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          ./easybuild.sh build -RPIT -mod -ninja
+          ./dev.py build --config dev-cfg-release-linux.toml --rpi-toolchain --mod --ninja
 
       - uses: actions/upload-artifact@v7
         with:
@@ -179,7 +179,7 @@ jobs:
           CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
         shell: bash
         run: |
-          ./easybuild.sh build -64 -mod --osx=10.10 --osx-arc="x86_64;arm64" -j
+          ./dev.py build --config dev-cfg-release-macos.toml --mod
 
       - uses: actions/upload-artifact@v7
         with:
@@ -206,7 +206,7 @@ jobs:
           CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
           CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
         run: |
-          call .\easybuild.bat build -mod
+          python dev.py build --config dev-cfg-release-windows.toml --mod
 
       - uses: actions/upload-artifact@v7
         with:
@@ -233,7 +233,7 @@ jobs:
           CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
           CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
         run: |
-          call .\easybuild.bat build -mod -64
+          python dev.py build --config dev-cfg-release-windows.toml --mod -64
 
       - uses: actions/upload-artifact@v7
         with:
@@ -430,7 +430,7 @@ jobs:
           options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI_ETL_UID=${{needs.pre-build.outputs.uid}} -e CI=true
           run: |
             git config --global --add safe.directory /code
-            ./easybuild.sh build -64
+            ./dev.py build --config dev-cfg-release-linux.toml -64
 
       - name: Change Owner of Container Working Directory
         run: |
@@ -479,7 +479,7 @@ jobs:
           options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI_ETL_UID=${{needs.pre-build.outputs.uid}} -e CI=true
           run: |
             git config --global --add safe.directory /code
-            ./easybuild.sh build -32
+            ./dev.py build --config dev-cfg-release-linux.toml -32
 
       - name: Change Owner of Container Working Directory
         run: |
@@ -529,7 +529,7 @@ jobs:
 
       - name: Build
         run: |
-          ./easybuild.sh build -RPIT -ninja
+          ./dev.py build --config dev-cfg-release-linux.toml --rpi-toolchain --ninja
 
       - uses: actions/download-artifact@v8
         with:
@@ -576,7 +576,7 @@ jobs:
           DEVELOPER_DIR: /Library/Developer/CommandLineTools
         shell: bash
         run: |
-          ./easybuild.sh build -64 --osx=10.10 --osx-arc="x86_64;arm64" -j
+          ./dev.py build --config dev-cfg-release-macos.toml
 
       - uses: actions/download-artifact@v8
         with:
@@ -589,7 +589,7 @@ jobs:
 
       - name: Generate packages
         shell: bash
-        run: ./easybuild.sh package -64 --osx=10.10 --osx-arc="x86_64;arm64" -j
+        run: ./dev.py package --config dev-cfg-release-macos.toml
 
       - uses: actions/upload-artifact@v7
         with:
@@ -616,7 +616,7 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          call .\easybuild.bat build
+          python dev.py build --config dev-cfg-release-windows.toml
 
       - uses: actions/download-artifact@v8
         with:
@@ -692,7 +692,7 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          call .\easybuild.bat build -64
+          python dev.py build --config dev-cfg-release-windows.toml -64
 
       - uses: actions/download-artifact@v8
         with:

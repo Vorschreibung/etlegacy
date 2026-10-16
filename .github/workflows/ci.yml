@@ -77,7 +77,7 @@ jobs:
             --env CI --env CI_ETL_DESCRIBE --env CI_ETL_TAG \
             --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
             --workdir "$GITHUB_WORKSPACE" \
-            etlegacy/lnx-build:latest ./easybuild.sh build -64
+            etlegacy/lnx-build:latest ./dev.py build --config dev-cfg-release-linux.toml -64
 
       - name: Generate packages
         run: |
@@ -139,7 +139,7 @@ jobs:
             --env CI --env CI_ETL_DESCRIBE --env CI_ETL_TAG \
             --volume "$GITHUB_WORKSPACE:$GITHUB_WORKSPACE" \
             --workdir "$GITHUB_WORKSPACE" \
-            etlegacy/lnx-build:latest ./easybuild.sh build -32
+            etlegacy/lnx-build:latest ./dev.py build --config dev-cfg-release-linux.toml -32
 
       - name: Generate packages
         run: |
@@ -169,7 +169,7 @@ jobs:
 
       - name: Build
         run: |
-          ./easybuild.sh build -RPIT -ninja
+          ./dev.py build --config dev-cfg-release-linux.toml --rpi-toolchain --ninja
 
       - name: Generate packages
         shell: bash
@@ -201,11 +201,11 @@ jobs:
           DEVELOPER_DIR: /Library/Developer/CommandLineTools
         shell: bash
         run: |
-          ./easybuild.sh build -64 --osx=10.10 --osx-arc="x86_64;arm64" -j
+          ./dev.py build --config dev-cfg-release-macos.toml
 
       - name: Generate packages
         shell: bash
-        run: ./easybuild.sh package -64 --osx=10.10 --osx-arc="x86_64;arm64" -j
+        run: ./dev.py package --config dev-cfg-release-macos.toml
 
       - *collect-binaries
       - *upload-binaries
@@ -224,7 +224,7 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          call .\easybuild.bat build
+          python dev.py build --config dev-cfg-release-windows.toml
 
       - name: Generate packages
         shell: cmd
@@ -248,7 +248,7 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          call .\easybuild.bat build -64
+          python dev.py build --config dev-cfg-release-windows.toml -64
 
       - name: Generate packages
         shell: cmd

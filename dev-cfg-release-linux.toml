@@ -1,0 +1,11 @@
+# Release build settings for the Linux GitHub actions jobs
+#
+# The architecture (-32/-64), --mod and --rpi-toolchain/--ninja are passed
+# by the individual jobs. Feature toggles are not set here on purpose, they
+# would override the --mod/--server/--rpi presets.
+
+build_type = "Release"
+generator = "Unix Makefiles"
+target = "all"
+mod_name = "legacy"
+portable_install = true

@@ -1,0 +1,15 @@
+# Release build settings for the macOS GitHub actions jobs
+#
+# --mod is passed by the individual jobs. Feature toggles are not set here
+# on purpose, they would override the --mod/--server presets.
+
+build_type = "Release"
+generator = "Unix Makefiles"
+target = "all"
+mod_name = "legacy"
+portable_install = true
+arch = "64"
+
+# Universal binaries, still loadable on old macOS versions
+macos_deployment_target = "10.10"
+macos_architectures = "x86_64;arm64"

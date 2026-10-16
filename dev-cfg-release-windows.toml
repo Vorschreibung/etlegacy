@@ -1,0 +1,10 @@
+# Release build settings for the Windows GitHub actions jobs
+#
+# The architecture (-64) and --mod are passed by the individual jobs.
+# Feature toggles are not set here on purpose, they would override the
+# --mod/--server presets.
+
+build_type = "Release"
+generator = "Visual Studio 17 2022"
+target = "all"
+mod_name = "legacy"

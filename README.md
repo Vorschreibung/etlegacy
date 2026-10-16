@@ -147,14 +147,16 @@ The following variables can be adjusted in CMake:
 
 Install required dependencies.
 
-* option A: **easybuild**
+* option A: **dev.py**
 
 In terminal, run one of the following:
 
 ```sh
-$ ./easybuild.sh        # for compiling a 32 bit version or
-$ ./easybuild.sh -64    # for compiling a 64 bit version
+$ ./dev.py all        # for compiling a 32 bit version or
+$ ./dev.py all -64    # for compiling a 64 bit version
 ```
+
+`./dev.py --help` lists all commands (`build`, `clean`, `package`, `install`, ...) and `./dev.py <command> --help` their options. Settings can be persisted by copying `dev-cfg-example.toml` to `dev-cfg.toml`, `./dev.py config` shows the effective settings.
 
 ET: Legacy will be installed in `~/etlegacy`.
 
@@ -189,7 +191,7 @@ Be sure to set the CMake variables (see above) beforehand.
 
   * In order to compile the jpeg-turbo library properly you will need the **nasm** assembler.
 
-  * On some systems, CMake might have trouble locating 32-bit libraries and tries to use 64-bit ones when building 32-bit. This can be fixed by setting the following enviromental variables before running CMake (note: running easybuild takes care of this for you)
+  * On some systems, CMake might have trouble locating 32-bit libraries and tries to use 64-bit ones when building 32-bit. This can be fixed by setting the following enviromental variables before running CMake (note: running dev.py takes care of this for you)
 
 ```sh
 $ export CC="gcc -m32"
@@ -227,9 +229,10 @@ Install:
   1. [Visual Studio Community](https://visualstudio.microsoft.com/) with the _Desktop Development with C++_ workload
   2. [CMake](https://cmake.org/) and make sure it is added to your system PATH
 
-* option A: **easybuild**
+* option A: **dev.py**
 
-    1. run easybuild.bat
+    1. install [Python 3](https://www.python.org/)
+    2. run `python dev.py all` (or `python dev.py all -64` for a 64 bit version)
 
 ET: Legacy will be installed in `My Documents\ETLegacy-Build`.
 
@@ -294,15 +297,15 @@ $ brew bundle --file=misc/macos/libs.Brewfile
 
 Depending on what brew version you're using (mostly older ones), you have to specify `brew install --universal` to get both 32bit and 64bit libs. If it throws an error, just use the command listed above. Although your system curl library supports both architectures, you also need to install its headers.
 
-* option A: **easybuild**
+* option A: **dev.py**
 
-There are many flags and options provided by easybuild.sh. The ET: Legacy version you can compile depends on the used macOS version.
+There are many flags and options provided by dev.py (see `./dev.py build --help`). The ET: Legacy version you can compile depends on the used macOS version.
 
 If you're running **up to macOS 10.14 (Mojave)**, use one the following flags in Terminal.app:
 
 ```sh
-$ ./easybuild.sh        # for compiling a 32 bit version or
-$ ./easybuild.sh -64    # for compiling a 64 bit version
+$ ./dev.py all -32    # for compiling a 32 bit version or
+$ ./dev.py all        # for compiling a 64 bit version
 ```
 
 This will put an 'etlegacy' folder with the selected arch into your user folder.
@@ -310,10 +313,10 @@ This will put an 'etlegacy' folder with the selected arch into your user folder.
 With **macOS 10.15 (Catalina) and above**, your only option is to compile and run a 64 bit client. Therefore you need to use the following flags:
 
 ```sh
-$ ./easybuild.sh -64 --osx=10.15    #watch out for the double dash at --osx !
+$ ./dev.py all --osx=10.15
 ```
 
-Take a look into easybuild.sh for more information and further options/flags.
+Take a look into `./dev.py build --help` for more information and further options/flags.
 
 * option B: **command line**
 
@@ -323,7 +326,7 @@ In terminal, run:
 $ mkdir build && cd build && cmake ..
 ```
 
-Look into easybuild.sh for all available CMake options.
+Run `./dev.py config` to see the CMake options dev.py would use.
 
 To compile, run:
 
@@ -367,13 +370,13 @@ nasm autoconf git cmake zip gcc g++ libtool libxrandr-dev x11proto-randr-dev
 **Pi 4+ install instructions**
 
 The OpenGL driver used is the Fake KMS driver and currently both OpenGL and GLES are ran within an X11 session.
-If you want to switch between OpenGL and GLES when installing ET: Legacy on the Pi 4, simply set the `FEATURE_RENDERER_GLES` flag to 0
-or 1 under the `RPI` section within the `easybuild.sh` script and run `./easybuild.sh -RPI -j4`.
+If you want to switch between OpenGL and GLES when installing ET: Legacy on the Pi 4, simply run `./dev.py all --rpi -j 4`
+and append `-D FEATURE_RENDERER_GLES=1` (or `0`) to override the renderer.
 
 **Others**
 
-If you want to switch between OpenGL and GLES when installing ET: Legacy, simply set the `FEATURE_RENDERER_GLES` flag to 0
-or 1 under the `RPI` section within the `easybuild.sh` script and run `./easybuild.sh -RPI -j4`.
+If you want to switch between OpenGL and GLES when installing ET: Legacy, simply run `./dev.py all --rpi -j 4`
+and append `-D FEATURE_RENDERER_GLES=1` (or `0`) to override the renderer.
 
 ### Snap Store/Snapcraft
 

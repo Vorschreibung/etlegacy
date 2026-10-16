@@ -11,6 +11,7 @@
 CMakeLists.txt.user
 etmain/ui/git_version.h
 /.cache
+/dev-cfg.toml
 .upstream-remote-branch
 
 #
@@ -21,7 +22,6 @@ etmain/ui/git_version.h
 *~
 *.sh
 !/misc/*.sh
-!/release.sh
 /.directory
 *.kdev4
 
@@ -73,8 +73,6 @@ win_resource.aps
 compile_commands.json
 
 # Do not under any circumstances ignore these
-!/easybuild.sh
-!/easybuild.bat
 !/gradlew
 !/gradlew.bat
 !/misc/docker/entrypoint.sh

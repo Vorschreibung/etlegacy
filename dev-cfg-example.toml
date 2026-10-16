@@ -1,0 +1,71 @@
+# ET: Legacy dev.py settings
+#
+# Copy to dev-cfg.toml and adjust. Commented out settings keep their
+# (platform) default. Command line options and the env vars BUILD_DIR,
+# TOOLCHAIN_FILE, MAKEFILE_GENERATOR and MACOS_ARCHITECTURES override these.
+# Run './dev.py config' to see the effective settings.
+#
+# dev.py reads a TOML subset: comments, single level [tables] and single
+# line key = value pairs with string, integer, boolean or array values.
+
+# Paths, relative ones are resolved against the repository root
+build_dir = "build"
+project_dir = "project"
+install_prefix = "~/etlegacy"
+# game_homepath = "~/.etlegacy"                  # default depends on the platform
+# game_basepath = "~/Documents/ETLegacy-Build"   # Windows install target
+
+# Toolchain
+build_type = "Release"
+# arch = "64"                 # "32" or "64", default: 32 on x86 Linux/Windows, else 64
+# compiler = "clang"          # "gcc" or "clang", default: $CC/$CXX, else gcc, else clang
+# generator = "Ninja"
+# toolset = "v143"            # Visual Studio platform toolset
+# toolchain_file = "cmake/Toolchain-cross-aarch64-linux.cmake"
+# jobs = 8                    # default: CPU count, 0: build tool default
+build_tool_args = []          # passed to the native build tool (after '--')
+
+# macOS
+macos_deployment_target = "11.0"
+# macos_architectures = "x86_64;arm64"   # default: host architecture
+# macos_sysroot = "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk"
+
+# Build profile
+target = "all"                # "all", "mod" or "server"
+rpi = false                   # Raspberry PI / aarch64 preset
+mod_name = "legacy"
+# mod_url = "www.etlegacy.com"  # default: derived from mod_name (legacy, etpub, jaymod, nq)
+portable_install = true       # relative install layout below install_prefix
+lsp = false                   # export compile_commands.json and write .clangd
+
+# Feature toggles, true/false force a feature on/off, unset keeps the default
+# ssl = true
+# auth = true
+# db = true
+# renderer2 = false
+# renderer_dynamic = true
+# bundled_libs = true
+# bundled_jpeg = true
+# extra = true
+# autoupdate = true
+# mod_pk3 = true
+# zip_only = false
+
+# Extra raw arguments for the CMake configure call
+cmake_args = []               # e.g. ["--log-level=VERBOSE"]
+
+# Output
+silent = false
+color = "auto"                # true, false or "auto" (if the terminal supports it),
+                              # NO_COLOR / FORCE_COLOR env vars override this
+
+# Raw CMake cache variables, these override everything above
+[cmake]
+# FEATURE_LUA = false
+# MY_VARIABLE = "value"
+
+# Settings for './dev.py release'
+[release]
+branch = "master"
+# remote = "origin"           # default: prompt for it
+sign = false

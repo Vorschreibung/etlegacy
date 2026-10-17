@@ -6,7 +6,19 @@
 # or error out the build
 if(EXISTS "${CMAKE_SOURCE_DIR}/libs/CMakeLists.txt")
 	message(STATUS "Using bundled libraries located at ${CMAKE_SOURCE_DIR}/libs")
+	if(BUNDLED_CURL AND BUNDLED_ZLIB AND (BUILD_CLIENT OR BUILD_SERVER))
+		# Resolve zlib before curl's OpenSSL checks can retain a failed system
+		# lookup, and use the same archive and headers as the engine.
+		list(APPEND CURL_CMAKE_ARGS
+			"-DZLIB_LIBRARY=$<TARGET_FILE:bundled_zlib>"
+			"-DZLIB_INCLUDE_DIR=${CMAKE_SOURCE_DIR}/libs/zlib"
+		)
+	endif()
     include(libs/CMakeLists.txt)
+	if(TARGET bundled_curl AND TARGET bundled_zlib)
+		# curl links its configure-time probes against this archive.
+		ExternalProject_Add_StepDependencies(bundled_curl configure bundled_zlib)
+	endif()
 else()
 	message(STATUS "======================================================")
 	message(STATUS "Bundled libraries were not found on your system!")

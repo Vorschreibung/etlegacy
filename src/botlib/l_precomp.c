@@ -1961,6 +1961,7 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, int *intvalue,
 			case P_DEC:
 			{
 				SourceError(source, "++ or -- used in #if/#elif");
+				error = 1;
 				break;
 			}
 			case P_SUB:
@@ -2102,6 +2103,13 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, int *intvalue,
 		}
 		if (error)
 		{
+			break;
+		}
+		// Check operand arity before evaluating or removing values.
+		if (!v || ((o->operator != P_LOGIC_NOT && o->operator != P_BIN_NOT) && !v->next))
+		{
+			SourceError(source, "missing values in #if/#elif");
+			error = 1;
 			break;
 		}
 		v1 = v;

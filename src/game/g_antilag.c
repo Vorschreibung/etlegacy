@@ -336,7 +336,8 @@ static qboolean G_AdjustSingleClientPosition(gentity_t *ent, int time)
 			ent->torsoFrame.pitchAngle    = ent->client->clientMarkers[j].torsoPitchAngle;
 			ent->torsoFrame.yawing        = ent->client->clientMarkers[j].torsoYawing;
 			ent->torsoFrame.pitching      = ent->client->clientMarkers[j].torsoPitching;
-			if (ent->client->clientMarkers[j].torsoAnimationMovetype)
+			// Animation data may be absent even when the marker has a movetype.
+			if (ent->torsoFrame.animation && ent->client->clientMarkers[j].torsoAnimationMovetype)
 			{
 				ent->torsoFrame.animation->movetype = ent->client->clientMarkers[j].torsoAnimationMovetype;
 			}
@@ -352,7 +353,8 @@ static qboolean G_AdjustSingleClientPosition(gentity_t *ent, int time)
 			ent->legsFrame.pitchAngle    = ent->client->clientMarkers[j].legsPitchAngle;
 			ent->legsFrame.yawing        = ent->client->clientMarkers[j].legsYawing;
 			ent->legsFrame.pitching      = ent->client->clientMarkers[j].legsPitching;
-			if (ent->client->clientMarkers[j].legsAnimationMovetype)
+			// Animation data may be absent even when the marker has a movetype.
+			if (ent->legsFrame.animation && ent->client->clientMarkers[j].legsAnimationMovetype)
 			{
 				ent->legsFrame.animation->movetype = ent->client->clientMarkers[j].legsAnimationMovetype;
 			}
@@ -380,7 +382,8 @@ static qboolean G_AdjustSingleClientPosition(gentity_t *ent, int time)
 			ent->torsoFrame.pitchAngle    = ent->client->clientMarkers[i].torsoPitchAngle;
 			ent->torsoFrame.yawing        = ent->client->clientMarkers[i].torsoYawing;
 			ent->torsoFrame.pitching      = ent->client->clientMarkers[i].torsoPitching;
-			if (ent->client->clientMarkers[i].torsoAnimationMovetype)
+			// Animation data may be absent even when the marker has a movetype.
+			if (ent->torsoFrame.animation && ent->client->clientMarkers[i].torsoAnimationMovetype)
 			{
 				ent->torsoFrame.animation->movetype = ent->client->clientMarkers[i].torsoAnimationMovetype;
 			}
@@ -396,7 +399,8 @@ static qboolean G_AdjustSingleClientPosition(gentity_t *ent, int time)
 			ent->legsFrame.pitchAngle    = ent->client->clientMarkers[i].legsPitchAngle;
 			ent->legsFrame.yawing        = ent->client->clientMarkers[i].legsYawing;
 			ent->legsFrame.pitching      = ent->client->clientMarkers[i].legsPitching;
-			if (ent->client->clientMarkers[i].legsAnimationMovetype)
+			// Animation data may be absent even when the marker has a movetype.
+			if (ent->legsFrame.animation && ent->client->clientMarkers[i].legsAnimationMovetype)
 			{
 				ent->legsFrame.animation->movetype = ent->client->clientMarkers[i].legsAnimationMovetype;
 			}
@@ -455,7 +459,8 @@ static qboolean G_AdjustSingleClientPosition(gentity_t *ent, int time)
 		ent->torsoFrame.pitchAngle    = ent->client->clientMarkers[j].torsoPitchAngle;
 		ent->torsoFrame.yawing        = ent->client->clientMarkers[j].torsoYawing;
 		ent->torsoFrame.pitching      = ent->client->clientMarkers[j].torsoPitching;
-		if (ent->client->clientMarkers[j].torsoAnimationMovetype)
+		// Animation data may be absent even when the marker has a movetype.
+		if (ent->torsoFrame.animation && ent->client->clientMarkers[j].torsoAnimationMovetype)
 		{
 			ent->torsoFrame.animation->movetype = ent->client->clientMarkers[j].torsoAnimationMovetype;
 		}
@@ -471,7 +476,8 @@ static qboolean G_AdjustSingleClientPosition(gentity_t *ent, int time)
 		ent->legsFrame.pitchAngle    = ent->client->clientMarkers[j].legsPitchAngle;
 		ent->legsFrame.yawing        = ent->client->clientMarkers[j].legsYawing;
 		ent->legsFrame.pitching      = ent->client->clientMarkers[j].legsPitching;
-		if (ent->client->clientMarkers[j].legsAnimationMovetype)
+		// Animation data may be absent even when the marker has a movetype.
+		if (ent->legsFrame.animation && ent->client->clientMarkers[j].legsAnimationMovetype)
 		{
 			ent->legsFrame.animation->movetype = ent->client->clientMarkers[j].legsAnimationMovetype;
 		}
@@ -526,7 +532,8 @@ qboolean G_ReAdjustSingleClientPosition(gentity_t *ent)
 		ent->torsoFrame.pitchAngle    = ent->client->backupMarker.torsoPitchAngle;
 		ent->torsoFrame.yawing        = ent->client->backupMarker.torsoYawing;
 		ent->torsoFrame.pitching      = ent->client->backupMarker.torsoPitching;
-		if (ent->client->backupMarker.torsoAnimationMovetype)
+		// Animation data may be absent even when the marker has a movetype.
+		if (ent->torsoFrame.animation && ent->client->backupMarker.torsoAnimationMovetype)
 		{
 			ent->torsoFrame.animation->movetype = ent->client->backupMarker.torsoAnimationMovetype;
 		}
@@ -540,7 +547,8 @@ qboolean G_ReAdjustSingleClientPosition(gentity_t *ent)
 		ent->legsFrame.frameTime     = ent->client->backupMarker.legsFrameTime;
 		ent->legsFrame.yawAngle      = ent->client->backupMarker.legsYawAngle;
 		ent->legsFrame.pitchAngle    = ent->client->backupMarker.legsPitchAngle;
-		if (ent->client->backupMarker.legsAnimationMovetype)
+		// Animation data may be absent even when the marker has a movetype.
+		if (ent->legsFrame.animation && ent->client->backupMarker.legsAnimationMovetype)
 		{
 			ent->legsFrame.animation->movetype = ent->client->backupMarker.legsAnimationMovetype;
 		}

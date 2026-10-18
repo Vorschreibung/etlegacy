@@ -806,10 +806,7 @@ unsigned int Web_CreateRequest(const char *url, const char *authToken, webUpload
 
 error_get:
 
-	if (request->complete_clb)
-	{
-		request->complete_clb(request, REQUEST_NOK);
-	}
+	// No request was queued; the caller still owns the upload and handles failure.
 	DL_FreeRequest(request);
 
 	return 0;

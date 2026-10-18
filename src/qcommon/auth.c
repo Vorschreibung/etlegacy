@@ -183,6 +183,21 @@ static void Auth_FreeUploadBuffer(webRequest_t *request)
 	}
 }
 
+// Failed creation leaves the upload with the caller and never invokes the callback.
+static void Auth_CreateRequest(const char *url, const char *authToken, webUploadData_t *upload, void *userData, webCallbackFunc_t complete)
+{
+	if (!Web_CreateRequest(url, authToken, upload, userData, complete, NULL))
+	{
+		webRequest_t request;
+
+		// Reuse the completion path to release the upload and report the failure.
+		Com_Memset(&request, 0, sizeof(request));
+		request.uploadData = upload;
+		request.userData   = userData;
+		complete(&request, REQUEST_NOK);
+	}
+}
+
 #ifndef DEDICATED
 static void Auth_WriteTokenToFile(const char *token)
 {
@@ -252,7 +267,7 @@ static void Auth_ClientLogin(const char *username, const char *password)
 	upload->buffer     = (byte *) tmp;
 	upload->bufferSize = strlen(tmp);
 
-	Web_CreateRequest(A_URL(AUTH_CLIENT_LOGIN), NULL, upload, NULL, &Auth_ClientLoginCallback, NULL);
+	Auth_CreateRequest(A_URL(AUTH_CLIENT_LOGIN), NULL, upload, NULL, &Auth_ClientLoginCallback);
 }
 
 static void Auth_ClientLoginTestCallback(struct webRequest_s *request, webRequestResult requestResult)
@@ -279,7 +294,7 @@ static void Auth_ClientLoginTestCallback(struct webRequest_s *request, webReques
 
 static void Auth_TestToken(void)
 {
-	Web_CreateRequest(A_URL(AUTH_CLIENT_LOGIN), authData.authToken, NULL, NULL, &Auth_ClientLoginTestCallback, NULL);
+	Auth_CreateRequest(A_URL(AUTH_CLIENT_LOGIN), authData.authToken, NULL, NULL, &Auth_ClientLoginTestCallback);
 }
 #else
 
@@ -337,7 +352,7 @@ static void Auth_TestToken(void)
 	upload->buffer     = (byte *) json;
 	upload->bufferSize = strlen(json);
 
-	Web_CreateRequest(A_URL(AUTH_SERVER_LOGIN_TEST), authData.authToken, upload, NULL, &Auth_ServerLoginTestCallback, NULL);
+	Auth_CreateRequest(A_URL(AUTH_SERVER_LOGIN_TEST), authData.authToken, upload, NULL, &Auth_ServerLoginTestCallback);
 }
 #endif
 
@@ -639,7 +654,7 @@ void Auth_Server_VerifyResponse(void *data, const char *username, const char *ch
 
 	((client_t *) data)->loginStatus = LOGIN_SERVER_VERIFY;
 
-	Web_CreateRequest(A_URL(AUTH_SERVER_VERIFY), authData.authToken, upload, data, &Auth_ServerVerifyCallback, NULL);
+	Auth_CreateRequest(A_URL(AUTH_SERVER_VERIFY), authData.authToken, upload, data, &Auth_ServerVerifyCallback);
 }
 
 void Auth_Server_FetchChallenge(void *data, const char *username)
@@ -671,8 +686,7 @@ void Auth_Server_FetchChallenge(void *data, const char *username)
 	upload->buffer     = (byte *) json;
 	upload->bufferSize = strlen(json);
 
-	Web_CreateRequest(A_URL(AUTH_SERVER_CHALLENGE), authData.authToken, upload, data, &Auth_ServerChallengeCallback,
-	                  NULL);
+	Auth_CreateRequest(A_URL(AUTH_SERVER_CHALLENGE), authData.authToken, upload, data, &Auth_ServerChallengeCallback);
 }
 
 void Auth_Server_RequestClientAuthentication(void *data)
@@ -728,8 +742,7 @@ void Auth_Client_FetchResponse(const char *challenge)
 	upload->buffer     = (byte *) json;
 	upload->bufferSize = strlen(json);
 
-	Web_CreateRequest(A_URL(AUTH_CLIENT_CHALLENGE), authData.authToken, upload, NULL, &Auth_ClientChallengeCallback,
-	                  NULL);
+	Auth_CreateRequest(A_URL(AUTH_CLIENT_CHALLENGE), authData.authToken, upload, NULL, &Auth_ClientChallengeCallback);
 }
 #endif
 

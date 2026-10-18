@@ -735,6 +735,12 @@ char *Com_StringContains(char *str1, char *str2, int casesensitive)
 	{
 		for (j = 0; str2[j]; j++)
 		{
+			// No later suffix can match if this candidate ends before the needle.
+			if (!str1[j])
+			{
+				return NULL;
+			}
+
 			if (casesensitive)
 			{
 				if (str1[j] != str2[j])
@@ -773,6 +779,12 @@ int Com_Filter(char *filter, char *name, int casesensitive)
 
 	while (*filter)
 	{
+		// Only a wildcard can match an empty remainder of the name.
+		if (!*name && *filter != '*')
+		{
+			return qfalse;
+		}
+
 		if (*filter == '*')
 		{
 			filter++;
@@ -864,6 +876,11 @@ int Com_Filter(char *filter, char *name, int casesensitive)
 					break;
 				}
 				filter++;
+			}
+			// An unterminated character class must not advance past the string.
+			if (!*filter)
+			{
+				return qfalse;
 			}
 			filter++;
 			name++;
@@ -964,6 +981,8 @@ int Com_RealTime(qtime_t *qtime)
 
 		return 1;
 	}
+	// Callers that cannot use the failure status still need defined fields.
+	Com_Memset(qtime, 0, sizeof(*qtime));
 	return 0;
 }
 

@@ -312,6 +312,8 @@ qboolean CL_PeekSnapshot(int snapshotNumber, snapshot_t *snapshot)
 				CL_ParseSnapshot(&buf);
 				if (cl.snap.valid)
 				{
+					// Parsing writes cl.snap; retain it before filling the caller's snapshot.
+					*clSnap = cl.snap;
 					success = qtrue;
 				}
 				break;
@@ -342,7 +344,7 @@ alldone:
 			(void) FS_Seek(clc.demo.file, origPosition, FS_SEEK_SET);
 			clc.lastPacketTime  = lastPacketTimeOrig;
 			cl.parseEntitiesNum = parseEntitiesNumOrig;
-			return qtrue;  // FIXME if you fix other ents
+			return qfalse;
 		}
 
 		// write the snapshot
@@ -372,7 +374,8 @@ alldone:
 	cl.parseEntitiesNum = parseEntitiesNumOrig;
 	// TODO: configstring changes and server commands!!!
 
-	return qtrue;
+	// A successful peek must have parsed and copied a snapshot to the caller.
+	return success;
 }
 
 /**

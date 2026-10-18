@@ -702,8 +702,13 @@ void QDECL NET_OutOfBandPrint(netsrc_t sock, const netadr_t *adr, const char *fo
 void QDECL NET_OutOfBandData(netsrc_t sock, const netadr_t *adr, const char *format, int len)
 {
 	byte  string[MAX_MSGLEN * 2];
-	int   i;
 	msg_t mbuf;
+
+	// Leave room for the marker before copying the payload for compression.
+	if (len < 0 || len > (int)sizeof(string) - 4)
+	{
+		Com_Error(ERR_DROP, "NET_OutOfBandData: invalid length %i", len);
+	}
 
 	// set the header
 	string[0] = 0xff;
@@ -711,10 +716,7 @@ void QDECL NET_OutOfBandData(netsrc_t sock, const netadr_t *adr, const char *for
 	string[2] = 0xff;
 	string[3] = 0xff;
 
-	for (i = 0; i < len; i++)
-	{
-		string[i + 4] = format[i];
-	}
+	Com_Memcpy(string + 4, format, len);
 
 	mbuf.data    = string;
 	mbuf.cursize = len + 4;

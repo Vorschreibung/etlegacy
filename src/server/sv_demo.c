@@ -2209,8 +2209,8 @@ static void SV_Demo_AutoPlay_f(void)
 {
 	char fileList[30000];
 	char path[MAX_OSPATH];
-	char *arg, *fileName;
-	int  i, count;
+	char *arg = "", *fileName;
+	int  i, count, argc;
 
 	if (sv.demoState != DS_NONE && sv.demoState != DS_WAITINGPLAYBACK && sv.demoState != DS_RESTART)
 	{
@@ -2218,7 +2218,9 @@ static void SV_Demo_AutoPlay_f(void)
 		return;
 	}
 
-	if (Cmd_Argc() == 2)
+	// Keep argument handling consistent across file lookup and playlist creation.
+	argc = Cmd_Argc();
+	if (argc == 2)
 	{
 		arg = Cmd_Argv(1);
 		Com_sprintf(path, sizeof(path), "svdemos/%s", arg);
@@ -2241,7 +2243,7 @@ static void SV_Demo_AutoPlay_f(void)
 		Com_Memset(demoAutoPlay, 0, sizeof(demoAutoPlay));
 		fileName = fileList;
 
-		if (Cmd_Argc() == 2)
+		if (argc == 2)
 		{
 			arg = va("%s/", arg);
 		}
@@ -2265,7 +2267,7 @@ static void SV_Demo_AutoPlay_f(void)
 		return;
 	}
 
-	Com_Printf("No demos found in %s.\n", arg);
+	Com_Printf("No demos found in %s.\n", path);
 }
 
 /**

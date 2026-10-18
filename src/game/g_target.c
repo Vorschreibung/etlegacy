@@ -859,7 +859,8 @@ void G_KillEnts(const char *target, gentity_t *ignore, gentity_t *killer, meansO
 			continue;
 		}
 
-		if (targ->s.eType == ET_CONSTRUCTIBLE)
+		// Constructibles without a death callback use the generic removal path.
+		if (targ->s.eType == ET_CONSTRUCTIBLE && targ->die)
 		{
 			if (killer)
 			{

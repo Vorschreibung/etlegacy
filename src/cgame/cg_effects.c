@@ -314,7 +314,11 @@ void CG_Bleed(vec3_t origin, int entityNum)
 		vec3_t vhead, vbody, bOrigin, dir, vec, pvec, ndir;
 		int    i, j;
 
-		CG_GetBleedOrigin(vhead, vbody, entityNum);
+		// Missing client information or models cannot provide a blood origin.
+		if (!CG_GetBleedOrigin(vhead, vbody, entityNum))
+		{
+			return;
+		}
 
 		// project the impact point onto the vector defined by torso -> head
 		ProjectPointOntoVector(origin, vbody, vhead, bOrigin);

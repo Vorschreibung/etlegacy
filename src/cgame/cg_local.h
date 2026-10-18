@@ -3237,7 +3237,7 @@ void CG_ParticleImpactSmokePuffExtended(qhandle_t pshader, vec3_t origin, int li
 #ifdef BLOOD_PARTICLE_TRAIL
 void CG_Particle_Bleed(qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEntityNum, int duration);
 #endif
-void CG_GetBleedOrigin(vec3_t head_origin, vec3_t body_origin, int fleshEntityNum);
+qboolean CG_GetBleedOrigin(vec3_t head_origin, vec3_t body_origin, int fleshEntityNum);
 void CG_Particle_OilParticle(qhandle_t pshader, vec3_t origin, vec3_t dir, int ptime, int snum);
 void CG_Particle_OilSlick(qhandle_t pshader, centity_t *cent);
 void CG_OilSlickRemove(centity_t *cent);

@@ -178,9 +178,10 @@ static void UpdateIPBans(ipFilterList_t *ipFilterList)
 			continue;
 		}
 
-		*(unsigned *)b = ipFilterList->ipFilters[i].compare;
-		*(unsigned *)m = ipFilterList->ipFilters[i].mask;
-		*ip            = 0;
+		// Preserve the stored byte order without unaligned, aliased integer writes.
+		Com_Memcpy(b, &ipFilterList->ipFilters[i].compare, sizeof(b));
+		Com_Memcpy(m, &ipFilterList->ipFilters[i].mask, sizeof(m));
+		*ip = 0;
 		for (j = 0; j < 4 ; j++)
 		{
 			if (m[j] != 255)

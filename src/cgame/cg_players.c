@@ -3364,7 +3364,7 @@ void CG_ResetPlayerEntity(centity_t *cent)
  * @param[in] body_origin
  * @param[in] fleshEntityNum
  */
-void CG_GetBleedOrigin(vec3_t head_origin, vec3_t body_origin, int fleshEntityNum)
+qboolean CG_GetBleedOrigin(vec3_t head_origin, vec3_t body_origin, int fleshEntityNum)
 {
 	clientInfo_t   *ci = &cgs.clientinfo[fleshEntityNum];
 	refEntity_t    body;
@@ -3374,7 +3374,7 @@ void CG_GetBleedOrigin(vec3_t head_origin, vec3_t body_origin, int fleshEntityNu
 
 	if (!ci->infoValid)
 	{
-		return;
+		return qfalse;
 	}
 
 	character = CG_CharacterForClientinfo(ci, NULL);
@@ -3391,14 +3391,14 @@ void CG_GetBleedOrigin(vec3_t head_origin, vec3_t body_origin, int fleshEntityNu
 	body.hModel = character->mesh;
 	if (!body.hModel)
 	{
-		return;
+		return qfalse;
 	}
 
 	head.hModel = character->hudhead;
 	if (!head.hModel)
 	{
 		CG_Printf("Warning: CG_GetBleedOrigin w/o model.\n");
-		return;
+		return qfalse;
 	}
 
 	VectorCopy(cent->lerpOrigin, body.origin);
@@ -3411,6 +3411,7 @@ void CG_GetBleedOrigin(vec3_t head_origin, vec3_t body_origin, int fleshEntityNu
 
 	VectorCopy(head.origin, head_origin);
 	VectorCopy(body.origin, body_origin);
+	return qtrue;
 }
 
 /**

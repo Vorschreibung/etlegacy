@@ -65,7 +65,7 @@ CHECKERS = (
     # "apiModeling.llvm.CastValue",
     # "apiModeling.llvm.ReturnValue",
     # "core.BitwiseShift",
-    # "core.CallAndMessage", # TODO
+    "core.CallAndMessage",
     "core.DivideZero",
     # "core.DynamicTypePropagation",
     # "core.NonNullParamChecker",
@@ -77,7 +77,8 @@ CHECKERS = (
     # "core.VLASize",
     # "core.builtin.AssumeModeling",
     # "core.builtin.BuiltinFunctions",
-    # "core.builtin.NoReturnFunctions",
+    # Stop paths at fatal errors and failed assertions before checking arguments.
+    "core.builtin.NoReturnFunctions",
     # "core.uninitialized.ArraySubscript",
     # "core.uninitialized.Assign",
     # "core.uninitialized.Branch",

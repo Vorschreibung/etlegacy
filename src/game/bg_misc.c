@@ -2782,8 +2782,10 @@ void BG_CalculateSpline_r(splinePath_t *spline, vec3_t out1, vec3_t out2, float 
 	}
 	if (!spline->next)
 	{
+		// A spline without a target reduces to its starting point.
+		VectorCopy(spline->point.origin, out1);
+		VectorCopy(spline->point.origin, out2);
 		return;
-		//Com_Error( ERR_DROP, "Spline (%s) with no target referenced", spline->point.name );
 	}
 	VectorCopy(spline->next->point.origin, points[i + 1]);
 
@@ -3140,6 +3142,8 @@ void BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result, qb
 	case TR_SPLINE:
 		if (!(pSpline = BG_GetSplineData(splinePath, &backwards)))
 		{
+			// Keep the trajectory at its base when its spline is unavailable.
+			VectorCopy(tr->trBase, result);
 			return;
 		}
 
@@ -3267,6 +3271,8 @@ void BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result, qb
 	case TR_LINEAR_PATH:
 		if (!(pSpline = BG_GetSplineData(splinePath, &backwards)))
 		{
+			// Keep the trajectory at its base when its spline is unavailable.
+			VectorCopy(tr->trBase, result);
 			return;
 		}
 

@@ -743,7 +743,8 @@ int PC_ExpandBuiltinDefine(source_t *source, token_t *deftoken, define_t *define
 int PC_ExpandDefine(source_t *source, token_t *deftoken, define_t *define,
                     token_t **firsttoken, token_t **lasttoken)
 {
-	token_t *parms[MAX_DEFINEPARMS], *dt, *pt, *t;
+	// Object-like defines have no argument token lists to expand or release.
+	token_t *parms[MAX_DEFINEPARMS] = { NULL }, *dt, *pt, *t;
 	token_t *t1, *t2, *first, *last, *nextpt, token;
 	int     parmnum, i;
 

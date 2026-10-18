@@ -321,7 +321,7 @@ void CG_ClearCamera(void)
 
 static cameraPoint_t *CG_GetNewCameraPoint(void)
 {
-	if (cameraInfo.cameraPointOffset + 1 >= MAX_CAMERA_POINTS)
+	if (cameraInfo.cameraPointOffset >= MAX_CAMERA_POINTS)
 	{
 		return NULL;
 	}
@@ -340,12 +340,18 @@ void CG_CameraAddCurrentPoint(void)
 	cameraPoint_t *point = CG_GetNewCameraPoint();
 	cameraPoint_t *last  = cameraInfo.currentCamera;
 
+	// Stop when the fixed camera point pool is full.
+	if (!point)
+	{
+		return;
+	}
+
 	while (last && last->next)
 	{
 		last = last->next;
 	}
 
-	if (last != point)
+	if (last && last != point)
 	{
 		last->next  = point;
 		point->prev = last;
@@ -360,6 +366,12 @@ void CG_CameraAddCurrentPoint(void)
 void CG_AddControlPoint(void)
 {
 	cameraPoint_t *last = cameraInfo.currentCamera;
+
+	// Control points require an existing camera point.
+	if (!last)
+	{
+		return;
+	}
 
 	while (last && last->next)
 	{
@@ -382,7 +394,8 @@ void CG_PlayCurrentCamera(unsigned int seconds)
 	vec3_t        bezCt1, bezCt2;
 	cameraPoint_t *last = cameraInfo.currentCamera;
 
-	if (!seconds)
+	// Playback needs a camera path and a snapshot to save the viewer position.
+	if (!seconds || !last || !cg.snap)
 	{
 		return;
 	}

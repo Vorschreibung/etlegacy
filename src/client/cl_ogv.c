@@ -367,7 +367,8 @@ static int OGV_LoadVideoFrame(cinematic_t *cin)
 				Com_DPrintf("Theora new resolution %dx%d\n", cin->frameWidth, cin->frameHeight);
 			}
 
-			if (cin->frameBufferSize < g_ogm->th_info.width * g_ogm->th_info.height)
+			// A retained capacity does not guarantee that the output buffer exists.
+			if (!cin->frameBuffer[0] || cin->frameBufferSize < g_ogm->th_info.width * g_ogm->th_info.height)
 			{
 
 				cin->frameBufferSize = g_ogm->th_info.width * g_ogm->th_info.height;

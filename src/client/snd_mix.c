@@ -543,7 +543,12 @@ static void S_PaintChannelFrom16_scalar(channel_t *ch, const sfx_t *sc, int coun
 
 			if (sampleOffset == SND_CHUNK_SIZE)
 			{
-				chunk        = chunk->next;
+				// Wrap at the end of the chunk chain, as for the initial offset.
+				chunk = chunk->next;
+				if (!chunk)
+				{
+					chunk = sc->soundData;
+				}
 				samples      = chunk->sndChunk;
 				sampleOffset = 0;
 			}
@@ -759,7 +764,12 @@ void S_PaintChannelFromMuLaw(channel_t *ch, sfx_t *sc, int count, int sampleOffs
 			samples++;
 			if (samples == (byte *)chunk->sndChunk + (SND_CHUNK_SIZE * 2))
 			{
-				chunk   = chunk->next;
+				// Wrap at the end of the chunk chain, as for the initial offset.
+				chunk = chunk->next;
+				if (!chunk)
+				{
+					chunk = sc->soundData;
+				}
 				samples = (byte *)chunk->sndChunk;
 			}
 		}

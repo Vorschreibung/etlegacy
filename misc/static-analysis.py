@@ -70,7 +70,7 @@ CHECKERS = (
     # "core.DynamicTypePropagation",
     # "core.NonNullParamChecker",
     # "core.NonnilStringConstants",
-    # "core.NullDereference", # TODO
+    "core.NullDereference",
     # "core.NullPointerArithm",
     "core.StackAddressEscape",
     # "core.UndefinedBinaryOperatorResult",

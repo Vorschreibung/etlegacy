@@ -634,7 +634,8 @@ void RespawnItem(gentity_t *ent)
 		}
 		master = ent->teammaster;
 
-		for (count = 0, ent = master; ent; ent = ent->teamchain, count++)
+		// The validated master is always the first member of the team.
+		for (count = 1, ent = master->teamchain; ent; ent = ent->teamchain, count++)
 			;
 
 		choice = rand() % count;

@@ -303,7 +303,8 @@ void CG_AddBloodTrails(vec3_t origin, vec3_t dir, int speed, int duration, int c
  */
 void CG_Bleed(vec3_t origin, int entityNum)
 {
-	if (!cg_blood.integer)
+	// A snapshot is required to identify the local player.
+	if (!cg_blood.integer || !cg.snap)
 	{
 		return;
 	}

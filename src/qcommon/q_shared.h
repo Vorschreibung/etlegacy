@@ -695,6 +695,8 @@ void COM_DefaultExtension(char *path, size_t maxSize, const char *extension);
 
 void COM_BeginParseSession(const char *name);
 
+void COM_EndParseSession(void);
+
 void COM_RestoreParseSession(char **data_p);
 
 void COM_SetCurrentParseLine(int line);

@@ -448,6 +448,10 @@ void CG_EDV_RunInput(void)
 	// Do the move
 	Pmove(&cg_pmove);
 
+	// The camera movement state only lives for this call.
+	cg_pmove.ps    = NULL;
+	cg_pmove.pmext = NULL;
+
 	// Update cam
 	cgs.demoCamera.commandTime = edv_ps.commandTime;
 	VectorCopy(edv_ps.origin, cgs.demoCamera.camOrigin);

@@ -1322,4 +1322,7 @@ void TVG_Pmove(pmove_t *pmove)
 			pmove->cmd.upmove = 20;
 		}
 	}
+
+	// The caller may have supplied a movement structure on its stack.
+	pm = NULL;
 }

@@ -419,6 +419,12 @@ void COM_BeginParseSession(const char *name)
 	Com_sprintf(com_parser.com_parsename, sizeof(com_parser.com_parsename), "%s", name);
 }
 
+// Release the rewind pointer before the caller's input buffer expires.
+void COM_EndParseSession(void)
+{
+	com_parser.backup_text = NULL;
+}
+
 /**
  * @brief COM_BackupParseSession
  * @param[in] data_p

@@ -2174,6 +2174,9 @@ qboolean CG_ParseMapVotePlayersCountConfig(void)
 		mapVotePlayersCount[i].max = Q_atoi(token);
 	}
 
+	// Drop the parser's reference to the local text buffer before returning.
+	COM_EndParseSession();
+
 	if (i == MAX_MAPVOTEPLAYERCOUNT)
 	{
 		G_Printf("G_ParseMapVotePlayersCountConfig: Too much map registered in file %s, max is %d\n", filename, MAX_MAPVOTEPLAYERCOUNT);

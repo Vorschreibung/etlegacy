@@ -198,6 +198,9 @@ static qboolean CG_ParsePatriclesConfig(void)
 		}
 	}
 
+	// Drop the parser's reference to the local text buffer on all parsed paths.
+	COM_EndParseSession();
+
 	if (i == MAX_SHADER_ANIMS)
 	{
 		CG_Printf("CG_ParseParticlesConfig: Error parsing particles animation file: %s\n", PARTICLES_CFG_NAME);

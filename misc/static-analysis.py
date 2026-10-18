@@ -72,7 +72,7 @@ CHECKERS = (
     # "core.NonnilStringConstants",
     # "core.NullDereference", # TODO
     # "core.NullPointerArithm",
-    # "core.StackAddressEscape", # TODO
+    "core.StackAddressEscape",
     # "core.UndefinedBinaryOperatorResult",
     # "core.VLASize",
     # "core.builtin.AssumeModeling",

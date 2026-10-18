@@ -1005,7 +1005,8 @@ void ammo_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 		count = (int)(MIN(clientcount, self->health / (float)self->damage));
 	}
 
-	for (i = 0; i < count; i++)
+	// Keep the distribution bounded by the clients collected above.
+	for (i = 0; i < count && i < clientcount; i++)
 	{
 		// self->damage contains the amount of ammo to add
 		if (AddMagicAmmo(touchClients[i], self->damage))

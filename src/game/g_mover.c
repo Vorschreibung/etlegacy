@@ -1576,6 +1576,12 @@ void Use_BinaryMover(gentity_t *ent, gentity_t *other, gentity_t *activator)
 	// only the master should be used
 	if (ent->flags & FL_TEAMSLAVE)
 	{
+		// An orphaned team slave cannot forward activation to a master.
+		if (!ent->teammaster)
+		{
+			return;
+		}
+
 		// pass along flags for how door was activated
 		if (ent->flags & FL_KICKACTIVATE)
 		{

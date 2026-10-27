@@ -7,970 +7,595 @@
 #                                     __/ |                  __/ |
 #                                    |___/                  |___/
 # 2024 Legacy team
+#
+# One pipeline for pull requests, master and releases. Every run builds and
+# packages all platforms and checks the results. Release runs (tags, the weekly
+# schedule and opted-in manual runs on master) additionally merge the mod of
+# every platform into one pk3, sign the Windows builds and publish everything.
 name: ETLBuild
 
 on:
+  pull_request:
+    branches: [master]
   push:
-    tags:
-      - "v*"
-  workflow_dispatch:
+    branches: [master]
+    tags: ["v*"]
   schedule:
     - cron: "0 0 * * FRI"
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Merge the mod pk3, sign and publish the build
+        type: boolean
+        default: false
+
+# Pull requests cancel their superseded runs, every other run is kept.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
-  # Try to figure out the build version information only once
-  pre-build:
+  version:
     runs-on: ubuntu-latest
     outputs:
       describe: ${{ steps.git.outputs.describe }}
       tag: ${{ steps.git.outputs.tag }}
       uid: ${{ steps.git.outputs.uid }}
+      release: ${{ steps.git.outputs.release }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true
 
+      - uses: prefix-dev/setup-pixi@v0.10.2
+        with:
+          pixi-version: v0.81.0
+          cache: true
+
+      - name: Check changes
+        run: pixi run check-changes --github "origin/master"
+
       - name: Fetch git version information
         id: git
+        env:
+          RELEASE: ${{ (github.ref_type == 'tag' || github.ref == 'refs/heads/master' && (github.event_name == 'schedule' || inputs.release)) && 'true' || 'false' }}
         run: |
           git fetch --tags --force
           git_describe=$(git describe --abbrev=7 2>/dev/null | awk '{$1=$1};1')
           git_tag=$(git describe --abbrev=0 2>/dev/null | awk '{$1=$1};1')
-          ci_id=$(uuidgen)
-          echo "Version info: $git_describe ?? $git_tag"
+          echo "Version info: $git_describe ?? $git_tag (release: $RELEASE)"
           {
             echo "describe=$git_describe"
             echo "tag=$git_tag"
-            echo "uid=$ci_id"
+            echo "uid=$(uuidgen)"
+            echo "release=$RELEASE"
           } >> "$GITHUB_OUTPUT"
 
-  #   __  __               _                                                  _     _
-  #  |  \/  |             | |                                                | |   (_)
-  #  | \  / |   ___     __| |     __ _    ___   _ __     ___   _ __    __ _  | |_   _    ___    _ __
-  #  | |\/| |  / _ \   / _` |    / _` |  / _ \ | '_ \   / _ \ | '__|  / _` | | __| | |  / _ \  | '_ \
-  #  | |  | | | (_) | | (_| |   | (_| | |  __/ | | | | |  __/ | |    | (_| | | |_  | | | (_) | | | | |
-  #  |_|  |_|  \___/   \__,_|    \__, |  \___| |_| |_|  \___| |_|     \__,_|  \__| |_|  \___/  |_| |_|
-  #                               __/ |
-  #                              |___/
-
-  lnx64-mod:
+  # Publish build images for changed Dockerfiles. Nothing waits for this:
+  # platform builds build a still missing image locally instead.
+  images:
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    needs: pre-build
+    strategy:
+      matrix:
+        image: [lnx-build, lnx-aarch64-build, android-build]
     steps:
       - uses: actions/checkout@v7
+
+      - name: Login to DockerHub Registry
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+      - name: Publish image
+        run: misc/ci/docker.sh publish ${{ matrix.image }}
+
+  #   __  __               _
+  #  |  \/  |             | |
+  #  | \  / |   ___     __| |  ___
+  #  | |\/| |  / _ \   / _` | / __|
+  #  | |  | | | (_) | | (_| | \__ \
+  #  |_|  |_|  \___/   \__,_| |___/
+  #
+  # Release only: build the mod libraries of every platform, then merge them
+  # into the single pk3 that all packages ship.
+  mods:
+    name: ${{ matrix.name }}-mod
+    needs: version
+    if: needs.version.outputs.release == 'true'
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: ${{ startsWith(matrix.os, 'windows') && 'cmd' || 'bash' }}
+    env:
+      CI_ETL_DESCRIBE: ${{ needs.version.outputs.describe }}
+      CI_ETL_TAG: ${{ needs.version.outputs.tag }}
+    strategy:
+      # Linux builds run in the legacy build images through docker.sh, because
+      # the checkout and artifact actions cannot run inside those images.
+      matrix: &platforms
+        include:
+          - name: lnx64
+            os: ubuntu-latest
+            lib: .so
+            build: misc/ci/docker.sh run lnx-build ./easybuild.sh build -64
+            package: misc/ci/docker.sh run lnx-build sh -c 'cd build && cpack'
+          - name: lnx32
+            os: ubuntu-latest
+            lib: .so
+            build: misc/ci/docker.sh run lnx-build ./easybuild.sh build -32
+            package: misc/ci/docker.sh run lnx-build sh -c 'cd build && cpack'
+          - name: lnx-aarch64
+            os: ubuntu-latest
+            lib: .so
+            build: misc/ci/docker.sh run lnx-aarch64-build ./easybuild.sh build -RPIT -ninja
+            package: misc/ci/docker.sh run lnx-aarch64-build sh -c 'cd build && cpack'
+          - name: osx
+            os: macos-15
+            lib: _mac
+            build: SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk DEVELOPER_DIR=/Library/Developer/CommandLineTools ./easybuild.sh build -64 --osx=10.10 --osx-arc="x86_64;arm64" -j
+            package: ./easybuild.sh package -64 --osx=10.10 --osx-arc="x86_64;arm64" -j
+          - name: win
+            os: windows-2022
+            lib: .dll
+            build: call .\easybuild.bat build
+            package: cd build && cpack
+          - name: win64
+            os: windows-2022
+            lib: .dll
+            build: call .\easybuild.bat build -64
+            package: cd build && cpack
+    steps:
+      - &checkout
+        uses: actions/checkout@v7
         with:
           submodules: true
 
-      - name: Build
-        env:
-          CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-          CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-          CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-        uses: maus007/docker-run-action-fork@v1
-        with:
-          image: etlegacy/lnx-build:latest
-          options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI_ETL_UID=${{needs.pre-build.outputs.uid}} -e CI=true
-          run: |
-            git config --global --add safe.directory /code
-            ./easybuild.sh build -64 -mod
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: lnx64-mod
-          path: |
-            build/legacy/cgame*.so
-            build/legacy/ui*.so
-            build/legacy/qagame*.so
-            build/legacy/tvgame*.so
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: incomplete-mod-pk3
-          path: build/legacy/legacy_*.pk3
-          if-no-files-found: error
-
-  lnx32-mod:
-    runs-on: ubuntu-latest
-    needs: pre-build
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Build
-        env:
-          CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-          CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-          CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-        uses: maus007/docker-run-action-fork@v1
-        with:
-          image: etlegacy/lnx-build:latest
-          options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI_ETL_UID=${{needs.pre-build.outputs.uid}} -e CI=true
-          run: |
-            git config --global --add safe.directory /code
-            ./easybuild.sh build -mod
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: lnx32-mod
-          path: |
-            build/legacy/cgame*.so
-            build/legacy/ui*.so
-            build/legacy/qagame*.so
-            build/legacy/tvgame*.so
-          if-no-files-found: error
-
-  lnx-aarch64-mod:
-    runs-on: ubuntu-latest
-    needs: pre-build
-    container:
-      image: etlegacy/lnx-aarch64-build
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Build
-        env:
-          CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-          CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-          CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
+      - &brew
+        name: Install dependencies
+        if: runner.os == 'macOS'
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          ./easybuild.sh build -RPIT -mod -ninja
+          brew bundle
+          brew install freetype librsvg graphicsmagick imagemagick
 
+      - name: Build mod
+        run: ${{ matrix.build }} -mod
+
+      # lnx64 also provides the pk3 that collects every platform's libraries.
       - uses: actions/upload-artifact@v7
         with:
-          name: lnx-aarch64-mod
+          name: ${{ matrix.name }}-mod
           path: |
-            build/legacy/cgame*.so
-            build/legacy/ui*.so
-            build/legacy/qagame*.so
-            build/legacy/tvgame*.so
+            build/legacy/cgame*${{ matrix.lib }}
+            build/legacy/ui*${{ matrix.lib }}
+            build/legacy/qagame*${{ matrix.lib }}
+            build/legacy/tvgame*${{ matrix.lib }}
+            ${{ matrix.name == 'lnx64' && 'build/legacy/legacy_*.pk3' || '' }}
           if-no-files-found: error
-
-  osx-mod:
-    runs-on: macos-15
-    needs: pre-build
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Install dependencies
-        run: brew bundle
-
-      - name: List dev tools
-        run: |
-          # shellcheck disable=SC2010
-          ls -la /Applications/ | grep Xcode
-          ls -la /Library/Developer/CommandLineTools/SDKs/
-          xcode-select --print-path
-          xcrun -sdk macosx --show-sdk-path
-
-      - name: Build
-        env:
-          SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
-          DEVELOPER_DIR: /Library/Developer/CommandLineTools
-          CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-          CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-          CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-        shell: bash
-        run: |
-          ./easybuild.sh build -64 -mod --osx=10.10 --osx-arc="x86_64;arm64" -j
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: osx-mod
-          path: |
-            build/legacy/cgame_mac
-            build/legacy/ui_mac
-            build/legacy/qagame_mac
-            build/legacy/tvgame_mac
-          if-no-files-found: error
-
-  win-mod:
-    runs-on: windows-2022
-    needs: pre-build
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Build
-        shell: cmd
-        env:
-          CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-          CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-          CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-        run: |
-          call .\easybuild.bat build -mod
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: win-mod
-          path: |
-            build/legacy/cgame*.dll
-            build/legacy/ui*.dll
-            build/legacy/qagame*.dll
-            build/legacy/tvgame*.dll
-          if-no-files-found: error
-
-  win64-mod:
-    runs-on: windows-2022
-    needs: pre-build
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Build
-        shell: cmd
-        env:
-          CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-          CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-          CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-        run: |
-          call .\easybuild.bat build -mod -64
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: win64-mod
-          path: |
-            build/legacy/cgame*.dll
-            build/legacy/ui*.dll
-            build/legacy/qagame*.dll
-            build/legacy/tvgame*.dll
-          if-no-files-found: error
+          retention-days: 1
 
   android-mod:
+    needs: version
+    if: needs.version.outputs.release == 'true'
     runs-on: ubuntu-latest
-    needs: pre-build
-    env:
+    container:
+      image: etlegacy/android-build
+    env: &android-env
       SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGN_APK_ALLIAS }}
       SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
       SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
-      CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-      CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-      CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-    container:
-      image: etlegacy/android-build
+      # Only the main repository has the signing secrets of release builds.
+      ANDROID_VARIANT: ${{ github.repository == 'etlegacy/etlegacy' && needs.version.outputs.release == 'true' && 'Release' || 'Debug' }}
+      CI_ETL_DESCRIBE: ${{ needs.version.outputs.describe }}
+      CI_ETL_TAG: ${{ needs.version.outputs.tag }}
     steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-          fetch-depth: 0
+      - *checkout
 
-      - name: Setup JDK
+      - &setup-java
+        name: Setup JDK
         uses: actions/setup-java@v6
         with:
           distribution: "temurin"
           java-version: "17"
 
-      - name: Build JoyStick Dependency
+      - &joystick
+        name: Build JoyStick Dependency
         working-directory: ./app/libs/joystick
         run: |
           ./gradlew clean               --stacktrace --info
           ./gradlew assembleRelease     --stacktrace --info
           ./gradlew publishToMavenLocal --stacktrace --info
 
-      - name: Upload JoyStick Dependency Artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: android-joystick-packages
-          path: "/root/.m2/repository/com/etlegacy/android/joystick/"
-          if-no-files-found: error
-
-      - name: Build Release
-        if: github.repository == 'etlegacy/etlegacy'
+      - &gradle
+        name: Build APK
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          ./gradlew clean assembleRelease --stacktrace --info
-          ls -R
-      - name: Build Debug
-        if: github.repository != 'etlegacy/etlegacy'
+          ./gradlew clean "assemble$ANDROID_VARIANT" --stacktrace --info
+
+      - name: Collect mod libraries
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          ./gradlew clean assembleDebug --stacktrace --info
-          ls -R
+          for apk in app/build/outputs/apk/*/*.apk; do
+            unzip -o -j "$apk" 'lib/*/libcgame*' 'lib/*/libui*' -d mod
+          done
 
-      - name: Prepare artifacts
-        run: |
-          mv ./app/build/intermediates/merged_native_libs/*/mergeReleaseNativeLibs/out/lib/arm64-v8a/libcgame*.so .
-          mv ./app/build/intermediates/merged_native_libs/*/mergeReleaseNativeLibs/out/lib/arm64-v8a/libui*.so .
-          mv ./app/build/intermediates/merged_native_libs/*/mergeReleaseNativeLibs/out/lib/x86/libcgame*.so .
-          mv ./app/build/intermediates/merged_native_libs/*/mergeReleaseNativeLibs/out/lib/x86/libui*.so .
-          mv ./app/build/intermediates/merged_native_libs/*/mergeReleaseNativeLibs/out/lib/x86_64/libcgame*.so .
-          mv ./app/build/intermediates/merged_native_libs/*/mergeReleaseNativeLibs/out/lib/x86_64/libui*.so .
-          ls -ltrah
-
-      - name: Upload arm64-v8a
-        uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v7
         with:
-          name: android-arm64-mod
-          path: |
-            libcgame*arm64*.so
-            libui*arm64*.so
+          name: android-mod
+          path: mod/
           if-no-files-found: error
+          retention-days: 1
 
-      - name: Upload x86
-        uses: actions/upload-artifact@v7
-        with:
-          name: android-x86-mod
-          path: |
-            libcgame*i386.so
-            libui*i386.so
-          if-no-files-found: error
-
-      - name: Upload x86_64
-        uses: actions/upload-artifact@v7
-        with:
-          name: android-x86_64-mod
-          path: |
-            libcgame*x86_64.so
-            libui*x86_64.so
-          if-no-files-found: error
-
-  #   __  __                                                          _
-  #  |  \/  |                                                        | |
-  #  | \  / |   ___   _ __    __ _    ___     _ __ ___     ___     __| |  ___
-  #  | |\/| |  / _ \ | '__|  / _` |  / _ \   | '_ ` _ \   / _ \   / _` | / __|
-  #  | |  | | |  __/ | |    | (_| | |  __/   | | | | | | | (_) | | (_| | \__ \
-  #  |_|  |_|  \___| |_|     \__, |  \___|   |_| |_| |_|  \___/   \__,_| |___/
-  #                           __/ |
-  #                          |___/
-  # Since lnx32 is installing the most, use it as the step that combines all the other steps mod files.
-  # This step also generates the final packages for 32 bit lnx.
-  mod-merger:
+  pk3:
+    needs: [version, mods, android-mod]
     runs-on: ubuntu-latest
-    needs:
-      [
-        pre-build,
-        lnx64-mod,
-        lnx32-mod,
-        osx-mod,
-        win-mod,
-        win64-mod,
-        lnx-aarch64-mod,
-        android-mod,
-      ]
     steps:
-      - uses: actions/download-artifact@v8
-        with:
-          name: incomplete-mod-pk3
-
       - uses: actions/download-artifact@v8
         with:
           pattern: "*-mod"
           path: platforms
           merge-multiple: true
 
-      - name: Create supported platform manifest
-        shell: bash
+      - name: Merge mod files
         run: |
           echo "win_x86 win_x86_64 lnx_x86 lnx_x86_64 macos_x86_64 macos_aarch64 lnx_armv8_64 android_aarch64 android_x86 android_x86_64" > platforms.manifest
-
-      - name: Merge mod files
-        shell: bash
-        run: |
+          mv platforms/legacy_*.pk3 .
           zip -rvj -MM legacy_*.pk3 platforms.manifest platforms/cgame* platforms/ui* platforms/libcgame* platforms/libui*
-
-      - name: Create mod zip
-        shell: bash
-        run: |
-          zip -rvj -MM etlegacy-mod-${{needs.pre-build.outputs.describe}}.zip legacy_*.pk3 platforms/qagame* platforms/tvgame*
-
-      - name: Remove old artifacts
-        uses: geekyeggo/delete-artifact@v6
-        with:
-          failOnError: false
-          name: |
-            incomplete-mod-pk3
-            *-mod
+          zip -rvj -MM "etlegacy-mod-${{ needs.version.outputs.describe }}.zip" legacy_*.pk3 platforms/qagame* platforms/tvgame*
 
       - uses: actions/upload-artifact@v7
         with:
-          name: All-mods
+          name: mod-pk3
           path: legacy_*.pk3
           if-no-files-found: error
+          retention-days: 1
 
       - uses: actions/upload-artifact@v7
         with:
           name: mod-zip
           path: etlegacy-mod-*.zip
           if-no-files-found: error
+          retention-days: 1
 
-  #   ______   _                   _                            _
-  #  |  ____| (_)                 | |                          | |
-  #  | |__     _   _ __     __ _  | |    _ __     __ _    ___  | | __   __ _    __ _    ___   ___
-  #  |  __|   | | | '_ \   / _` | | |   | '_ \   / _` |  / __| | |/ /  / _` |  / _` |  / _ \ / __|
-  #  | |      | | | | | | | (_| | | |   | |_) | | (_| | | (__  |   <  | (_| | | (_| | |  __/ \__ \
-  #  |_|      |_| |_| |_|  \__,_| |_|   | .__/   \__,_|  \___| |_|\_\  \__,_|  \__, |  \___| |___/
-  #                                     | |                                     __/ |
-  #                                     |_|                                    |___/
-  # Generate the final packages for Lnx, macOS, Windows and Android
-  lnx64:
-    runs-on: ubuntu-latest
-    needs: [pre-build, mod-merger]
+  #   _____                 _
+  #  |  __ \               | |
+  #  | |__) |   __ _    ___| | __   __ _    __ _    ___   ___
+  #  |  ___/   / _` |  / __| |/ /  / _` |  / _` |  / _ \ / __|
+  #  | |      | (_| | | (__|   <  | (_| | | (_| | |  __/ \__ \
+  #  |_|       \__,_|  \___|_|\_\  \__,_|  \__, |  \___| |___/
+  #                                         __/ |
+  #                                        |___/
+  packages:
+    # The compiler warning check finds build logs by these exact job names.
+    name: ${{ matrix.name }}
+    needs: [version, pk3]
+    # pk3 only runs for releases, but skipping it must not skip the builds.
+    if: ${{ !cancelled() && !failure() }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: ${{ startsWith(matrix.os, 'windows') && 'cmd' || 'bash' }}
     env:
-      CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-      CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-      CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
+      CI_ETL_DESCRIBE: ${{ needs.version.outputs.describe }}
+      CI_ETL_TAG: ${{ needs.version.outputs.tag }}
+    strategy:
+      matrix: *platforms
     steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
+      - *checkout
+      - *brew
 
       - name: Build
-        uses: maus007/docker-run-action-fork@v1
-        with:
-          image: etlegacy/lnx-build:latest
-          options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI_ETL_UID=${{needs.pre-build.outputs.uid}} -e CI=true
-          run: |
-            git config --global --add safe.directory /code
-            ./easybuild.sh build -64
+        run: ${{ matrix.build }}
 
-      - name: Change Owner of Container Working Directory
-        run: |
-          action_name=$(whoami)
-          action_group=$(groups "$action_name" | awk '{print $3}')
-          sudo chown "${action_name}:${action_group}" -R .
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: All-mods
-          path: build/legacy
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: build/legacy
-
-      - name: Generate packages
-        uses: maus007/docker-run-action-fork@v1
-        with:
-          image: etlegacy/lnx-build:latest
-          options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI=true
-          run: |
-            cd build/
-            cpack
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: lnx64-packages
-          path: |
-            build/etlegacy-*.tar.gz
-            build/etlegacy-*.sh
-          if-no-files-found: error
-
-  lnx32:
-    runs-on: ubuntu-latest
-    needs: [pre-build, mod-merger]
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Build
-        uses: maus007/docker-run-action-fork@v1
-        with:
-          image: etlegacy/lnx-build:latest
-          options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI_ETL_UID=${{needs.pre-build.outputs.uid}} -e CI=true
-          run: |
-            git config --global --add safe.directory /code
-            ./easybuild.sh build -32
-
-      - name: Change Owner of Container Working Directory
-        run: |
-          action_name=$(whoami)
-          action_group=$(groups "$action_name" | awk '{print $3}')
-          sudo chown "${action_name}:${action_group}" -R .
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: All-mods
-          path: build/legacy
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: build/legacy
-
-      - name: Generate packages
-        uses: maus007/docker-run-action-fork@v1
-        with:
-          image: etlegacy/lnx-build:latest
-          options: -v ${{ github.workspace }}:/code -e CI_ETL_DESCRIBE=${{needs.pre-build.outputs.describe}} -e CI_ETL_TAG=${{needs.pre-build.outputs.tag}} -e CI=true
-          run: |
-            cd build/
-            cpack
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: lnx32-packages
-          path: |
-            build/etlegacy-*.tar.gz
-            build/etlegacy-*.sh
-          if-no-files-found: error
-
-  lnx-aarch64:
-    runs-on: ubuntu-latest
-    needs: [pre-build, mod-merger]
-    container:
-      image: etlegacy/lnx-aarch64-build
-    env:
-      CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-      CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-      CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Build
-        run: |
-          ./easybuild.sh build -RPIT -ninja
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: All-mods
-          path: build/legacy
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: build/legacy
-
-      - name: Generate packages
-        shell: bash
-        working-directory: build
-        run: cpack
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: lnx-aarch64-packages
-          path: |
-            build/etlegacy-*.tar.gz
-            build/etlegacy-*.sh
-          if-no-files-found: error
-
-  osx:
-    runs-on: macos-15
-    needs: [pre-build, mod-merger]
-    env:
-      CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-      CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-      CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Install dependencies
-        run: |
-          brew bundle
-          brew install freetype librsvg graphicsmagick imagemagick
-
-      - name: Build
-        env:
-          SDKROOT: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
-          DEVELOPER_DIR: /Library/Developer/CommandLineTools
-        shell: bash
-        run: |
-          ./easybuild.sh build -64 --osx=10.10 --osx-arc="x86_64;arm64" -j
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: All-mods
-          path: build/legacy
-
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: build/legacy
-
-      - name: Generate packages
-        shell: bash
-        run: ./easybuild.sh package -64 --osx=10.10 --osx-arc="x86_64;arm64" -j
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: osx-packages
-          path: |
-            build/etlegacy-*.tar.gz
-            build/etlegacy-*.dmg
-          if-no-files-found: error
-
-  win:
-    runs-on: windows-2022
-    needs: [pre-build, mod-merger]
-    outputs:
-      win: ${{ steps.artifact-upload-step.outputs.artifact-id }}
-    env:
-      CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-      CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-      CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Build
-        shell: cmd
-        run: |
-          call .\easybuild.bat build
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: All-mods
-          path: build/legacy
-
-      - name: Display structure of downloaded files
-        run: dir
-        working-directory: build/legacy
-
-      - name: Upload Win etl.exe
-        uses: actions/upload-artifact@v7
-        id: artifact-exe-upload-step
-        with:
-          name: win-exe
-          path: |
-            build/etl.exe
-          if-no-files-found: error
-
-      - name: SignPath Win Exe Snapshot
-        uses: signpath/github-action-submit-signing-request@v1.3
-        with:
-          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
-          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
-          project-slug: "etlegacy"
-          signing-policy-slug: "test-signing"
-          github-artifact-id: "${{steps.artifact-exe-upload-step.outputs.artifact-id}}"
-          wait-for-completion: true
-          output-artifact-directory: "win-exe"
-
-      - name: SignPath Win Exe Release
-        uses: signpath/github-action-submit-signing-request@v1.3
-        if: github.ref_type == 'tag'
-        with:
-          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
-          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
-          project-slug: "etlegacy"
-          signing-policy-slug: "release-signing"
-          github-artifact-id: "${{steps.artifact-exe-upload-step.outputs.artifact-id}}"
-          wait-for-completion: true
-          output-artifact-directory: "win-exe"
-
-      - name: Generate packages
-        shell: cmd
-        working-directory: build
-        run: |
-          cp D:\a\etlegacy\etlegacy\win-exe\etl.exe .
-          cpack
-
-      - uses: actions/upload-artifact@v7
-        id: artifact-upload-step
-        with:
-          name: win-packages
-          path: |
-            build/etlegacy-*.exe
-            build/etlegacy-*.zip
-          if-no-files-found: error
-
-  win64:
-    runs-on: windows-2022
-    needs: [pre-build, mod-merger]
-    outputs:
-      win64: ${{ steps.artifact-upload-step.outputs.artifact-id }}
-    env:
-      CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-      CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-      CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Build
-        shell: cmd
-        run: |
-          call .\easybuild.bat build -64
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: All-mods
-          path: build/legacy
-
-      - name: Display structure of downloaded files
-        run: dir
-        working-directory: build/legacy
-
-      - name: Upload Win64 etl.exe
-        uses: actions/upload-artifact@v7
-        id: artifact-exe-upload-step
-        with:
-          name: win64-exe
-          path: |
-            build/etl.exe
-          if-no-files-found: error
-
-      - name: SignPath Win64 Exe Snapshot
-        uses: signpath/github-action-submit-signing-request@v1.3
-        with:
-          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
-          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
-          project-slug: "etlegacy"
-          signing-policy-slug: "test-signing"
-          github-artifact-id: "${{steps.artifact-exe-upload-step.outputs.artifact-id}}"
-          wait-for-completion: true
-          output-artifact-directory: "win64-exe"
-
-      - name: SignPath Win64 Exe Release
-        uses: signpath/github-action-submit-signing-request@v1.3
-        if: github.ref_type == 'tag'
-        with:
-          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
-          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
-          project-slug: "etlegacy"
-          signing-policy-slug: "release-signing"
-          github-artifact-id: "${{steps.artifact-exe-upload-step.outputs.artifact-id}}"
-          wait-for-completion: true
-          output-artifact-directory: "win64-exe"
-
-      - name: Generate packages
-        shell: cmd
-        working-directory: build
-        run: |
-          cp D:\a\etlegacy\etlegacy\win64-exe\etl.exe .
-          cpack
-
-      - uses: actions/upload-artifact@v7
-        id: artifact-upload-step
-        with:
-          name: win64-packages
-          path: |
-            build/etlegacy-*.exe
-            build/etlegacy-*.zip
-          if-no-files-found: error
-
-  android:
-    runs-on: ubuntu-latest
-    env:
-      SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGN_APK_ALLIAS }}
-      SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
-      SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_SIGN_APK_PASS }}
-      CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-      CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
-      CI_ETL_UID: ${{needs.pre-build.outputs.uid}}
-    needs: [pre-build, mod-merger]
-    container:
-      image: etlegacy/android-build
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          submodules: true
-
-      - name: Setup JDK
-        uses: actions/setup-java@v6
-        with:
-          distribution: "temurin"
-          java-version: "17"
-
-      - name: Download JoyStick Dependency Artifacts
+      # Replace the pk3 of this platform with the one of all platforms.
+      - name: Download merged mod pk3
+        if: needs.pk3.result == 'success'
         uses: actions/download-artifact@v8
         with:
-          name: android-joystick-packages
-          path: "/root/.m2/repository/com/etlegacy/android/joystick/"
+          name: mod-pk3
+          path: build/legacy
 
-      - uses: actions/download-artifact@v8
+      - name: Upload etl.exe for signing
+        id: exe
+        if: runner.os == 'Windows' && needs.version.outputs.release == 'true'
+        uses: actions/upload-artifact@v7
         with:
-          name: All-mods
+          name: ${{ matrix.name }}-exe
+          path: build/etl.exe
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Sign etl.exe
+        if: steps.exe.outcome == 'success'
+        uses: signpath/github-action-submit-signing-request@v1.3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: etlegacy
+          signing-policy-slug: ${{ github.ref_type == 'tag' && 'release-signing' || 'test-signing' }}
+          github-artifact-id: ${{ steps.exe.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed-exe
+
+      - name: Use signed etl.exe
+        if: steps.exe.outcome == 'success'
+        run: copy /y signed-exe\etl.exe build\etl.exe
+
+      - name: Generate packages
+        run: ${{ matrix.package }}
+
+      - name: Collect binaries and libraries
+        shell: bash
+        working-directory: build
+        run: |
+          # Exclude compiler probes and duplicate CPack staging trees.
+          find . -type d \( -name CMakeFiles -o -name _CPack_Packages \) -prune -o \
+            \( -type f -o -type l \) \( \
+              -name 'etl' -o -name 'etl.*' -o -name 'etlded' -o -name 'etlded.*' -o \
+              -name '*.exe' -o -name '*.dll' -o -name '*.so' -o -name '*.so.*' -o \
+              -name '*.dylib' -o -name '*.a' -o -name '*.lib' -o -name '*_mac' -o \
+              -path '*.app/*' \) -print0 > "$RUNNER_TEMP/binaries.list"
+          test -s "$RUNNER_TEMP/binaries.list"
+
+          # Tar preserves executable permissions and library symlinks across jobs.
+          tar -czf ../binaries.tar.gz --null -T "$RUNNER_TEMP/binaries.list"
+
+      - name: Upload platform binaries
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-binaries-${{ matrix.name }}
+          path: binaries.tar.gz
+          if-no-files-found: error
+          compression-level: 0
+          overwrite: true
+          retention-days: 1
+
+      - name: Upload packages
+        id: packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.name }}-packages
+          path: |
+            build/etlegacy-*.tar.gz
+            build/etlegacy-*.sh
+            build/etlegacy-*.dmg
+            build/etlegacy-*.exe
+            build/etlegacy-*.zip
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Sign packages
+        if: steps.exe.outcome == 'success'
+        uses: signpath/github-action-submit-signing-request@v1.3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ secrets.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: etlegacy
+          signing-policy-slug: ${{ github.ref_type == 'tag' && 'release-signing' || 'test-signing' }}
+          github-artifact-id: ${{ steps.packages.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed-packages
+
+      - name: Upload signed packages
+        if: steps.exe.outcome == 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.name }}-packages
+          path: signed-packages/
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 1
+
+  android:
+    needs: [version, pk3]
+    if: ${{ !cancelled() && !failure() }}
+    runs-on: ubuntu-latest
+    container:
+      image: etlegacy/android-build
+    env: *android-env
+    steps:
+      - *checkout
+      - *setup-java
+      - *joystick
+
+      - name: Download merged mod pk3
+        if: needs.pk3.result == 'success'
+        uses: actions/download-artifact@v8
+        with:
+          name: mod-pk3
           path: app/src/main/assets
 
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: app/src/main/assets
-
-      - name: Build Release and Generate Package
-        if: github.repository == 'etlegacy/etlegacy'
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          ./gradlew clean assembleRelease --stacktrace --info
-          ls -R
-      - name: Build Debug and Generate Package
-        if: github.repository != 'etlegacy/etlegacy'
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          ./gradlew clean assembleDebug --stacktrace --info
-          ls -R
+      - *gradle
 
       - name: Rename APK
         run: |
-          for FILE in ./app/build/outputs/apk/*/*; do mv "$FILE" "${FILE%-*}.apk"; done
+          for FILE in app/build/outputs/apk/*/*.apk; do mv "$FILE" "${FILE%-*}.apk"; done
           ls -R app/build/outputs/apk
 
-      - uses: actions/upload-artifact@v7
+      - name: Collect Android binaries and libraries
+        shell: bash
+        run: |
+          # Keep the ABI directories from the APK alongside the installable APK.
+          mkdir -p android-binaries
+          for apk in app/build/outputs/apk/*/*.apk; do
+            cp "$apk" android-binaries/
+            unzip -o "$apk" 'lib/*' -d android-binaries
+          done
+          tar -czf binaries.tar.gz -C android-binaries .
+
+      - name: Upload platform binaries
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-binaries-android
+          path: binaries.tar.gz
+          if-no-files-found: error
+          compression-level: 0
+          overwrite: true
+          retention-days: 1
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v7
         with:
           name: android-packages
           path: app/build/outputs/apk/*/etlegacy*.apk
           if-no-files-found: error
+          retention-days: 1
 
-  #    ____  _             ____       _   _
-  #   / ___|(_) __ _ _ __ |  _ \ __ _| |_| |__
-  #   \___ \| |/ _` | '_ \| |_) / _` | __| '_ \
-  #    ___) | | (_| | | | |  __/ (_| | |_| | | |
-  #   |____/|_|\__, |_| |_|_|   \__,_|\__|_| |_|
-  #            |___/
-
-  sign:
-    if: github.repository == 'etlegacy/etlegacy'
+  #    _____   _                     _
+  #   / ____| | |                   | |
+  #  | |      | |__     ___    ___  | | __  ___
+  #  | |      | '_ \   / _ \  / __| | |/ / / __|
+  #  | |____  | | | | |  __/ | (__  |   <  \__ \
+  #   \_____| |_| |_|  \___|  \___| |_|\_\ |___/
+  #
+  check-build-artifacts:
     runs-on: ubuntu-latest
-    needs: [pre-build, win, win64]
+    needs: [packages, android]
+    # Check the builds explicitly, the default success() also fails on the
+    # skipped release-only ancestors.
+    if: &builds-succeeded >-
+      !cancelled() &&
+      needs.packages.result == 'success' &&
+      needs.android.result == 'success'
     steps:
-      - name: Get version status
-        id: vars
+      - &checkout-full
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Fetch all platform binaries
+        uses: actions/download-artifact@v8
+        with:
+          pattern: ci-binaries-*
+          path: .ci-binaries
+
+      - name: Assemble distribution
+        shell: bash
         run: |
-          echo "hash_exists=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.LEGACY_UPLOAD_CHECK_URL }}${{ github.sha }} 2>/dev/null)" >> "$GITHUB_OUTPUT"
+          # Extract each platform into its own directory without losing file modes.
+          for archive in .ci-binaries/ci-binaries-*/binaries.tar.gz; do
+            platform="${archive#*/ci-binaries-}"
+            platform="${platform%/binaries.tar.gz}"
+            mkdir -p "dist/$platform"
+            tar -xzf "$archive" -C "dist/$platform"
+          done
+          tar -czf dist.tar.gz dist
 
-      - uses: actions/download-artifact@v8
-        if: ${{ steps.vars.outputs.hash_exists == '404' }}
+      - name: Publish distribution
+        if: github.run_attempt > 1
+        uses: actions/upload-artifact@v7
         with:
-          pattern: win*
-
-      - name: SignPath Win Snapshot
-        uses: signpath/github-action-submit-signing-request@v1.3
-        if: ${{ steps.vars.outputs.hash_exists == '404' && github.ref == 'refs/heads/master' }}
-        with:
-          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
-          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
-          project-slug: "etlegacy"
-          signing-policy-slug: "test-signing"
-          github-artifact-id: "${{needs.win.outputs.win}}"
-          wait-for-completion: true
-          output-artifact-directory: "win-packages"
-
-      - name: SignPath Win64 Snapshot
-        uses: signpath/github-action-submit-signing-request@v1.3
-        if: ${{ steps.vars.outputs.hash_exists == '404' && github.ref == 'refs/heads/master' }}
-        with:
-          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
-          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
-          project-slug: "etlegacy"
-          signing-policy-slug: "test-signing"
-          github-artifact-id: "${{needs.win64.outputs.win64}}"
-          wait-for-completion: true
-          output-artifact-directory: "win64-packages"
-
-      - name: SignPath Win Release
-        uses: signpath/github-action-submit-signing-request@v1.3
-        if: github.ref_type == 'tag'
-        with:
-          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
-          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
-          project-slug: "etlegacy"
-          signing-policy-slug: "release-signing"
-          github-artifact-id: "${{needs.win.outputs.win}}"
-          wait-for-completion: true
-          output-artifact-directory: "win-packages"
-
-      - name: SignPath Win64 Release
-        uses: signpath/github-action-submit-signing-request@v1.3
-        if: github.ref_type == 'tag'
-        with:
-          api-token: "${{ secrets.SIGNPATH_API_TOKEN }}"
-          organization-id: "${{ secrets.SIGNPATH_ORGANIZATION_ID }}"
-          project-slug: "etlegacy"
-          signing-policy-slug: "release-signing"
-          github-artifact-id: "${{needs.win64.outputs.win64}}"
-          wait-for-completion: true
-          output-artifact-directory: "win64-packages"
-
-      - uses: actions/upload-artifact@v7
-        if: ${{ steps.vars.outputs.hash_exists == '404' }}
-        with:
-          name: win-packages
-          path: |
-            win-packages/etlegacy-*-x86.exe
-            win-packages/etlegacy-*-x86.zip
-          overwrite: true
+          name: ci-dist
+          path: dist.tar.gz
           if-no-files-found: error
-
-      - uses: actions/upload-artifact@v7
-        if: ${{ steps.vars.outputs.hash_exists == '404' }}
-        with:
-          name: win64-packages
-          path: |
-            win64-packages/etlegacy-*-x64.exe
-            win64-packages/etlegacy-*-x64.zip
+          compression-level: 0
           overwrite: true
-          if-no-files-found: error
+          retention-days: 1
 
-  #   _    _           _                       _                         _      _____   _
-  #  | |  | |         | |                     | |                       | |    / ____| | |
-  #  | |  | |  _ __   | |   ___     __ _    __| |     __ _   _ __     __| |   | |      | |   ___    __ _   _ __    _   _   _ __
-  #  | |  | | | '_ \  | |  / _ \   / _` |  / _` |    / _` | | '_ \   / _` |   | |      | |  / _ \  / _` | | '_ \  | | | | | '_ \
-  #  | |__| | | |_) | | | | (_) | | (_| | | (_| |   | (_| | | | | | | (_| |   | |____  | | |  __/ | (_| | | | | | | |_| | | |_) |
-  #   \____/  | .__/  |_|  \___/   \__,_|  \__,_|    \__,_| |_| |_|  \__,_|    \_____| |_|  \___|  \__,_| |_| |_|  \__,_| | .__/
-  #           | |                                                                                                         | |
-  #           |_|                                                                                                         |_|
+      - &pixi
+        uses: prefix-dev/setup-pixi@v0.10.2
+        with:
+          pixi-version: v0.81.0
+          cache: true
 
+      - name: Check Build Artifacts
+        run: pixi run dist-manifest-check --github
+
+  check-compiler-warnings:
+    runs-on: ubuntu-latest
+    needs: [packages, android]
+    if: *builds-succeeded
+    steps:
+      - *checkout-full
+      - *pixi
+
+      - name: Collect and Check GitHub Build Logs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # fallback
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: pixi run collect-and-check-gh-build-logs --github
+
+  #   _____           _       _   _         _
+  #  |  __ \         | |     | | (_)       | |
+  #  | |__) |  _   _ | |__   | |  _   ___  | |__
+  #  |  ___/  | | | || '_ \  | | | | / __| | '_ \
+  #  | |      | |_| || |_) | | | | | \__ \ | | | |
+  #  |_|       \__,_||_.__/  |_| |_| |___/ |_| |_|
+  #
   upload:
     runs-on: ubuntu-latest
-    needs: [pre-build, sign, lnx32, lnx64, osx, lnx-aarch64, android]
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+    needs: [version, packages, android, pk3]
+    if: needs.version.outputs.release == 'true'
+    env:
+      LEGACY_AUTH: ${{ secrets.LEGACY_AUTH }}
+      LEGACY_UPLOAD_URL: ${{ secrets.LEGACY_UPLOAD_URL }}
     steps:
-      - uses: geekyeggo/delete-artifact@v6
-        with:
-          name: |
-            All-mods
-
+      # Commits are only published once, e.g. a quiet week reuses the last build.
       - name: Get version status
         id: vars
+        env:
+          LEGACY_UPLOAD_CHECK_URL: ${{ secrets.LEGACY_UPLOAD_CHECK_URL }}
         run: |
-          echo "hash_exists=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.LEGACY_UPLOAD_CHECK_URL }}${{ github.sha }} 2>/dev/null)" >> "$GITHUB_OUTPUT"
+          echo "hash_exists=$(curl -s -o /dev/null -w "%{http_code}" "${LEGACY_UPLOAD_CHECK_URL}${GITHUB_SHA}" 2>/dev/null)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/download-artifact@v8
-        if: ${{ steps.vars.outputs.hash_exists == '404' }}
+        if: steps.vars.outputs.hash_exists == '404'
         with:
+          pattern: "*-packages"
           path: packages
 
+      - uses: actions/download-artifact@v8
+        if: steps.vars.outputs.hash_exists == '404'
+        with:
+          name: mod-zip
+          path: packages/mod-zip
+
       - name: Register version
-        if: ${{ steps.vars.outputs.hash_exists == '404' }}
+        if: steps.vars.outputs.hash_exists == '404'
+        env:
+          LEGACY_VERSION_REGISTER_URL: ${{ secrets.LEGACY_VERSION_REGISTER_URL }}
         run: |
-          curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -F"sha=${{ github.sha }}" -F"uid=${{needs.pre-build.outputs.uid}}" -F"desc=${{needs.pre-build.outputs.describe}}" ${{ secrets.LEGACY_VERSION_REGISTER_URL }}
+          curl --fail -H "Authorization: Bearer $LEGACY_AUTH" -X POST -F"sha=$GITHUB_SHA" -F"uid=${{ needs.version.outputs.uid }}" -F"desc=${{ needs.version.outputs.describe }}" "$LEGACY_VERSION_REGISTER_URL"
 
       - name: Upload packages
-        if: ${{ steps.vars.outputs.hash_exists == '404' }}
-        shell: bash
+        if: steps.vars.outputs.hash_exists == '404'
         working-directory: packages
         run: |
-          find lnx64-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=ouJ8LoD4tpFE" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
-          find lnx32-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=3Eib0F0HiVcY" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
-          find osx-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=zrm0gXDJ0vvQ" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
-          find win-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=qkKkqKmiKHul" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
-          find win64-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=1EM7l2e6pqpA" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
-          find android-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=pqxx51ioaosg" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
-          find lnx-aarch64-packages/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=r3tqepamenlf" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
-          find mod-zip/ -name '*' -type f -exec curl --fail -H "Authorization: Bearer ${{ secrets.LEGACY_AUTH }}" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=eacan4jn14wt" -F"sha=${{ github.sha }}" ${{ secrets.LEGACY_UPLOAD_URL }} \;
+          # Upload ids of the download slots on etlegacy.com per artifact.
+          declare -A upload_ids=(
+            [lnx64-packages]=ouJ8LoD4tpFE
+            [lnx32-packages]=3Eib0F0HiVcY
+            [osx-packages]=zrm0gXDJ0vvQ
+            [win-packages]=qkKkqKmiKHul
+            [win64-packages]=1EM7l2e6pqpA
+            [android-packages]=pqxx51ioaosg
+            [lnx-aarch64-packages]=r3tqepamenlf
+            [mod-zip]=eacan4jn14wt
+          )
+          for artifact in "${!upload_ids[@]}"; do
+            find "$artifact" -type f -exec curl --fail -H "Authorization: Bearer $LEGACY_AUTH" -X POST -H "Content-Type: multipart/form-data" -F "data=@{}" -F "upload_id=${upload_ids[$artifact]}" -F"sha=$GITHUB_SHA" "$LEGACY_UPLOAD_URL" \;
+          done
 
       - name: Discord notification
-        if: ${{ steps.vars.outputs.hash_exists == '404' && needs.pre-build.outputs.describe != needs.pre-build.outputs.tag }}
+        if: steps.vars.outputs.hash_exists == '404' && needs.version.outputs.describe != needs.version.outputs.tag
         env:
           DISCORD_WEBHOOK: ${{ secrets.PUBLISH_DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@0.4.0
         with:
-          args: "<@&673533235887865879> Build from ETLegacy: ${{ needs.pre-build.outputs.describe }} (${{ github.sha }}) has been published.\nDownload at: https://www.etlegacy.com/workflow-files"
+          args: "<@&673533235887865879> Build from ETLegacy: ${{ needs.version.outputs.describe }} (${{ github.sha }}) has been published.\nDownload at: https://www.etlegacy.com/workflow-files"
 
+  # Only publish the server image once the packages are on the site.
   docker:
     runs-on: ubuntu-latest
-    needs: [pre-build, upload] # only upload to docker if the upload to the site was successfully completed
-    # only run on master
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+    needs: [version, upload]
     env:
-      CI_ETL_DESCRIBE: ${{needs.pre-build.outputs.describe}}
-      CI_ETL_TAG: ${{needs.pre-build.outputs.tag}}
+      CI_ETL_DESCRIBE: ${{ needs.version.outputs.describe }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          submodules: false
 
       - uses: actions/download-artifact@v8
         with:
@@ -983,92 +608,62 @@ jobs:
           cp ../../misc/docker/dedicated.Dockerfile ./Dockerfile
           cp ../../misc/docker/entrypoint.sh ./entrypoint.sh
 
-      - name: Package folder contents
-        working-directory: build/package
-        run: |
-          ls -R
-
       - name: Login to DockerHub Registry
-        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
       - name: Get the version
         id: vars
         run: |
           tag_missing=$(docker manifest inspect "etlegacy/server:${CI_ETL_DESCRIBE}" > /dev/null ; echo $?)
-          echo "Current tag ${{needs.pre-build.outputs.describe}} is missing from Docker: $tag_missing"
+          echo "Current tag ${CI_ETL_DESCRIBE} is missing from Docker: $tag_missing"
           echo "tag_missing=$tag_missing" >> "$GITHUB_OUTPUT"
 
-      # If we are on any build version then we create the latest-patch version
+      # Every release run refreshes the latest-patch version
       - name: Build the server container
         working-directory: build/package
         run: |
           docker build . --file Dockerfile --tag etlegacy/server:latest-patch
           docker push etlegacy/server:latest-patch
 
-      # Create weekly tag when scheduled and update when triggered on docker hub
-      - name: Build and push the weekly Docker image
-        if: ${{ github.event_name == 'schedule' }}
-        working-directory: build/package
+      # Create weekly tag when scheduled
+      - name: Push the weekly Docker image
+        if: github.event_name == 'schedule'
         run: |
           docker tag etlegacy/server:latest-patch etlegacy/server:weekly
           docker push etlegacy/server:weekly
 
       # If we are on a release tag, then also create the 'latest' tag on docker hub
-      - name: Build and push the latest Docker image
-        if: needs.pre-build.outputs.describe == needs.pre-build.outputs.tag && steps.vars.outputs.tag_missing == '1' && github.event_name != 'schedule'
-        working-directory: build/package
+      - name: Push the latest Docker image
+        if: needs.version.outputs.describe == needs.version.outputs.tag && steps.vars.outputs.tag_missing == '1' && github.event_name != 'schedule'
         run: |
           docker tag etlegacy/server:latest-patch "etlegacy/server:${CI_ETL_DESCRIBE}"
           docker tag etlegacy/server:latest-patch "etlegacy/server:latest"
           docker push "etlegacy/server:${CI_ETL_DESCRIBE}"
           docker push "etlegacy/server:latest"
 
-  cleanup:
-    runs-on: ubuntu-latest
-    if: always()
-    needs: [upload, docker]
-    steps:
-      - uses: geekyeggo/delete-artifact@v6
-        with:
-          failOnError: false
-          name: |
-            All-mods
-            mod-zip
-            incomplete-mod-pk3
-            *-packages
-            *-mod
-            *-exe
+  snap:
+    needs: upload
+    uses: ./.github/workflows/snapcraft.yml
+    secrets: inherit
 
   ci-discord-notify-on-failure:
     needs:
-      - pre-build
-
-      - lnx64-mod
-      - lnx32-mod
-      - lnx-aarch64-mod
-      - osx-mod
-      - win-mod
-      - win64-mod
+      - version
+      - images
+      - mods
       - android-mod
-
-      - mod-merger
-
-      - lnx64
-      - lnx32
-      - lnx-aarch64
-      - osx
-      - win
-      - win64
+      - pk3
+      - packages
       - android
-
-      - sign
-
+      - check-build-artifacts
+      - check-compiler-warnings
       - upload
       - docker
-      - cleanup
-    if: |
-      github.ref == 'refs/heads/master' &&
-      failure()
+      - snap
+    if: failure() && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Notify Discord
